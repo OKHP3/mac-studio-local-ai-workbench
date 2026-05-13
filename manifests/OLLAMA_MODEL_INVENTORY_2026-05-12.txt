@@ -1,0 +1,7 @@
+NAME                    ID              SIZE      MODIFIED
+llama3.1:8b             46e0c10c039e    4.9 GB    5 days ago
+mistral-small3.1:24b    b9aaf0c2586a    15 GB     5 days ago
+codestral:22b           0898a8b286d5    12 GB     6 days ago
+gemma3:27b              a418f5838eaf    17 GB     6 days ago
+gemma3:12b              f4031aab637d    8.1 GB    7 days ago
+phi4:14b                ac896e5b8b34    9.1 GB    7 days ago
