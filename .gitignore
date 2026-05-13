@@ -1,0 +1,82 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*
+.Spotlight-V100
+.Trashes
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Environment and secrets
+.env
+.env.*
+*.token
+*.key
+*.pem
+*.p12
+*.pfx
+*_TOKEN*
+*token*
+*secret*
+*secrets*
+claude_desktop_config.json
+anthropic*.json
+openai*.json
+notion*.json
+huggingface*.json
+
+# Python / virtual environments
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Local model files and caches
+models/
+ollama/
+lm-studio/
+huggingface-cache/
+qdrant_storage/
+open-webui-data/
+.cache/
+
+# Large model artifacts
+*.gguf
+*.safetensors
+*.bin
+*.pt
+*.pth
+*.onnx
+*.mlx
+
+# Archives and local backups
+*.tar.gz
+*.tgz
+*.zip
+*.7z
+*.rar
+*.bak
+
+# Local runtime outputs
+logs/
+*.log
+.tmp/
+tmp/
