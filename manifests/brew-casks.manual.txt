@@ -1,0 +1,5 @@
+docker-desktop
+lm-studio
+microsoft-edge
+onedrive
+visual-studio-code
