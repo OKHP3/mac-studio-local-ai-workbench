@@ -1,0 +1,5 @@
+/Volumes/OKH-Local/07_Local_LLMs/lm-studio/models
+/Volumes/OKH-Local/07_Local_LLMs/lm-studio/models/lmstudio-community
+/Volumes/OKH-Local/07_Local_LLMs/lm-studio/models/lmstudio-community/gemma-4-26B-A4B-it-GGUF
+/Volumes/OKH-Local/07_Local_LLMs/lm-studio/models/lmstudio-community/gemma-4-E2B-it-GGUF
+/Volumes/OKH-Local/07_Local_LLMs/lm-studio/models/lmstudio-community/gemma-4-E4B-it-GGUF
