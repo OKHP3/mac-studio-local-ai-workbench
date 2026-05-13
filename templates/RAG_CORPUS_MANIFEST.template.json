@@ -1,0 +1,29 @@
+{
+  "corpus_id": "jamie-corpus-v1",
+  "created_date": "YYYY-MM-DD",
+  "owner": "OKHP3",
+  "description": "Short description of this corpus.",
+  "source_systems": [
+    "notion",
+    "github",
+    "local_files",
+    "chatgpt_exports",
+    "claude_exports"
+  ],
+  "sensitivity": "personal",
+  "default_retrieval_status": "candidate",
+  "documents": [
+    {
+      "document_id": "example-doc-001",
+      "title": "Example Document",
+      "source_system": "notion",
+      "source_url_or_path": "",
+      "project": "mac-studio-local-ai-workbench",
+      "domain": "local-ai",
+      "status": "candidate",
+      "sensitivity": "personal",
+      "exported_at": "YYYY-MM-DD",
+      "notes": ""
+    }
+  ]
+}
