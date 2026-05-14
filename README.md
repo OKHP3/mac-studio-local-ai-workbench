@@ -114,7 +114,7 @@ Before making this repository public, run a final review for:
 - private LAN/IP details
 - employer-specific or non-public information
 
-See `SECURITY.md` for the publication boundary and disclosure policy.
+See `PUBLICATION_BOUNDARY.md` for the publication boundary and disclosure posture.
 
 ## Baseline verdict
 
