@@ -6,6 +6,8 @@ REPO_ROOT="$(cd "$SETUP_DIR/.." && pwd)"
 
 FORMULAE_FILE="$REPO_ROOT/manifests/brew-formulae.manual.txt"
 CASKS_FILE="$REPO_ROOT/manifests/brew-casks.manual.txt"
+LOCAL_AI_VOLUME="${LOCAL_AI_VOLUME:-${OKH_LOCAL_VOLUME:-/Volumes/OKH-Local}}"
+LOCAL_LLMS_DIR="$LOCAL_AI_VOLUME/07_Local_LLMs"
 
 echo "===== VERIFY HOMEBREW FORMULAE ====="
 while read -r formula; do
@@ -30,19 +32,24 @@ done < "$CASKS_FILE"
 
 echo
 echo "===== VERIFY LOCAL AI PATHS ====="
+echo "LOCAL_AI_VOLUME=$LOCAL_AI_VOLUME"
 echo "OLLAMA_MODELS=${OLLAMA_MODELS:-unset}"
 echo "HF_HOME=${HF_HOME:-unset}"
 echo "HUGGINGFACE_HUB_CACHE=${HUGGINGFACE_HUB_CACHE:-unset}"
 
 echo
 echo "===== VERIFY SYMLINKS ====="
-ls -la /Volumes/OKH-Local | grep -E 'ollama|lm-studio' || true
+if [[ -d "$LOCAL_AI_VOLUME" ]]; then
+  ls -la "$LOCAL_AI_VOLUME" | grep -E 'ollama|lm-studio' || true
+else
+  echo "Missing local AI volume: $LOCAL_AI_VOLUME"
+fi
 
 echo
 echo "===== VERIFY LOCAL AI STORAGE SIZES ====="
-du -sh /Volumes/OKH-Local/07_Local_LLMs/ollama/models 2>/dev/null || echo "Missing Ollama model path"
-du -sh /Volumes/OKH-Local/07_Local_LLMs/lm-studio/models 2>/dev/null || echo "Missing LM Studio model path"
-du -sh /Volumes/OKH-Local/07_Local_LLMs/huggingface-cache 2>/dev/null || echo "Missing Hugging Face cache path"
+du -sh "$LOCAL_LLMS_DIR/ollama/models" 2>/dev/null || echo "Missing Ollama model path"
+du -sh "$LOCAL_LLMS_DIR/lm-studio/models" 2>/dev/null || echo "Missing LM Studio model path"
+du -sh "$LOCAL_LLMS_DIR/huggingface-cache" 2>/dev/null || echo "Missing Hugging Face cache path"
 
 echo
 echo "===== VERIFY OLLAMA ====="
