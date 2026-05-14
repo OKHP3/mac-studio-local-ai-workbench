@@ -1,76 +1,68 @@
 ---
 title: "Storage Architecture"
-artifact_type: "architecture_document"
+artifact_type: "architecture_doc"
 created_date: "2026-05-13"
 project: "Mac Studio Local AI Workbench"
-status: "public-candidate"
+status: "normalized"
 ---
 
 # Storage Architecture
 
-## Core principle
+## Design principle
 
-Model and cache storage should live on a dedicated external workbench volume, not the Mac Studio internal SSD.
+Local AI projects need explicit storage governance. Model weights, cache folders, benchmark outputs, exports, and repo mirrors should live on a dedicated external workbench volume rather than crowding the internal SSD.
 
-The exact volume name used in the original build is intentionally generalized in this public repository. Adapt the paths below to your own local environment.
+The internal SSD runs macOS and applications. The external volume holds replaceable runtime assets and project artifacts.
 
-## External workbench volume pattern
+## Volume layout
 
 ```text
-/Volumes/<external-ai-volume>
+/Volumes/OKH-Local/
+  00_Inbox/
+  01_ChatGPT_Exports/
+  02_Claude_Exports/
+  03_Notion_Exports/
+  04_GitHub_Mirrors/
+  05_Research_Vault/
+  06_RAG_Experiments/
+  07_Local_LLMs/
+  08_Media_Staging/
+  09_Archive_Cold/
+  99_Temp_Scratch/
 ```
 
-## Canonical local AI storage paths
+## Local model storage
 
 ```text
-/Volumes/<external-ai-volume>/07_Local_LLMs/ollama/models
-/Volumes/<external-ai-volume>/07_Local_LLMs/lm-studio/models
-/Volumes/<external-ai-volume>/07_Local_LLMs/huggingface-cache
-/Volumes/<external-ai-volume>/07_Local_LLMs/manifests
-/Volumes/<external-ai-volume>/07_Local_LLMs/mlx
-/Volumes/<external-ai-volume>/07_Local_LLMs/quarantine
+/Volumes/OKH-Local/07_Local_LLMs/ollama/models
+/Volumes/OKH-Local/07_Local_LLMs/lm-studio/models
+/Volumes/OKH-Local/07_Local_LLMs/huggingface-cache
 ```
 
 ## Compatibility symlinks
 
-Compatibility symlinks may be retained for tools or old references that expect root-level folders:
-
 ```text
-/Volumes/<external-ai-volume>/ollama -> /Volumes/<external-ai-volume>/07_Local_LLMs/ollama
-/Volumes/<external-ai-volume>/lm-studio -> /Volumes/<external-ai-volume>/07_Local_LLMs/lm-studio
+/Volumes/OKH-Local/ollama
+/Volumes/OKH-Local/lm-studio
 ```
 
-## Environment variables
+These root-level entries point back to canonical folders under `07_Local_LLMs`.
 
-```bash
-export OKH_LOCAL_VOLUME="/Volumes/<external-ai-volume>"
-export OLLAMA_MODELS="$OKH_LOCAL_VOLUME/07_Local_LLMs/ollama/models"
-export OLLAMA_FLASH_ATTENTION="1"
-export OLLAMA_KV_CACHE_TYPE="q8_0"
-export HF_HOME="$OKH_LOCAL_VOLUME/07_Local_LLMs/huggingface-cache"
-export HUGGINGFACE_HUB_CACHE="$HF_HOME/hub"
-```
+## Service configuration note
 
-## Ollama service path
+The Ollama background service must see the same model directory that the interactive shell uses. Shell profile variables do not automatically flow into background services, so service configuration must be verified after changes.
 
-The Homebrew Ollama service should be able to see the same model path used by the shell environment:
+## Disk usage baseline
 
-```text
-/Volumes/<external-ai-volume>/07_Local_LLMs/ollama/models
-```
+| Path | Size |
+|---|---:|
+| Ollama models | 63 GB |
+| LM Studio models | 45 GB |
+| Hugging Face cache | 2.18 GB |
+| Total used | ~110 GB |
+| Drive capacity | 931 GB |
+| Available | ~820 GB |
 
-This should be verified after service restart and model visibility confirmation.
+## Recovery path
 
-## Design rationale
-
-Externalized storage provides:
-
-- lower internal SSD pressure
-- easier backup of setup artifacts
-- clearer separation between runtime storage and documentation
-- easier future migration to another workstation
-- explicit storage governance before RAG/vector databases grow
-
-## Publication note
-
-This repository documents the storage pattern. It intentionally does not store model binaries, Ollama blobs, Hugging Face cache contents, LM Studio downloads, local credential files, or private machine configuration.
+If the external workbench volume is lost, re-create the folder structure, re-pull models, restore workspace exports if needed, and restore repo documentation and scripts from GitHub.
