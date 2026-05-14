@@ -3,7 +3,7 @@ title: "Build Journey Summary"
 artifact_type: "build_log"
 created_date: "2026-05-13"
 project: "Mac Studio Local AI Workbench"
-status: "draft"
+status: "public-candidate"
 ---
 
 # Build Journey Summary
@@ -14,24 +14,37 @@ The workbench began as a local AI exploration effort, then matured into a govern
 
 ## Phase 2 — External volume taxonomy
 
-The external NVMe volume `/Volumes/OKH-Local` became the operating substrate for local AI artifacts, model storage, research exports, GitHub mirrors, RAG experiments, and cold archives.
+A dedicated external NVMe volume became the operating substrate for local AI artifacts, model storage, research exports, GitHub mirrors, RAG experiments, and cold archives.
 
-Important folders include:
+Important folder classes include:
 
-- `/Volumes/OKH-Local/04_GitHub_Mirrors`
-- `/Volumes/OKH-Local/05_Research_Vault`
-- `/Volumes/OKH-Local/06_RAG_Experiments`
-- `/Volumes/OKH-Local/07_Local_LLMs`
+- GitHub mirrors
+- research vault
+- RAG experiments
+- local LLM storage
+- cold archive
+- temporary scratch space
+
+Representative path pattern:
+
+```text
+/Volumes/<external-ai-volume>/04_GitHub_Mirrors
+/Volumes/<external-ai-volume>/05_Research_Vault
+/Volumes/<external-ai-volume>/06_RAG_Experiments
+/Volumes/<external-ai-volume>/07_Local_LLMs
+```
 
 ## Phase 3 — Storage normalization
 
-Ollama, LM Studio, and Hugging Face cache locations were normalized under `/Volumes/OKH-Local/07_Local_LLMs`.
+Ollama, LM Studio, and Hugging Face cache locations were normalized under the local LLM storage area on the external workbench volume.
 
 The major correction was eliminating accidental fragmentation between root-level runtime folders and canonical storage folders.
 
 ## Phase 4 — Verification and closure
 
-A known-good baseline was documented, scripts were created, a verification report was captured, and a compressed closure archive was created.
+A known-good baseline was documented, scripts were created, a verification report was captured, and a compressed closure archive was created locally.
+
+The closure archive is intentionally not committed to this repository.
 
 ## Phase 5 — Benchmarking
 
@@ -51,4 +64,8 @@ The next phase is operational hardening:
 - expanded smoke tests
 - strict prompt benchmarks
 - local RAG/vector database smoke test
-- project page preparation for overkillhill.com
+- public project page refinement
+
+## Publication note
+
+This build journey is a sanitized public summary. Raw transcripts, private workspace links, local-only logs, and credential-bearing configuration are intentionally excluded.
