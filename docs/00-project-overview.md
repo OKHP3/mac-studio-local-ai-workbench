@@ -3,7 +3,7 @@ title: "Project Overview"
 artifact_type: "project_overview"
 created_date: "2026-05-13"
 project: "Mac Studio Local AI Workbench"
-status: "draft"
+status: "public-candidate"
 ---
 
 # Project Overview
@@ -33,12 +33,12 @@ Baseline build: **done**.
 
 Operational hardening: **in progress**.
 
-Publishable project page: **not yet complete**.
+Public project page: **published as a case study**.
 
 ## Primary local components
 
 - Mac Studio M4 Max
-- External NVMe volume: `/Volumes/OKH-Local`
+- Dedicated external NVMe workbench volume
 - Ollama
 - LM Studio
 - Hugging Face cache
@@ -46,9 +46,21 @@ Publishable project page: **not yet complete**.
 - Docker Desktop
 - VS Code
 - GitHub CLI
-- Notion project memory
+- private project-memory workspace
 - GitHub durable artifact repo
 
 ## Repository role
 
-This repository is the sanitized durable artifact layer. It should preserve documentation, scripts, benchmark results, manifests, and templates without storing model binaries, secrets, private tokens, or cache contents.
+This repository is the sanitized durable artifact layer. It should preserve documentation, scripts, benchmark results, manifests, and templates without storing model binaries, secrets, private tokens, private workspace links, raw MCP configuration, or cache contents.
+
+## Public/private boundary
+
+Private working notes, raw build transcripts, private workspace pages, and MCP-oriented memory are intentionally kept outside this public-candidate repo.
+
+Public materials should be:
+
+- summarized
+- sanitized
+- useful without private links
+- free of secrets or local credential details
+- safe to read without access to the original private workspace
