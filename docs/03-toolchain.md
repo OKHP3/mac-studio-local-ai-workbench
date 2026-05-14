@@ -3,7 +3,7 @@ title: "Toolchain"
 artifact_type: "toolchain_document"
 created_date: "2026-05-13"
 project: "Mac Studio Local AI Workbench"
-status: "draft"
+status: "public-candidate"
 ---
 
 # Toolchain
@@ -28,15 +28,24 @@ status: "draft"
 
 ## Storage and corpus layer
 
-- External NVMe volume: `/Volumes/OKH-Local`
-- GitHub mirrors under `/Volumes/OKH-Local/04_GitHub_Mirrors`
-- Research vault under `/Volumes/OKH-Local/05_Research_Vault`
-- RAG experiments under `/Volumes/OKH-Local/06_RAG_Experiments`
-- Local model storage under `/Volumes/OKH-Local/07_Local_LLMs`
+- Dedicated external NVMe workbench volume
+- GitHub mirror workspace
+- Research vault
+- RAG experiment workspace
+- Local model storage area
+
+Representative path pattern:
+
+```text
+/Volumes/<external-ai-volume>/04_GitHub_Mirrors
+/Volumes/<external-ai-volume>/05_Research_Vault
+/Volumes/<external-ai-volume>/06_RAG_Experiments
+/Volumes/<external-ai-volume>/07_Local_LLMs
+```
 
 ## Knowledge and project memory layer
 
-- Notion is the working canon and project-memory surface.
+- Private workspace notes are the working canon and project-memory surface.
 - GitHub is the durable versioned artifact layer.
 - Local files are the operational substrate.
 
@@ -50,3 +59,7 @@ status: "draft"
 ## Important distinction
 
 GitHub is not automatically RAG. It becomes useful for RAG only when paired with a retrieval layer such as search, embeddings, vector database indexing, or a connector with reliable file retrieval.
+
+## Public/private boundary
+
+This repository documents categories and patterns. It does not include private workspace links, raw MCP configuration, local credential files, tokens, private API keys, or service-specific secrets.
