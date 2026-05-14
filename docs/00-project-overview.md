@@ -3,64 +3,73 @@ title: "Project Overview"
 artifact_type: "project_overview"
 created_date: "2026-05-13"
 project: "Mac Studio Local AI Workbench"
-status: "public-candidate"
+status: "baseline-complete"
 ---
 
 # Project Overview
 
 ## Thesis
 
-This project documents the conversion of a Mac Studio M4 Max into a governed local AI workbench.
+This project documents the conversion of a Mac Studio M4 Max into a governed local AI workbench — not just an installation of tools, but a deliberate operating model: externalized storage, reproducible setup, restore scripts, health verification, model benchmarks, update governance, and a RAG readiness layer.
 
-The project is not framed as a generic local AI installation. It is framed as a practical operating model for local AI infrastructure: externalized storage, reproducible setup, restore scripts, health checks, model benchmarks, update governance, and RAG readiness.
+The distinction matters. Most local AI setups are a pile of downloads. This one is built to be maintainable, recoverable, and useful over time.
 
 ## Why it matters
 
-Local AI becomes useful when it is more than a pile of installed tools. A durable setup needs:
+Local AI becomes genuinely useful only when the infrastructure underneath it is trustworthy. A durable setup needs:
 
-- normalized storage paths
-- documented environment variables
-- model inventories
-- known-good baseline checks
-- controlled update policy
-- backup and recovery plan
-- model role classification
-- RAG/corpus governance
+- Normalized storage paths that survive reboots and version bumps
+- Documented environment variables so you know why things work
+- Model inventories that track what's running and why
+- Known-good baseline checks you can run after changes
+- A controlled update policy that doesn't break things silently
+- Backup and recovery that actually works when you need it
+- Model role classification so you're not using a 27B model for a task that an 8B handles fine
+- RAG and corpus governance for when you want the AI to know your actual content
+
+## The hardware
+
+| Component | Spec |
+|---|---|
+| Machine | Mac Studio M4 Max (2025) |
+| Unified memory | 36GB |
+| Internal SSD | 512GB |
+| External NVMe | 1TB WD Black SN7100 (via Satechi Stand Hub, `/Volumes/OKH-Local`) |
+| macOS | Sequoia (latest as of 2026-05-04) |
 
 ## Build status
 
-Baseline build: **done**.
+| Phase | Status |
+|---|---|
+| Baseline build | ✅ Done — 2026-05-12 |
+| Storage normalization | ✅ Done — 2026-05-12 |
+| Smoke test benchmarks | ✅ Done — 2026-05-12 |
+| Operational hardening | 🔄 In progress |
+| Full benchmark pass | ⬜ Pending |
+| RAG/vector database | ⬜ Planned |
 
-Operational hardening: **in progress**.
+## Primary software stack
 
-Public project page: **published as a case study**.
-
-## Primary local components
-
-- Mac Studio M4 Max
-- Dedicated external NVMe workbench volume
-- Ollama
-- LM Studio
-- Hugging Face cache
-- Open WebUI
-- Docker Desktop
-- VS Code
-- GitHub CLI
-- private project-memory workspace
-- GitHub durable artifact repo
+| Tool | Version | Role |
+|---|---|---|
+| Homebrew | 5.1.8 | Package manager |
+| Git | 2.54.0 | Version control (overrides Apple Git) |
+| Python | 3.14.4 | Runtime |
+| Node.js | 26.0.0 | MCP server support |
+| GitHub CLI | 2.92.0 | Repo operations |
+| Docker Desktop | 4.72.0 | Container runtime |
+| Ollama | 0.23.1 | Local model inference (MLX-accelerated) |
+| LM Studio | 0.4.12 | Model GUI, MLX backend |
+| Open WebUI | Latest | Browser-based chat interface |
+| mlx-lm | 0.31.3 | Direct Apple Silicon inference |
+| VSCode | 1.119.0 | Editor |
+| Continue.dev | 1.2.22 | Local Copilot replacement in VSCode |
+| Claude Desktop | Latest | Frontier AI + MCP orchestration hub |
 
 ## Repository role
 
-This repository is the sanitized durable artifact layer. It should preserve documentation, scripts, benchmark results, manifests, and templates without storing model binaries, secrets, private tokens, private workspace links, raw MCP configuration, or cache contents.
+This repo is the sanitized, durable artifact layer. It stores documentation, scripts, benchmark results, manifests, and templates — without model binaries, secrets, tokens, cache contents, or links to private workspaces.
 
-## Public/private boundary
+## Public project page
 
-Private working notes, raw build transcripts, private workspace pages, and MCP-oriented memory are intentionally kept outside this public-candidate repo.
-
-Public materials should be:
-
-- summarized
-- sanitized
-- useful without private links
-- free of secrets or local credential details
-- safe to read without access to the original private workspace
+https://overkillhill.com/projects/mac-studio-local-ai-workbench/
