@@ -2,19 +2,22 @@
 title: "Mac Studio Local AI Workbench"
 artifact_type: "project_readme"
 created_date: "2026-05-13"
+updated_date: "2026-05-28"
 project: "Mac Studio Local AI Workbench"
-status: "baseline-complete"
+status: "baseline-complete-agent-online"
 ---
 
 # Mac Studio Local AI Workbench
 
-This repository captures the governed baseline build of a Mac Studio M4 Max local AI workbench.
+This repository captures the governed baseline build of a Mac Studio M4 Max local AI workbench — plus the autonomous agent layer added in May 2026.
 
 The purpose is not merely to document that local AI tools were installed. The purpose is to preserve the operating model, scripts, benchmarks, decisions, and future RAG roadmap needed to make the workstation maintainable, recoverable, and useful.
 
 ## Current status
 
 Baseline phase: **DONE**
+
+Agent layer: **ONLINE** — OpenClaw 2026.5.26, agent named Larry, as of 2026-05-28.
 
 The local AI workbench has been:
 
@@ -24,21 +27,32 @@ The local AI workbench has been:
 - benchmarked
 - verified
 - archived locally
-
-Operational hardening is still in progress. The next phase is backup, update governance, Open WebUI state capture, stricter model benchmarks, and a small RAG/vector database smoke test.
+- extended with an autonomous background agent
 
 ## Core architecture
 
 ```text
 Mac Studio M4 Max
-  -> external NVMe workbench volume
-  -> Ollama runtime
-  -> LM Studio model workspace
+  -> external NVMe workbench volume (OKH-Local)
+  -> Ollama runtime (MLX-accelerated, port 11434)
+  -> LM Studio model workspace (MLX backend, port 1234)
   -> Hugging Face external cache
-  -> Open WebUI front door
+  -> Open WebUI front door (Docker, port 3000)
+  -> OpenClaw agent — Larry (LaunchAgent, port 18789)
+     -> SearXNG web search (Docker, port 8888)
+     -> 28 skills (Apple Notes, GitHub, Notion, web search, more)
   -> local benchmark harness
   -> future RAG/vector database layer
 ```
+
+## Two AI interaction layers
+
+| Layer | Tool | What it does |
+|---|---|---|
+| Chat interface | Open WebUI | You send a prompt, model responds |
+| Autonomous agent | OpenClaw (Larry) | Runs in background, works without prompting |
+
+These are complementary. Open WebUI is for interactive queries. Larry handles the zero-cost execution tier — background tasks, scheduling, file operations, Apple Notes/Reminders, web search, and RAG queries.
 
 ## Canonical local paths
 
@@ -48,6 +62,8 @@ Mac Studio M4 Max
 /Volumes/OKH-Local/07_Local_LLMs/ollama/models
 /Volumes/OKH-Local/07_Local_LLMs/lm-studio/models
 /Volumes/OKH-Local/07_Local_LLMs/huggingface-cache
+~/searxng/config/          (SearXNG configuration)
+~/.openclaw/workspace/     (agent workspace — MEMORY.md, SOUL.md, IDENTITY.md)
 ```
 
 ## Repository purpose
@@ -61,6 +77,7 @@ It should contain:
 - model inventories
 - benchmark summaries
 - architecture notes
+- agent configuration documentation
 - update policy templates
 - RAG roadmap artifacts
 - publishable project-page source material
@@ -71,10 +88,39 @@ It should not contain:
 - Hugging Face cache contents
 - Ollama blobs
 - LM Studio downloaded models
-- tokens
-- secrets
+- tokens or secrets
 - private keys
 - unsanitized config files
+- links to private workspaces
+
+## Repository structure
+
+```text
+docs/
+  00-project-overview.md       Project thesis, hardware, build status
+  01-build-journey.md          Dated build log — May 3 through May 28
+  02-storage-architecture.md   OKH-Local volume layout, env vars
+  03-toolchain.md              Full software stack including OpenClaw
+  04-model-inventory.md        All 10 models with routing logic
+  05-benchmark-results.md      Smoke test results, MLX benchmark
+  06-definition-of-done.md     Punch list, smoke tests, growth items
+  07-rag-roadmap.md            RAG architecture and deployment guide
+  08-council-of-ais-methodology.md  Multi-AI workflow methodology
+  09-token-economics.md        Token routing and cost decisions
+  10-openclaw-larry-agent.md   OpenClaw agent — full documentation
+benchmarks/
+  smoke-test-prompts.md        The 5-test benchmark suite
+  local-model-smoke-test-2026-05-12/
+templates/
+  research-artifact-template.md
+  validation-brief-template.md
+manifests/
+  ollama-model-inventory-2026-05-12.md
+scripts/
+  restore_mac_studio_baseline.sh
+  verify_mac_studio_baseline.sh
+.env.example
+```
 
 ## Project page
 
@@ -84,6 +130,6 @@ Public project page:
 https://overkillhill.com/projects/mac-studio-local-ai-workbench/
 ```
 
-## Baseline verdict
+## Current verdict
 
-The system is functional as a local AI workbench baseline. The next phase is operational hardening: backup, update governance, Open WebUI state capture, stricter model benchmarks, and a small RAG/vector database smoke test.
+The Mac Studio M4 Max is a functional, governed local AI workbench with an active autonomous agent layer. The baseline is documented, benchmarked, verified, and archived. The next phase is the RAG corpus build, expanded model benchmarks, and the architecture diagram.
