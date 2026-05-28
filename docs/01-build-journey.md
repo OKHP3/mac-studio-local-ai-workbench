@@ -2,13 +2,14 @@
 title: "Build Journey"
 artifact_type: "build_log"
 created_date: "2026-05-13"
+updated_date: "2026-05-28"
 project: "Mac Studio Local AI Workbench"
 status: "complete"
 ---
 
 # Build Journey
 
-10 days. Hardware to fully operational local AI workbench.
+10 days to baseline. 15 more days to agent layer.
 
 ## 2026-05-03 — Hardware planning and research
 
@@ -130,6 +131,34 @@ status: "complete"
 
 ---
 
-## Baseline verdict
+## 2026-05-18 — Offsite backup
 
-The Mac Studio M4 Max is a functional, governed local AI workbench. The baseline is documented, benchmarked, verified, and archived. The next phase is operational hardening, RAG corpus build, and expanded benchmarks.
+**Did:** Copied baseline archive to OneDrive: `cp /Volumes/OKH-Local/05_Research_Vault/mac-studio-setup_DONE_2026-05-12.tar.gz ~/OneDrive/Documents/`. Verified archive contents (15 files: restore scripts, verification scripts, Homebrew manifests, system profile, baseline documentation). Confirmed OneDrive sync status: up to date, no errors.
+
+**Worked:** Archive confirmed intact — 5.6K compressed, 15 text files. OneDrive syncing to cloud and ASUS.
+
+---
+
+## 2026-05-27 — OpenClaw installation
+
+**Did:** Installed OpenClaw 2026.5.26 via `npm install -g openclaw@latest` (372 packages). Ran `openclaw setup` and `openclaw onboard` wizards via QuickStart path. Configured Ollama local-only mode. Selected iMessage as channel (imsg binary not available — channel crash-looped, later disabled). Installed 11 skills during onboard. Configured session-memory and command-logger hooks. LaunchAgent installed — auto-starts at login on port 18789. Attempted phi4:14b as primary model — context overflow on every message (system prompt overhead ~12-13k tokens exceeds 16k window). Switched to gemma3:27b (131k context, 9% utilization). Resolved context overflow by clearing bloated session files from iMessage crash loop. Agent confirmed responding.
+
+**Worked:** OpenClaw 2026.5.26 running as LaunchAgent. gemma3:27b responding cleanly. Control UI at localhost:18789.
+
+**Broke:** phi4:14b context overflow — architectural constraint of OpenClaw workspace file overhead. iMessage channel crash-looping due to missing imsg binary (not available via npm or Homebrew — requires Swift/Xcode build from source). Disabled with `openclaw channels remove --channel imessage`.
+
+---
+
+## 2026-05-28 — Larry goes live
+
+**Did:** Named agent Larry, modeled after Larry the Lobster from SpongeBob SquarePants. Rewrote `IDENTITY.md` with full character context and `SOUL.md` with voice rules and constraints. Seeded `MEMORY.md` from a multi-AI identity consolidation (Claude + ChatGPT + Copilot + Perplexity + Gemini + Notion) — agent now context-aware about Jamie, the Council of AIs stack, active projects, and the BFS firewall. Ran `openclaw doctor` — corrected context windows for all 7 configured models, raised bootstrap character limit to 20,000. Fixed clawhub and mcporter binary paths (`npm install -g clawhub mcporter`). Deployed SearXNG in Docker on port 8888, enabled JSON API, configured as Larry's web_search provider. Set `tools.profile` to `full` (was `coding`, which stripped web tools). Confirmed web_search returning results via SearXNG. Eligible skill count: 28.
+
+**Worked:** Larry introduced himself correctly on cold start from workspace files alone — no session history required. Web search confirmed functional via SearXNG JSON API. Control UI at localhost:18789 stable.
+
+**Broke:** SearXNG returned stale version data on first search query — result quality depends on which search engines SearXNG federates. Engine quality tuning pending (open `localhost:8888/preferences` to configure preferred engines).
+
+---
+
+## Current verdict
+
+The Mac Studio M4 Max is a functional, governed local AI workbench with an active autonomous agent layer. The baseline is documented, benchmarked, verified, and archived. Larry (OpenClaw) is online with 28 skills, web search, and full context awareness. The next phase is the RAG corpus build, expanded model benchmarks, and the architecture diagram.
