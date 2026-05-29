@@ -2,95 +2,130 @@
 title: "Model Inventory"
 artifact_type: "model_inventory"
 created_date: "2026-05-13"
-updated_date: "2026-05-28"
+updated_date: "2026-05-29"
 project: "Mac Studio Local AI Workbench"
-status: "baseline-plus-agent"
+status: "expanded"
 ---
 
 # Model Inventory
 
-## Baseline date: 2026-05-12 | Agent added: 2026-05-28
+## Last updated: 2026-05-29
 
-## Ollama models
+Total: **28 models across 3 runtimes, 270GB on disk**
 
-| Model | Size | Runtime | Daily driver | Role |
-|---|---:|---|---|---|
-| `phi4:14b` | 9.1 GB | Ollama | ✅ Primary | Fast reasoning, instruction following |
-| `gemma3:12b` | 8.1 GB | Ollama | — | General purpose, mid-tier |
-| `gemma3:27b` | 17 GB | Ollama | ✅ Quality / ✅ Agent | Flagship general, heavy reasoning. **Also the OpenClaw primary model.** |
-| `codestral:22b` | 12 GB | Ollama | ✅ Code | Code generation, Continue.dev autocomplete |
-| `mistral-small3.1:24b` | 15 GB | Ollama | — | General purpose, fast |
-| `llama3.1:8b` | 4.9 GB | Ollama | — | Lightweight utility, bulk tasks |
+---
 
-**Total Ollama footprint:** ~66 GB
+## Ollama models (6)
 
-**Storage path:** `/Volumes/OKH-Local/07_Local_LLMs/ollama/models`
+Storage: `/Volumes/OKH-Local/07_Local_LLMs/ollama/models` (~66GB)
 
-**Service:** Homebrew background service, starts at login
+| Model | Size | Daily driver | Role |
+|---|---:|---|---|
+| phi4:14b | 9.1 GB | ✅ Primary | Fast reasoning, instruction following |
+| gemma3:12b | 8.1 GB | — | General purpose, mid-tier |
+| gemma3:27b | 17 GB | ✅ Quality / ✅ Agent | Flagship general. Also OpenClaw (Larry) primary model. |
+| codestral:22b | 12 GB | ✅ Code | Code generation, Continue.dev autocomplete |
+| mistral-small3.1:24b | 15 GB | — | General purpose, fast |
+| llama3.1:8b | 4.9 GB | — | Lightweight utility, bulk tasks |
 
 **Performance flags:** `OLLAMA_FLASH_ATTENTION=1`, `OLLAMA_KV_CACHE_TYPE=q8_0`
 
-### Why gemma3:27b is the OpenClaw primary model
+**Why gemma3:27b is the OpenClaw primary:** OpenClaw loads all workspace files as system prompt at session start (~12-13k tokens). phi4:14b's 16k window overflows immediately. gemma3:27b handles it at under 10% of its 131k context window.
 
-OpenClaw loads the full agent workspace (AGENTS.md, SOUL.md, MEMORY.md, IDENTITY.md, TOOLS.md) as system prompt at session start — approximately 12-13k tokens before any conversation begins. phi4:14b's 16k context window overflows immediately. gemma3:27b handles the same load at under 10% of its 131k context window.
+---
 
-This is an architectural constraint of OpenClaw, not a model deficiency. Any Ollama model with a context window under ~20k is unusable as an OpenClaw primary on this workspace configuration.
+## LM Studio models (22)
 
-## LM Studio models
+Storage: `/Volumes/OKH-Local/07_Local_LLMs/lm-studio/models/` (~204GB)
+
+Three subdirectories (consolidated 2026-05-29 from scattered root-level folders):
+
+### lmstudio-community/ (GGUF, 27GB)
 
 | Model | Format | Size | Capability |
 |---|---|---:|---|
-| `gemma-4-E4B-it` | GGUF Q4_K_M | 6.33 GB | Multimodal image input, Mixture of Experts |
-| `gemma-4-E2B-it` | GGUF | ~5 GB | Ultra-light, fastest responses |
-| `gemma-4-26B-A4B-it` | GGUF | ~16 GB | MoE, only 4B params active per token |
+| gemma-4-E4B-it | GGUF Q4_K_M | 6.33 GB | Multimodal image input, Mixture of Experts |
+| gemma-4-E2B-it | GGUF Q4_K_M | ~4 GB | Ultra-light, fastest responses |
+| gemma-4-26B-A4B-it | GGUF Q4_K_M | ~17 GB | MoE, only 4B params active per token |
 
-**Storage path:** `/Volumes/OKH-Local/07_Local_LLMs/lm-studio/models`
+### lmstudio-community-mlx/ (MLX, 126GB)
 
-**Server port:** 1234, OpenAI-compatible API
+| Model | Size | Notes |
+|---|---:|---|
+| Olmo-3-32B-Think-MLX-4bit | 18.1 GB | AllenAI reasoning model |
+| NVIDIA-Nemotron-3-Nano-30B-A3B-MLX-4bit | 17.8 GB | NVIDIA MoE |
+| Mistral-Small-3.2-24B-Instruct-2506-MLX-4bit | 13.5 GB | Mistral Small 3.2 |
+| Magistral-Small-2509-MLX-4bit | 14.1 GB | Mistral reasoning |
+| Magistral-Small-2506-MLX-4bit | 13.3 GB | Mistral reasoning (earlier) |
+| devstral-small-2505-MLX-4bit | 13.3 GB | Mistral coding agent |
+| Devstral-Small-2507-MLX-4bit | 13.3 GB | Mistral coding agent (updated) |
+| LFM2-24B-A2B-MLX-4bit | 13.4 GB | Liquid AI MoE |
+| LFM2-1.2B-MLX-8bit | 1.2 GB | Liquid AI ultra-light |
+| LFM2.5-1.2B-Instruct-MLX-8bit | 1.2 GB | Liquid AI ultra-light (v2.5) |
+| Phi-4-reasoning-plus-MLX-4bit | 8.3 GB | Microsoft reasoning |
+| Phi-4-mini-reasoning-MLX-4bit | 2.2 GB | Microsoft reasoning, compact |
+| gemma-3n-E4B-it-MLX-4bit | 5.9 GB | Google Gemma 3n MoE |
 
-**Backend:** LM Studio MLX v1.6.0, auto-detected on Apple Silicon
+### mlx-community/ (MLX, 51GB)
 
-Note on MoE models: Mixture of Experts architecture activates only a subset of parameters per inference pass. A `26B A4B` model has 26 billion total parameters but only 4 billion are active at a time, giving large-model knowledge at small-model memory and compute cost.
+| Model | Size | Notes |
+|---|---:|---|
+| Devstral-Small-2-24B-Instruct-2512-4bit | 14.1 GB | Mistral coding agent (latest) |
+| gemma-3-27b-it-qat-4bit | 16.9 GB | Google Gemma 3 27B |
+| gemma-3-12b-it-qat-4bit | 8.1 GB | Google Gemma 3 12B |
+| gpt-oss-20b-MXFP4-Q8 | 12.1 GB | OpenAI OSS 20B |
+| gemma-3-4b-it-qat-4bit | 3.0 GB | Google Gemma 3 4B |
+| gemma-3-1b-it-qat-4bit | 771 MB | Google Gemma 3 1B |
 
-## MLX direct inference
+---
 
-| Model | Format | Size | Throughput |
-|---|---|---:|---:|
-| Phi-4-mini-instruct-4bit | MLX 4-bit | 2.18 GB | 139 tok/s |
+## MLX direct inference (1)
 
-**Cache path:** `/Volumes/OKH-Local/07_Local_LLMs/huggingface-cache`
+Storage: `/Volumes/OKH-Local/07_Local_LLMs/huggingface-cache/` (~2.18GB)
 
-**Source:** `mlx-community/Phi-4-mini-instruct-4bit`
+| Model | Size | Throughput |
+|---|---:|---:|
+| Phi-4-mini-instruct-4bit | 2.18 GB | 139 tok/s |
 
 **Run command:** `mlx_lm.generate --model mlx-community/Phi-4-mini-instruct-4bit --prompt "your prompt" --max-tokens 500`
 
-**Performance context:** 139 tok/s via direct MLX inference vs ~35 tok/s for the same model via Ollama. MLX operates directly on Apple Silicon's unified memory without abstraction layers.
+---
+
+## Storage summary
+
+| Location | Size | Count |
+|---|---:|---:|
+| Ollama models | ~66 GB | 6 |
+| LM Studio GGUF | 27 GB | 3 |
+| LM Studio MLX (lmstudio-community-mlx) | 126 GB | 13 |
+| LM Studio MLX (mlx-community) | 51 GB | 6 |
+| HuggingFace cache (mlx-lm) | 2.18 GB | 1 |
+| **Total** | **~272 GB** | **29** |
+
+---
+
+## Storage normalization history
+
+- **2026-05-12:** Initial normalization. Ollama models moved to `/Volumes/OKH-Local/07_Local_LLMs/ollama/models`. LM Studio set to `/Volumes/OKH-Local/07_Local_LLMs/lm-studio/models`.
+- **2026-05-29:** LM Studio discovered to be saving newer MLX models outside the `models/` directory (at `/lm-studio/mlx-community/` and `/lm-studio/lmstudio-community/`). Consolidated all three locations into `models/` subdirectories. LM Studio confirmed all 22 models visible after consolidation.
+
+---
 
 ## Model selection policy
 
-**Western-lab models only:** Meta, Google, Mistral, Microsoft.
+Western-lab models only: Meta, Google, Mistral, Microsoft, NVIDIA, Liquid AI, AllenAI, OpenAI.
 
-Chinese cloud AI services operate under PRC data law. This setup maintains a clean Western-only boundary for simplicity of reasoning and defensibility.
+All models in this inventory are from Western labs. Chinese cloud AI services are excluded.
 
-Note: open-weight models from any lab are architecturally isolated once downloaded; weights are inert files with no network access. The policy applies to cloud-connected services, not to the nature of the weights themselves. If your threat model differs, Qwen2.5-Coder 32B and DeepSeek are technically strong alternatives.
+Note: open-weight models from any lab are architecturally isolated once downloaded. The policy applies to cloud-connected services.
 
-## Removed models
-
-| Model | Size | Reason |
-|---|---:|---|
-| `llama3.3:70b` | 42 GB | Exceeds 36GB unified memory ceiling with applications running. Caused system freeze requiring hard restart. |
-| `gemma-4-31B-it` | ~87 GB reported | LM Studio guardrails rejected load at default quantization. Incompatible with 36GB system. |
+---
 
 ## Memory ceiling rule
 
-**36GB unified memory.** Practical safe ceiling for model weights with normal application load: **~22GB**.
+36GB unified memory. Practical safe ceiling with normal application load: ~22GB.
 
-Context: macOS baseline overhead ~4-6GB, Docker + Open WebUI ~500MB, active apps ~1-2GB, KV cache during inference ~2-3GB. That leaves ~22GB for model weights before instability risk.
-
-Models over 20GB should only be loaded when other heavy applications are closed first.
-
-## Routing logic
-
+Ollama routing logic:
 ```text
 Fast task, no code        → phi4:14b
 Heavy reasoning           → gemma3:27b
@@ -98,5 +133,12 @@ Code / autocomplete       → codestral:22b
 Bulk / lightweight        → llama3.1:8b
 Image analysis            → gemma-4-E4B-it (LM Studio)
 Max throughput            → Phi-4-mini-instruct-4bit (mlx-lm direct)
-OpenClaw agent (Larry)    → gemma3:27b (131k context, required for workspace overhead)
+OpenClaw agent (Larry)    → gemma3:27b (131k context required)
 ```
+
+## Removed models
+
+| Model | Reason |
+|---|---|
+| llama3.3:70b (42GB) | Caused system freeze. Exceeds 36GB ceiling with apps running. |
+| gemma-4-31B-it | LM Studio guardrails rejected at default quantization (~87GB required). |
