@@ -2,6 +2,7 @@
 title: "Storage Architecture"
 artifact_type: "architecture_doc"
 created_date: "2026-05-13"
+updated_date: "2026-05-28"
 project: "Mac Studio Local AI Workbench"
 status: "normalized"
 ---
@@ -37,6 +38,7 @@ The internal SSD runs macOS and applications. The external volume holds replacea
 /Volumes/OKH-Local/07_Local_LLMs/ollama/models
 /Volumes/OKH-Local/07_Local_LLMs/lm-studio/models
 /Volumes/OKH-Local/07_Local_LLMs/huggingface-cache
+/Volumes/OKH-Local/07_Local_LLMs/qdrant          (future — vector database)
 ```
 
 ## Compatibility symlinks
@@ -48,9 +50,33 @@ The internal SSD runs macOS and applications. The external volume holds replacea
 
 These root-level entries point back to canonical folders under `07_Local_LLMs`.
 
+## Agent and service paths (home directory)
+
+These paths live in the user home directory, not on OKH-Local. They hold configuration and runtime state, not model weights.
+
+```text
+~/.openclaw/workspace/        OpenClaw agent workspace
+  MEMORY.md                   Persistent identity and context
+  IDENTITY.md                 Larry persona and character context
+  SOUL.md                     Voice rules and constraints
+  AGENTS.md                   Agent configuration
+  HEARTBEAT.md                Scheduled task definitions
+
+~/searxng/config/             SearXNG search engine configuration
+~/searxng/data/               SearXNG runtime data
+
+~/Library/LaunchAgents/       macOS LaunchAgent plists
+  homebrew.mxcl.ollama.plist  Ollama service configuration
+  ai.openclaw.gateway.plist   OpenClaw gateway service
+```
+
 ## Service configuration note
 
-The Ollama background service must see the same model directory that the interactive shell uses. Shell profile variables do not automatically flow into background services, so service configuration must be verified after changes.
+The Ollama background service and the OpenClaw gateway both run as launchd services. Neither inherits shell environment variables from `~/.zprofile`. Environment variables must be configured directly in each service's plist file.
+
+For Ollama: `/opt/homebrew/opt/ollama/homebrew.mxcl.ollama.plist`
+
+For OpenClaw: the gateway reads from `~/.openclaw/openclaw.json` — not from the shell environment.
 
 ## Disk usage baseline
 
@@ -65,4 +91,13 @@ The Ollama background service must see the same model directory that the interac
 
 ## Recovery path
 
-If the external workbench volume is lost, re-create the folder structure, re-pull models, restore workspace exports if needed, and restore repo documentation and scripts from GitHub.
+If the external workbench volume is lost:
+
+1. Re-create the folder structure
+2. Re-pull Ollama models: `ollama pull modelname` for each
+3. Re-download LM Studio models via LM Studio UI
+4. Re-authenticate HuggingFace: `huggingface-cli login`
+5. Restore agent workspace from backup or re-seed MEMORY.md manually
+6. Restore repo documentation and scripts from GitHub
+
+Nothing on OKH-Local is irreplaceable. Everything either re-downloads from a registry or rebuilds from GitHub.

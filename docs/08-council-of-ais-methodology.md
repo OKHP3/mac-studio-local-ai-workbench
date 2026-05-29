@@ -2,6 +2,7 @@
 title: "Council of AIs — Operational Methodology"
 artifact_type: "methodology_doc"
 created_date: "2026-05-13"
+updated_date: "2026-05-28"
 project: "Mac Studio Local AI Workbench"
 status: "canonical"
 ---
@@ -69,7 +70,8 @@ Claude, ChatGPT, and the working document independently read the GitHub artifact
 | ChatGPT Plus | Medium | Subscription limits | Deep reasoning overuse |
 | GitHub Copilot | Low-medium | Monthly included capacity | Underutilized |
 | M365 Copilot Pro | Low | Included | Underutilized |
-| Notion AI | Lowest | Effectively included | Rarely a concern |
+| Notion AI | Lowest cloud | Effectively included | Rarely a concern |
+| **Larry / OpenClaw** | **Zero** | **Local inference only** | **Context window overflow if wrong model** |
 
 ---
 
@@ -77,6 +79,7 @@ Claude, ChatGPT, and the working document independently read the GitHub artifact
 
 | Phase | Right choice | Wrong choice | Why |
 |---|---|---|---|
+| Background tasks / automation | Larry (OpenClaw / gemma3:27b) | Claude / ChatGPT | Zero cost, runs without prompting |
 | Ideation | Base Claude / GPT chat | Extended thinking | Divergence needs speed, not depth |
 | Polishing | Working-document AI | Frontier model | Cheap synthesis is sufficient |
 | Low-risk spec validation | Base Claude or ChatGPT | Extended reasoning | Alignment checks do not always need depth |
@@ -143,20 +146,35 @@ Now generate the exact researcher prompt.
 
 ## How the local stack fits in
 
-The Mac Studio local AI workbench is the zero-marginal-cost intern tier for this methodology.
+The Mac Studio local AI workbench is the zero-marginal-cost execution tier for this methodology.
 
-Local models on Ollama replace the lowest-cost cloud inference for:
+Larry (the OpenClaw agent running on this machine) handles the lowest tier of the routing hierarchy:
 
-- Bulk document processing
-- RAG corpus queries
+- Background scheduled tasks
+- Apple Notes and Reminders operations
+- File system operations on /Volumes/OKH-Local
+- First-pass document summarization
+- RAG corpus queries (once Qdrant is deployed)
+- Web search via SearXNG
 - Repetitive validation checks
-- First-pass summarization
 - Voice transcript cleanup
 
-This extends the token budget. Every task a local model handles is a task Claude Pro or ChatGPT Plus does not need to.
+Every task Larry handles is a task Claude Pro or ChatGPT Plus does not need to touch. This extends the effective token budget without increasing monthly spend.
 
-Routing hierarchy:
+## Full routing hierarchy (with local agent layer)
 
 ```text
-Local models → Notion AI → Claude/ChatGPT base → Perplexity/Copilot → Replit
+Larry / OpenClaw (zero cost — local gemma3:27b via Ollama)
+    ↓
+Notion AI (effectively zero)
+    ↓
+Claude / ChatGPT base chat
+    ↓
+Perplexity / Copilot (expiring capacity — use it)
+    ↓
+Claude / ChatGPT extended reasoning (high-stakes only)
+    ↓
+Replit (most expensive — spec must be locked before invoking)
 ```
+
+**The principle:** Route tasks to the cheapest capable tier. Larry goes first. Replit goes last.
