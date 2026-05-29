@@ -2,13 +2,14 @@
 title: "Model Inventory"
 artifact_type: "model_inventory"
 created_date: "2026-05-13"
+updated_date: "2026-05-28"
 project: "Mac Studio Local AI Workbench"
-status: "baseline"
+status: "baseline-plus-agent"
 ---
 
 # Model Inventory
 
-## Baseline date: 2026-05-12
+## Baseline date: 2026-05-12 | Agent added: 2026-05-28
 
 ## Ollama models
 
@@ -16,7 +17,7 @@ status: "baseline"
 |---|---:|---|---|---|
 | `phi4:14b` | 9.1 GB | Ollama | ✅ Primary | Fast reasoning, instruction following |
 | `gemma3:12b` | 8.1 GB | Ollama | — | General purpose, mid-tier |
-| `gemma3:27b` | 17 GB | Ollama | ✅ Quality | Flagship general, heavy reasoning |
+| `gemma3:27b` | 17 GB | Ollama | ✅ Quality / ✅ Agent | Flagship general, heavy reasoning. **Also the OpenClaw primary model.** |
 | `codestral:22b` | 12 GB | Ollama | ✅ Code | Code generation, Continue.dev autocomplete |
 | `mistral-small3.1:24b` | 15 GB | Ollama | — | General purpose, fast |
 | `llama3.1:8b` | 4.9 GB | Ollama | — | Lightweight utility, bulk tasks |
@@ -28,6 +29,12 @@ status: "baseline"
 **Service:** Homebrew background service, starts at login
 
 **Performance flags:** `OLLAMA_FLASH_ATTENTION=1`, `OLLAMA_KV_CACHE_TYPE=q8_0`
+
+### Why gemma3:27b is the OpenClaw primary model
+
+OpenClaw loads the full agent workspace (AGENTS.md, SOUL.md, MEMORY.md, IDENTITY.md, TOOLS.md) as system prompt at session start — approximately 12-13k tokens before any conversation begins. phi4:14b's 16k context window overflows immediately. gemma3:27b handles the same load at under 10% of its 131k context window.
+
+This is an architectural constraint of OpenClaw, not a model deficiency. Any Ollama model with a context window under ~20k is unusable as an OpenClaw primary on this workspace configuration.
 
 ## LM Studio models
 
@@ -85,10 +92,11 @@ Models over 20GB should only be loaded when other heavy applications are closed 
 ## Routing logic
 
 ```text
-Fast task, no code    → phi4:14b
-Heavy reasoning       → gemma3:27b
-Code / autocomplete   → codestral:22b
-Bulk / lightweight    → llama3.1:8b
-Image analysis        → gemma-4-E4B-it (LM Studio)
-Max throughput        → Phi-4-mini-instruct-4bit (mlx-lm direct)
+Fast task, no code        → phi4:14b
+Heavy reasoning           → gemma3:27b
+Code / autocomplete       → codestral:22b
+Bulk / lightweight        → llama3.1:8b
+Image analysis            → gemma-4-E4B-it (LM Studio)
+Max throughput            → Phi-4-mini-instruct-4bit (mlx-lm direct)
+OpenClaw agent (Larry)    → gemma3:27b (131k context, required for workspace overhead)
 ```
