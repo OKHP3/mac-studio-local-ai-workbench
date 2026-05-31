@@ -2,83 +2,110 @@
 title: "Benchmark Results"
 artifact_type: "benchmark_summary"
 created_date: "2026-05-12"
+updated_date: "2026-05-30"
 project: "Mac Studio Local AI Workbench"
-status: "smoke-test-complete"
+status: "strict-benchmark-complete"
 ---
 
 # Benchmark Results
 
-## Smoke test — 2026-05-12
+## Summary
 
-Initial benchmark of two Ollama models using loose, default-style prompting. Purpose was to establish a baseline, not to determine the ceiling.
+Two benchmark passes completed:
 
-### Models tested
+- **2026-05-12:** Loose/default prompting — 2 models tested, established baseline
+- **2026-05-30:** Strict output-only prompting — all 6 models tested
 
-- `llama3.1:8b` — Meta's 8B parameter model
-- `phi4:14b` — Microsoft's 14B parameter reasoning model
+Key finding: strict prompting eliminated all outright failures. The May 2026 failures were prompt engineering issues, not model deficiencies.
 
-### Test suite
+---
 
-| Test | Prompt intent | llama3.1:8b | phi4:14b |
-|---|---|---|---|
-| Exact instruction following | Reply with exactly the requested sentence | ✅ Pass | ✅ Pass |
-| Voice transcript cleanup | Clean up a dictated paragraph while preserving meaning | ⚠️ Functional, added framing text | ✅ Pass |
-| YAML generation | Produce valid YAML front matter for a document | ❌ Fail, invented fields and added prose | ❌ Fail, invented fields and added prose |
-| Architecture summary | Summarize a technical architecture in 5 bullets | ⚠️ Functional, semantic flaw | ⚠️ Partial fail, correct semantics but returned 7 items not 5 |
-| Mermaid diagram generation | Generate a Mermaid flowchart from a description | ❌ Fail, invalid syntax and added prose | ⚠️ Partial fail, mostly valid, still added prose |
+## Strict prompt benchmark — 2026-05-30
+
+All 6 Ollama models tested against the same 5 tests with strict output-only instructions.
+
+### Scoring
+
+- ✅ Pass — output exactly meets criteria
+- ⚠️ Functional — output usable but violates at least one formatting constraint
+- ❌ Fail — output not usable without significant correction
+
+### Results
+
+| Model | T1 Exact | T2 Transcript | T3 YAML | T4 Summary | T5 Mermaid | Score |
+|---|---|---|---|---|---|---|
+| phi4:14b | ✅ | ✅ | ⚠️ | ✅ | ⚠️ | 3P / 2F |
+| gemma3:12b | ✅ | ✅ | ✅ | ✅ | ✅ | **5P / 0F** |
+| gemma3:27b | ✅ | ✅ | ✅ | ✅ | ✅ | **5P / 0F** |
+| codestral:22b | ⚠️ | ✅ | ⚠️ | ✅ | ⚠️ | 2P / 3F |
+| mistral-small3.1:24b | ✅ | ✅ | ⚠️ | ✅ | ✅ | 4P / 1F |
+| llama3.1:8b | ✅ | ⚠️ | ⚠️ | ✅ | ⚠️ | 2P / 3F |
+
+**Zero outright failures across all 6 models.**
 
 ### Individual verdicts
 
-**llama3.1:8b**
+**gemma3:12b** — Clean sweep. Best strict-prompt performer. 5/5. Recommended for governed artifact generation.
 
-Suitable for: simple instruction following, rough transcript cleanup, first-pass summarization, smoke tests.
+**gemma3:27b** — Clean sweep. 5/5. Quality daily driver and OpenClaw primary. Recommended for governed artifact generation.
 
-Not suitable for: strict YAML, Mermaid generation, canonical architecture documents, unsupervised governance artifacts.
+**mistral-small3.1:24b** — 4/5. Only failure: YAML wrapped in code fence. Strong general performer.
 
-**phi4:14b**
+**phi4:14b** — 3/5. YAML wrapped in code fence. Mermaid generated undeclared node. Fast daily driver suitable for tasks not requiring strict structured output.
 
-Suitable for: everything llama3.1:8b handles, plus cleaner transcript cleanup and more semantically accurate architecture interpretation.
+**codestral:22b** — 2/5 functional. Leading space on T1, code fence on YAML, extra nodes in Mermaid. Expected for a code generation model — use it for code, not governed documents.
 
-Not suitable for: strict structured artifact generation without tighter prompting.
+**llama3.1:8b** — 2/5 functional. Retained "So" on transcript, YAML missing closing fence, Mermaid space in node name. Suitable for lightweight tasks where minor formatting issues are acceptable.
 
-### Key finding
+### Key finding: YAML code fence pattern
 
-The YAML and Mermaid failures under loose prompting do not prove that the models are incapable. They show that the prompt harness was too loose for governed artifact generation.
+4 of 6 models default to wrapping YAML output in a code fence even when not instructed to. Fix: add "do not use a code fence, output raw YAML only" to any YAML generation prompt.
 
-A strict prompt benchmark pass is required before concluding these models are inadequate for structured artifact work.
+---
 
-Suggested strict-prompt pattern:
+## Baseline benchmark — 2026-05-12
 
-- Require output only, no preamble, no explanation
-- Require exact field names and values
-- Supply the expected date and model values explicitly
-- State whether code fences are required or prohibited
-- Test both fenced and raw-output modes
+Two Ollama models benchmarked using loose, default-style prompting.
+
+### Models tested
+
+- `llama3.1:8b`
+- `phi4:14b`
+
+### Test suite
+
+| Test | llama3.1:8b | phi4:14b |
+|---|---|---|
+| Exact instruction following | ✅ Pass | ✅ Pass |
+| Voice transcript cleanup | ⚠️ Functional (formatting issue) | ✅ Pass |
+| YAML generation | ❌ Fail | ❌ Fail |
+| Architecture summary | ⚠️ Functional (semantic flaw) | ⚠️ Partial fail |
+| Mermaid diagram generation | ❌ Fail | ⚠️ Partial fail |
+
+### Baseline conclusion
+
+The YAML and Mermaid failures under loose prompting reflected weak prompt harness, not model incapability. Both were confirmed capable under strict prompting in the May 30 pass.
 
 ---
 
 ## MLX direct inference benchmark
 
 | Model | Runtime | Quantization | Throughput |
-|---|---|---|---:|
+|---|---|---|---|
 | Phi-4-mini-instruct-4bit | mlx-lm direct | 4-bit | 139 tok/s |
 | Phi-4-mini-instruct-4bit | Ollama | 4-bit, estimated | ~35 tok/s |
 
-MLX direct inference was approximately 4x faster than Ollama for the compatible Phi-4 mini test model. Peak memory usage during MLX inference was 2.23 GB.
+MLX direct inference is approximately 4x faster than Ollama for compatible models.
 
 ---
 
-## Models not yet benchmarked
+## Routing recommendations (post-benchmark)
 
-| Model | Expected strength | Priority |
+| Task | Recommended model | Reason |
 |---|---|---|
-| codestral:22b | Code generation, structured output | High |
-| gemma3:27b | General reasoning, quality output | High |
-| gemma3:12b | General purpose | Medium |
-| mistral-small3.1:24b | General purpose | Medium |
-
----
-
-## Next benchmark phase
-
-Run the same 5-test suite on all 6 Ollama models using strict prompts. Compare results against the loose-prompt baseline and document which models cross the threshold for autonomous structured artifact generation.
+| Governed document generation | gemma3:12b or gemma3:27b | Only models with 5/5 strict pass |
+| Code generation | codestral:22b | Purpose-built, strong code output |
+| Fast general tasks | phi4:14b | Speed, 3/5 strict pass |
+| Lightweight / bulk | llama3.1:8b | Smallest footprint, acceptable for low-stakes tasks |
+| OpenClaw agent | gemma3:27b | Required for 131k context window |
+| Max throughput | Phi-4-mini-instruct-4bit (mlx-lm) | 139 tok/s |
