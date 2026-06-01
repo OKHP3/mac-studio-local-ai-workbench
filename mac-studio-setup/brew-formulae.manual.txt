@@ -1,0 +1,14 @@
+bat
+fd
+fzf
+gh
+git
+mlx
+node
+ollama
+pnpm
+python@3.14
+ripgrep
+tree
+wget
+yq
