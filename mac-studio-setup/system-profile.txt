@@ -1,0 +1,31 @@
+Software:
+
+    System Software Overview:
+
+      System Version: macOS 26.4.1 (25E253)
+      Kernel Version: Darwin 25.4.0
+      Boot Volume: Macintosh HD
+      Boot Mode: Normal
+      Computer Name: OverKill-Hill’s Mac Studio
+      User Name: OverKill-Hill (okh)
+      Secure Virtual Memory: Enabled
+      System Integrity Protection: Enabled
+      Time since boot: 6 days, 6 hours, 17 minutes
+
+Hardware:
+
+    Hardware Overview:
+
+      Model Name: Mac Studio
+      Model Identifier: Mac16,9
+      Model Number: MU963LL/A
+      Chip: Apple M4 Max
+      Total Number of Cores: 14 (10 Performance and 4 Efficiency)
+      Memory: 36 GB
+      System Firmware Version: 18000.101.7
+      OS Loader Version: 18000.101.7
+      Serial Number (system): NW3FD46TDJ
+      Hardware UUID: 07C1A2D5-DF4E-5400-8F9C-DDB7000B9D04
+      Provisioning UDID: 00006041-000450690A81401C
+      Activation Lock Status: Enabled
+
