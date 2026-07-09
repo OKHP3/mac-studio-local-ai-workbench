@@ -14,7 +14,7 @@ Setup journal and configuration for the Mac Studio M4 local AI workbench running
 [ TODO: Languages, frameworks, key dependencies ]
 
 ## Local Paths
-- **Windows**: `C:\Users\jamie\OKH-Local\Projects\mac-studio-local-ai-workbench`
+- **Windows**: `C:\Users\jamie\OKH-Local\04_GitHub_Mirrors\mac-studio-local-ai-workbench`
 - **Mac**: `/Volumes/OKH-Local/04_GitHub_Mirrors/mac-studio-local-ai-workbench`
 
 ## Key Conventions
