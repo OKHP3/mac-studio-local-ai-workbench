@@ -1,0 +1,33 @@
+{
+  "inventory_date": "2026-07-20",
+  "project_scope": "Documented local AI workbench and repository tooling",
+  "technologies": [
+    {"name":"macOS","role":"host operating system","current":"26.4.1","latest":"26.4.1","source":"repo:mac-studio-setup/system-profile.txt","tracking":"manual"},
+    {"name":"Homebrew","role":"package manager","current":"5.1.8","latest":"6.0.0","source":"https://brew.sh/blog/","tracking":"brew"},
+    {"name":"Git","role":"version control","current":"2.54.0","latest":"2.54.0","source":"repo:docs/03-toolchain.md","tracking":"github-release","repository":"git/git"},
+    {"name":"Python","role":"runtime for Python tooling","current":"3.14.4","latest":"3.14.6","source":"https://www.python.org/downloads/","tracking":"python-release"},
+    {"name":"Node.js","role":"JavaScript runtime and MCP support","current":"26.0.0","latest":"26.5.0","source":"https://nodejs.org/en/blog/","tracking":"node-release"},
+    {"name":"npm","role":"Node package manager","current":"11.12.1","latest":"11.12.1","source":"repo:docs/03-toolchain.md","tracking":"npm"},
+    {"name":"GitHub CLI","role":"repository operations","current":"2.92.0","latest":"2.94.0","source":"repo:docs/03-toolchain.md; https://github.com/cli/cli/releases","tracking":"github-release","repository":"cli/cli"},
+    {"name":"git-lfs","role":"large file support","current":"not captured","latest":"query Homebrew","source":"repo:docs/03-toolchain.md","tracking":"brew"},
+    {"name":"Ollama","role":"local inference server","current":"0.23.1","latest":"0.32.0","source":"https://github.com/ollama/ollama/releases","tracking":"github-release","repository":"ollama/ollama"},
+    {"name":"LM Studio","role":"desktop model workspace and local server","current":"0.4.12","latest":"not confirmed","source":"repo:docs/03-toolchain.md; https://lmstudio.ai/blog","tracking":"manual"},
+    {"name":"mlx-lm","role":"direct Apple Silicon inference","current":"0.31.3","latest":"0.31.3","source":"https://github.com/ml-explore/mlx-lm","tracking":"github-release","repository":"ml-explore/mlx-lm"},
+    {"name":"MLX","role":"Apple Silicon machine-learning framework","current":"not captured","latest":"query Homebrew","source":"repo:manifests/brew-formulae.manual.txt","tracking":"brew"},
+    {"name":"Open WebUI","role":"browser chat interface over Ollama","current":"latest (historical banner v0.9.5)","latest":"0.9.4","source":"https://github.com/open-webui/open-webui/releases","tracking":"github-release","repository":"open-webui/open-webui"},
+    {"name":"Docker Desktop","role":"container runtime","current":"4.72.0","latest":"4.82.0","source":"https://docs.docker.com/desktop/release-notes/","tracking":"manual"},
+    {"name":"OpenClaw","role":"persistent local agent runtime","current":"2026.5.26","latest":"not confirmed","source":"repo:docs/10-openclaw-larry-agent.md; https://github.com/openclaw/openclaw/releases","tracking":"github-release","repository":"openclaw/openclaw"},
+    {"name":"SearXNG","role":"private metasearch service","current":"latest (Docker image, tag not captured)","latest":"not confirmed","source":"repo:docs/03-toolchain.md; https://github.com/searxng/searxng","tracking":"docker-image","image":"searxng/searxng"},
+    {"name":"Qdrant","role":"planned vector database","current":"planned / not deployed","latest":"1.18.2","source":"repo:docs/07-rag-roadmap.md; https://github.com/qdrant/qdrant","tracking":"github-release","repository":"qdrant/qdrant"},
+    {"name":"VS Code","role":"primary editor","current":"1.119.0","latest":"1.127","source":"repo:docs/03-toolchain.md; https://code.visualstudio.com/updates/archive","tracking":"manual"},
+    {"name":"Continue.dev","role":"local Copilot-style editor workflow","current":"1.2.22","latest":"1.3.39","source":"repo:docs/03-toolchain.md; https://github.com/continuedev/continue/blob/main/extensions/vscode/package.json","tracking":"manual"},
+    {"name":"pnpm","role":"Node package management support","current":"not captured","latest":"query Homebrew","source":"repo:manifests/brew-formulae.manual.txt","tracking":"brew"},
+    {"name":"Bash","role":"restore and verification scripts","current":"version not captured","latest":"system-provided","source":"repo:scripts/*.sh","tracking":"manual"},
+    {"name":"JavaScript","role":"language available through Node.js/OpenClaw","current":"no repository source detected","latest":"not applicable","source":"repo scan","tracking":"none"},
+    {"name":"TypeScript","role":"language","current":"not used / no source or config detected","latest":"not applicable","source":"repo scan","tracking":"none"},
+    {"name":"Vite","role":"frontend build tool","current":"not used / no config detected","latest":"not applicable","source":"repo scan","tracking":"none"},
+    {"name":"Tailwind CSS","role":"CSS framework","current":"not used / no config detected","latest":"not applicable","source":"repo scan","tracking":"none"},
+    {"name":"React","role":"UI framework","current":"not used / no config detected","latest":"not applicable","source":"repo scan","tracking":"none"},
+    {"name":"Java","role":"programming language/runtime","current":"not used / no source detected","latest":"not applicable","source":"repo scan","tracking":"none"}
+  ]
+}
