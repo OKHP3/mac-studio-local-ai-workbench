@@ -63,6 +63,7 @@ The root `AGENTS.md` is the canonical project guide. `CLAUDE.md` is intentionall
 - `scripts/`: current repository-aware restore and verification scripts.
 - `mac-studio-setup/`: dated baseline snapshot, machine-specific records, and historical setup copies of the scripts.
 - `templates/`: reusable health-check, model-role, RAG, update-policy, research, and validation templates.
+- `context/threads/`: public-safe, provenance-aware extracts of supplied AI threads; keep source URLs, private workspace details, and raw transcripts redacted.
 - `.env.example`: sanitized example environment variables. It contains paths and tuning values, never secrets.
 - `PUBLICATION_BOUNDARY.md`: publication hygiene boundary for this repository.
 - `PUBLIC_RELEASE_CHECK_2026-05-13.md`: dated public-release scan and its limitations.
