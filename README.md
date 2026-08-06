@@ -133,7 +133,7 @@ manifests/
 scripts/
   restore_mac_studio_baseline.sh
   verify_mac_studio_baseline.sh
-.env.example
+config/env.example
 ```
 
 ## Project page
