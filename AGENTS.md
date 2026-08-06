@@ -64,9 +64,9 @@ The root `AGENTS.md` is the canonical project guide. `CLAUDE.md` is intentionall
 - `mac-studio-setup/`: dated baseline snapshot, machine-specific records, and historical setup copies of the scripts.
 - `templates/`: reusable health-check, model-role, RAG, update-policy, research, and validation templates.
 - `context/threads/`: public-safe, provenance-aware extracts of supplied AI threads; keep source URLs, private workspace details, and raw transcripts redacted.
-- `.env.example`: sanitized example environment variables. It contains paths and tuning values, never secrets.
-- `PUBLICATION_BOUNDARY.md`: publication hygiene boundary for this repository.
-- `PUBLIC_RELEASE_CHECK_2026-05-13.md`: dated public-release scan and its limitations.
+- `config/env.example`: sanitized example environment variables. It contains paths and tuning values, never secrets.
+- `docs/publication-boundary.md`: publication hygiene boundary for this repository.
+- `reports/public-release-check-2026-05-13.md`: dated public-release scan and its limitations.
 - `.agents/skills/`: checked-in agent skill assets seeded in June 2026.
 
 ## Technology and architecture
@@ -94,7 +94,7 @@ The canonical example storage locations are under `/Volumes/OKH-Local/07_Local_L
 - Preserve standalone punchy lines and do not flatten them into paragraphs.
 - Do not use em dashes in generated content.
 - Use explicit dates for status claims and distinguish baseline completion from ongoing maintenance or planned work.
-- Keep secrets out of examples. `.env.example` is safe only when it remains sanitized.
+- Keep secrets out of examples. `config/env.example` is safe only when it remains sanitized.
 - Respect the memory ceiling documented in the model and storage records. Do not recommend adding models without checking available unified memory, storage, quantization, and benchmark role.
 - Use `scripts/` for current repository-aware validation and restore work. Treat `mac-studio-setup/` copies as dated baseline artifacts unless a task explicitly targets that snapshot.
 - Do not assume local services are available from this repository checkout. Ollama, Docker, LM Studio, OpenClaw, SearXNG, Homebrew, and host paths belong to the Mac Studio environment.
@@ -129,7 +129,7 @@ There is no repository-local application test suite. For documentation and scrip
 ## Safe change procedure
 
 1. Check `git status` and preserve existing user changes.
-2. Read the relevant dated source records and `PUBLICATION_BOUNDARY.md` before changing a claim.
+2. Read the relevant dated source records and `docs/publication-boundary.md` before changing a claim.
 3. Make the smallest scoped documentation, manifest, or script change.
 4. Do not alter application code, dependencies, CI behavior, secrets, or generated artifacts for a context-maintenance task.
 5. Validate the changed files and report any host-dependent checks that could not run.
