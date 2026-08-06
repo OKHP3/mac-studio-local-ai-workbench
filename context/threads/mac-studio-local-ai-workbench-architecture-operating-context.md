@@ -85,9 +85,9 @@ The user also named a set of files intended to supply additional workflow contex
 | E001 | T002 | file | unknown | text-extracted | `docs/05-benchmark-results.md` repository counterpart | Source synopsis, decisions, and reusable assets | retain |
 | E002 | T002 | file | unknown | text-extracted | `docs/11-build-your-own-local-ai.md` repository counterpart | Source synopsis, architecture, and handoff | retain |
 | E003 | T002 | artifact | unknown | text-extracted | `docs/12-architecture-diagrams.md` repository counterpart | Architecture synthesis and rich-element accounting | compress |
-| E004 | T002 | diagram | unknown | text-extracted | `docs/12-diagram-flowchart.md` repository counterpart | Architecture synthesis and reusable routing model | retain |
-| E005 | T002 | diagram | unknown | text-extracted | `docs/13-diagram-mindmap.md` repository counterpart | Architecture synthesis and system inventory | retain |
-| E006 | T002 | diagram | unknown | text-extracted | `docs/14-diagram-architecture.md` repository counterpart | Architecture synthesis and dependency model | retain |
+| E004 | T002 | diagram | unknown | text-extracted | `docs/diagram-flowchart.md` repository counterpart | Architecture synthesis and reusable routing model | retain |
+| E005 | T002 | diagram | unknown | text-extracted | `docs/diagram-mindmap.md` repository counterpart | Architecture synthesis and system inventory | retain |
+| E006 | T002 | diagram | unknown | text-extracted | `docs/diagram-architecture.md` repository counterpart | Architecture synthesis and dependency model | retain |
 | E007 | T003 | file | unknown | referenced-not-supplied | User-named `chatgpt-github-update-prompt.md` | Missing sidecars and open questions | flag-missing |
 | E008 | T003 | file | unknown | referenced-not-supplied | User-named `MEMORY.md` | Privacy-sensitive missing material; no content retained | flag-missing |
 | E009 | T003 | file | unknown | referenced-not-supplied | User-named `new-thread-rag-flywheel-seed-prompt.md` | RAG workflow gap | flag-missing |

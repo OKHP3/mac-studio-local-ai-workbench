@@ -108,9 +108,23 @@ docs/
   08-council-of-ais-methodology.md  Multi-AI workflow methodology
   09-token-economics.md        Token routing and cost decisions
   10-openclaw-larry-agent.md   OpenClaw agent — full documentation
+  local-web-portal-https.md    Future local portal and HTTPS boundary
+  diagram-flowchart.md         Architecture flowchart
+  diagram-mindmap.md           Architecture mind map
+  diagram-architecture.md      System architecture diagram
+  15-technology-version-management.md  Technology update tracking
+  16-local-ai-stack-readiness-research-2026-08-02.md  Readiness research
+  16-openclaw-readiness-and-local-to-cloud-ai-pipeline-2026-08-02.md  Dated readiness record
+  17-openclaw-hardening-handoff-2026-08-02.md  Hardening handoff
 benchmarks/
   smoke-test-prompts.md        The 5-test benchmark suite
   local-model-smoke-test-2026-05-12/
+reports/
+  technology-update-report.md
+  openclaw-related-runtime-readiness-audit-2026-08-02.md
+  mac-studio-hardening-execution-2026-08-02.md
+context/threads/                Sanitized provenance and continuity extracts
+config/technology-inventory.json Technology tracking input
 templates/
   research-artifact-template.md
   validation-brief-template.md
