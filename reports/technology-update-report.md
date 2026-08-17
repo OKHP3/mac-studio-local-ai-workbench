@@ -1,6 +1,6 @@
 # Technology update report
 
-Generated: 2026-08-10
+Generated: 2026-08-17
 
 | Technology | Recorded | Latest observed | Evidence |
 |---|---|---|---|
@@ -12,7 +12,7 @@ Generated: 2026-08-10
 | npm | 11.12.1 | 12.0.2 | repo:docs/03-toolchain.md |
 | GitHub CLI | 2.92.0 | 2.97.0 | repo:docs/03-toolchain.md; https://github.com/cli/cli/releases |
 | git-lfs | not captured | 3.7.1 | repo:docs/03-toolchain.md |
-| Ollama | 0.23.1 | 0.32.7 | https://github.com/ollama/ollama/releases |
+| Ollama | 0.23.1 | 0.32.14 | https://github.com/ollama/ollama/releases |
 | LM Studio | 0.4.12 | not confirmed | repo:docs/03-toolchain.md; https://lmstudio.ai/blog |
 | mlx-lm | 0.31.3 | 0.31.3 | https://github.com/ml-explore/mlx-lm |
 | MLX | not captured | 0.32.0 | repo:manifests/brew-formulae.manual.txt |
@@ -23,7 +23,7 @@ Generated: 2026-08-10
 | Qdrant | planned / not deployed | 1.19.0 | repo:docs/07-rag-roadmap.md; https://github.com/qdrant/qdrant |
 | VS Code | 1.119.0 | 1.127 | repo:docs/03-toolchain.md; https://code.visualstudio.com/updates/archive |
 | Continue.dev | 1.2.22 | 1.3.39 | repo:docs/03-toolchain.md; https://github.com/continuedev/continue/blob/main/extensions/vscode/package.json |
-| pnpm | not captured | 11.21.0 | repo:manifests/brew-formulae.manual.txt |
+| pnpm | not captured | 11.22.0 | repo:manifests/brew-formulae.manual.txt |
 | Bash | version not captured | system-provided | repo:scripts/*.sh |
 | JavaScript | no repository source detected | not applicable | repo scan |
 | TypeScript | not used / no source or config detected | not applicable | repo scan |
