@@ -101,7 +101,7 @@ docs/
   01-build-journey.md          Dated build log — May 3 through May 28
   02-storage-architecture.md   OKH-Local volume layout, env vars
   03-toolchain.md              Full software stack including OpenClaw
-  04-model-inventory.md        All 10 models with routing logic
+  04-model-inventory.md        All 29 models on disk; 6 actively routed via Ollama
   05-benchmark-results.md      Smoke test results, MLX benchmark
   06-definition-of-done.md     Punch list, smoke tests, growth items
   07-rag-roadmap.md            RAG architecture and deployment guide
