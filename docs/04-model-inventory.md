@@ -11,7 +11,7 @@ status: "expanded"
 
 ## Last updated: 2026-05-29
 
-Total: **28 models across 3 runtimes, 270GB on disk**
+Total: **29 models across 3 runtimes, ~272GB on disk**
 
 ---
 
