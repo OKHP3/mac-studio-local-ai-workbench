@@ -114,3 +114,11 @@ GitHub is the durable corpus. It is not automatically a vector database or graph
 - External cache retained: `/Volumes/OKH-Local/07_Local_LLMs/huggingface-cache`
 - External cache size after migration: 2.0G
 - Marker file created: `/Users/okh/.cache/HUGGINGFACE_CACHE_MOVED_TO_OKH_LOCAL.txt`
+
+## LAN exposure fix confirmed (2026-09-12)
+
+- Full scan and fix pass to make Mac Studio-hosted services reachable from the HillHouse LAN (for the Windows/Asus OpenClaw instance and the broader SHOAL local-AI-server goal). Full detail: [`docs/18-lan-exposure-fix-2026-09-12.md`](../docs/18-lan-exposure-fix-2026-09-12.md).
+- Current LAN address: `10.10.1.201` (Wi-Fi `HillHouse`).
+- Fixed and verified reachable from off-host: LM Studio (1234), Open WebUI (3000), Qdrant (6333/6334 — also fixed a stale `DKH-Local` → `OKH-Local` bind-mount path), SearXNG (8888).
+- Still loopback-only, needs Jamie with real terminal access: Ollama (11434) — `launchctl setenv OLLAMA_HOST "0.0.0.0"` + `brew services restart ollama`; OpenClaw Gateway (18789) — no GUI bind-address setting found, likely needs an `openclaw.json` / env-var edit and gateway restart.
+- Follow-up: re-check restart policy (`restart: always`) on the three recreated Docker containers; Open WebUI may need a fresh login after container recreation.
