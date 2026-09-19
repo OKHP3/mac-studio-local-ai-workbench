@@ -1,13 +1,13 @@
 # Technology update report
 
-Checked (UTC): 2026-09-19T03:05:17+00:00
+Checked (UTC): 2026-09-19T03:08:14+00:00
 
 Recorded versions are dated repository evidence, not a fresh Mac Studio inspection.
 Latest values are source observations, not installed or compatibility-tested versions.
 Homebrew rows track the stable version available in the named formula/cask channel.
 See [maintenance plan](../docs/15-technology-version-management.md) for boundaries and adoption steps.
 
-Inventory entries: 111. Newer than recorded: 16. Source failures: 0.
+Inventory entries: 111. Newer than recorded: 16. Source failures: 4.
 
 ## Host
 
@@ -63,9 +63,9 @@ Inventory entries: 111. Newer than recorded: 16. Source failures: 0.
 | Technology | Recorded version (date) | Latest stable / channel | Result | Evidence and release source |
 |---|---|---|---|---|
 | Mermaid | Unknown | 12.0.0 | installed-unknown | [evidence 1](../docs/12-architecture-diagrams.md); [release source](https://registry.npmjs.org/mermaid/latest) |
-| actions/checkout | 7.0.1 (2026-09-19) | 7.0.1 | matches-record | [evidence 1](../.github/workflows/technology-updates.yml); [release source](https://github.com/actions/checkout/releases/tag/v7.0.1) |
-| actions/setup-python | 7.0.0 (2026-09-19) | 7.0.0 | matches-record | [evidence 1](../.github/workflows/technology-updates.yml); [release source](https://github.com/actions/setup-python/releases/tag/v7.0.0) |
-| actions/upload-artifact | 7.0.1 (2026-09-19) | 7.0.1 | matches-record | [evidence 1](../.github/workflows/technology-updates.yml); [release source](https://github.com/actions/upload-artifact/releases/tag/v7.0.1) |
+| actions/checkout | 7.0.1 (2026-09-19) | Unknown (lookup failed) | source-error | [evidence 1](../.github/workflows/technology-updates.yml); [release source](https://api.github.com/repos/actions/checkout/releases/latest) |
+| actions/setup-python | 7.0.0 (2026-09-19) | Unknown (lookup failed) | source-error | [evidence 1](../.github/workflows/technology-updates.yml); [release source](https://api.github.com/repos/actions/setup-python/releases/latest) |
+| actions/upload-artifact | 7.0.1 (2026-09-19) | Unknown (lookup failed) | source-error | [evidence 1](../.github/workflows/technology-updates.yml); [release source](https://api.github.com/repos/actions/upload-artifact/releases/latest) |
 | GitHub-hosted Ubuntu runner | 24.04 (2026-09-19) | Not versioned / manual | manual-review | [evidence 1](../.github/workflows/technology-updates.yml); [release source](https://github.com/actions/runner-images) |
 
 ## External Site
@@ -115,7 +115,7 @@ Inventory entries: 111. Newer than recorded: 16. Source failures: 0.
 
 | Technology | Recorded version (date) | Latest stable / channel | Result | Evidence and release source |
 |---|---|---|---|---|
-| Caddy | Unknown | 2.11.4 | planned | [evidence 1](../docs/local-web-portal-https.md); [release source](https://github.com/caddyserver/caddy/releases/tag/v2.11.4) |
+| Caddy | Unknown | Unknown (lookup failed) | source-error | [evidence 1](../docs/local-web-portal-https.md); [release source](https://api.github.com/repos/caddyserver/caddy/releases/latest) |
 
 ## Format
 
@@ -148,17 +148,17 @@ Inventory entries: 111. Newer than recorded: 16. Source failures: 0.
 
 | Technology | Recorded version (date) | Latest stable / channel | Result | Evidence and release source |
 |---|---|---|---|---|
-| llama3.1:8b | 46e0c10c039e (2026-05-12) | Not versioned / manual | model | [evidence 1](../manifests/ollama_model_inventory_2026-05-12.txt); [release source](https://ollama.com/library/llama3.1) |
-| mistral-small3.1:24b | b9aaf0c2586a (2026-05-12) | Not versioned / manual | model | [evidence 1](../manifests/ollama_model_inventory_2026-05-12.txt); [release source](https://ollama.com/library/mistral-small3.1) |
-| codestral:22b | 0898a8b286d5 (2026-05-12) | Not versioned / manual | model | [evidence 1](../manifests/ollama_model_inventory_2026-05-12.txt); [release source](https://ollama.com/library/codestral) |
-| gemma3:27b | a418f5838eaf (2026-05-12) | Not versioned / manual | model | [evidence 1](../manifests/ollama_model_inventory_2026-05-12.txt); [release source](https://ollama.com/library/gemma3) |
-| gemma3:12b | f4031aab637d (2026-05-12) | Not versioned / manual | model | [evidence 1](../manifests/ollama_model_inventory_2026-05-12.txt); [release source](https://ollama.com/library/gemma3) |
-| phi4:14b | ac896e5b8b34 (2026-05-12) | Not versioned / manual | model | [evidence 1](../manifests/ollama_model_inventory_2026-05-12.txt); [release source](https://ollama.com/library/phi4) |
+| llama3.1:8b | 46e0c10c039e (2026-05-12) | Not versioned / manual | model | [evidence 1](../manifests/OLLAMA_MODEL_INVENTORY_2026-05-12.txt); [release source](https://ollama.com/library/llama3.1) |
+| mistral-small3.1:24b | b9aaf0c2586a (2026-05-12) | Not versioned / manual | model | [evidence 1](../manifests/OLLAMA_MODEL_INVENTORY_2026-05-12.txt); [release source](https://ollama.com/library/mistral-small3.1) |
+| codestral:22b | 0898a8b286d5 (2026-05-12) | Not versioned / manual | model | [evidence 1](../manifests/OLLAMA_MODEL_INVENTORY_2026-05-12.txt); [release source](https://ollama.com/library/codestral) |
+| gemma3:27b | a418f5838eaf (2026-05-12) | Not versioned / manual | model | [evidence 1](../manifests/OLLAMA_MODEL_INVENTORY_2026-05-12.txt); [release source](https://ollama.com/library/gemma3) |
+| gemma3:12b | f4031aab637d (2026-05-12) | Not versioned / manual | model | [evidence 1](../manifests/OLLAMA_MODEL_INVENTORY_2026-05-12.txt); [release source](https://ollama.com/library/gemma3) |
+| phi4:14b | ac896e5b8b34 (2026-05-12) | Not versioned / manual | model | [evidence 1](../manifests/OLLAMA_MODEL_INVENTORY_2026-05-12.txt); [release source](https://ollama.com/library/phi4) |
 | ministral-3:8b | Unknown | Not versioned / manual | model | [evidence 1](../mac-studio-setup/LOCAL_WORKBENCH_STATUS.md); [release source](https://ollama.com/library/ministral-3) |
 | command-r7b:latest | Unknown | Not versioned / manual | model | [evidence 1](../mac-studio-setup/LOCAL_WORKBENCH_STATUS.md); [release source](https://ollama.com/library/command-r7b) |
 | llama3.2:3b | Unknown | Not versioned / manual | model | [evidence 1](../mac-studio-setup/LOCAL_WORKBENCH_STATUS.md); [release source](https://ollama.com/library/llama3.2) |
 | nomic-embed-text:latest | Unknown | Not versioned / manual | model | [evidence 1](../mac-studio-setup/LOCAL_WORKBENCH_STATUS.md); [release source](https://ollama.com/library/nomic-embed-text) |
-| LM Studio / direct MLX model collection | Unknown | Not versioned / manual | model | [evidence 1](../manifests/lm_studio_model_inventory_2026-05-12.txt); [evidence 2](../docs/04-model-inventory.md); [evidence 3](../reports/openclaw-related-runtime-readiness-audit-2026-08-02.md); [release source](https://huggingface.co/models) |
+| LM Studio / direct MLX model collection | Unknown | Not versioned / manual | model | [evidence 1](../manifests/LM_STUDIO_MODEL_INVENTORY_2026-05-12.txt); [evidence 2](../docs/04-model-inventory.md); [evidence 3](../reports/openclaw-related-runtime-readiness-audit-2026-08-02.md); [release source](https://huggingface.co/models) |
 
 ## Absent
 
@@ -240,10 +240,11 @@ Inventory entries: 111. Newer than recorded: 16. Source failures: 0.
 - **zstd**: Name recorded in May; installed version not captured. Stable Homebrew distribution channel; can lag upstream.
 - **Mermaid**: No renderer is pinned in this repository. GitHub Markdown and editor previews choose their own renderer versions.
 - **Mermaid public website renderer**: Read from the separate website repository. Updates and rendering tests belong there.
-- **actions/checkout**: Workflow pin observed: 3d3c42e5aac5ba805825da76410c181273ba90b1. Dependabot maintains this reference.
-- **actions/setup-python**: Workflow pin observed: 5fda3b95a4ea91299a34e894583c3862153e4b97. Dependabot maintains this reference.
-- **actions/upload-artifact**: Workflow pin observed: 043fb46d1a93c77aae656e7c1c64a875d1fc6a0a. Dependabot maintains this reference.
+- **actions/checkout**: Workflow pin observed: 3d3c42e5aac5ba805825da76410c181273ba90b1. Dependabot maintains this reference. HTTPError: HTTP Error 403: rate limit exceeded
+- **actions/setup-python**: Workflow pin observed: 5fda3b95a4ea91299a34e894583c3862153e4b97. Dependabot maintains this reference. HTTPError: HTTP Error 403: rate limit exceeded
+- **actions/upload-artifact**: Workflow pin observed: 043fb46d1a93c77aae656e7c1c64a875d1fc6a0a. Dependabot maintains this reference. HTTPError: HTTP Error 403: rate limit exceeded
 - **GitHub-hosted Ubuntu runner**: Runner image receives provider updates; OS line is explicit in the workflow.
+- **Caddy**: HTTPError: HTTP Error 403: rate limit exceeded
 - **JavaScript / ECMAScript**: Language support follows Node/browser. Vendored skill support includes .mjs files; no application JS in this repository.
 - **Markdown / GFM**: Document format; GitHub owns the renderer. No parser dependency pinned here.
 - **YAML**: Front matter and workflow format. No standalone YAML package pinned for this tracker.

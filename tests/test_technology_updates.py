@@ -3,6 +3,7 @@ import copy
 import gzip
 import importlib.util
 import json
+import subprocess
 from pathlib import Path
 import tempfile
 import unittest
@@ -107,6 +108,14 @@ class ReleaseSelection(unittest.TestCase):
         broken["technologies"] = [i for i in broken["technologies"] if i.get("formula") != "git"]
         with self.assertRaisesRegex(ValueError, "missing entries"):
             tracker.validate_inventory(broken)
+
+    def test_evidence_uses_git_filename_case_even_on_windows(self):
+        tracked = set(subprocess.check_output(["git", "ls-files"], cwd=ROOT, text=True).splitlines())
+        data = json.loads((ROOT / "config/technology-inventory.json").read_text(encoding="utf-8"))
+        for technology in data["technologies"]:
+            for evidence in technology["evidence"]:
+                if not evidence.startswith("https://"):
+                    self.assertIn(evidence, tracked, "Evidence path must match Git filename case")
 
     def test_partial_network_failure_preserves_report_and_fails_run(self):
         data = {"technologies": [item()]}

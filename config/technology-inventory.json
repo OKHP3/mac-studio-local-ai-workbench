@@ -2061,7 +2061,7 @@
         "title": "llama3.1:8b release metadata"
       },
       "evidence": [
-        "manifests/ollama_model_inventory_2026-05-12.txt"
+        "manifests/OLLAMA_MODEL_INVENTORY_2026-05-12.txt"
       ],
       "notes": ""
     },
@@ -2080,7 +2080,7 @@
         "title": "mistral-small3.1:24b release metadata"
       },
       "evidence": [
-        "manifests/ollama_model_inventory_2026-05-12.txt"
+        "manifests/OLLAMA_MODEL_INVENTORY_2026-05-12.txt"
       ],
       "notes": ""
     },
@@ -2099,7 +2099,7 @@
         "title": "codestral:22b release metadata"
       },
       "evidence": [
-        "manifests/ollama_model_inventory_2026-05-12.txt"
+        "manifests/OLLAMA_MODEL_INVENTORY_2026-05-12.txt"
       ],
       "notes": ""
     },
@@ -2118,7 +2118,7 @@
         "title": "gemma3:27b release metadata"
       },
       "evidence": [
-        "manifests/ollama_model_inventory_2026-05-12.txt"
+        "manifests/OLLAMA_MODEL_INVENTORY_2026-05-12.txt"
       ],
       "notes": ""
     },
@@ -2137,7 +2137,7 @@
         "title": "gemma3:12b release metadata"
       },
       "evidence": [
-        "manifests/ollama_model_inventory_2026-05-12.txt"
+        "manifests/OLLAMA_MODEL_INVENTORY_2026-05-12.txt"
       ],
       "notes": ""
     },
@@ -2156,7 +2156,7 @@
         "title": "phi4:14b release metadata"
       },
       "evidence": [
-        "manifests/ollama_model_inventory_2026-05-12.txt"
+        "manifests/OLLAMA_MODEL_INVENTORY_2026-05-12.txt"
       ],
       "notes": ""
     },
@@ -2251,7 +2251,7 @@
         "title": "LM Studio / direct MLX model collection release metadata"
       },
       "evidence": [
-        "manifests/lm_studio_model_inventory_2026-05-12.txt",
+        "manifests/LM_STUDIO_MODEL_INVENTORY_2026-05-12.txt",
         "docs/04-model-inventory.md",
         "reports/openclaw-related-runtime-readiness-audit-2026-08-02.md"
       ],
