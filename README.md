@@ -136,7 +136,16 @@ scripts/
 config/env.example
 ```
 
-## Project page
+## Technology maintenance
+
+The [technology comparison](reports/technology-update-report.md) lists recorded
+versions, latest stable or distribution-channel observations, sources and
+unknowns. The [maintenance plan](docs/15-technology-version-management.md)
+explains weekly release monitoring, Dependabot updates for GitHub Actions,
+read-only Mac version capture, upgrade checks and rollback. Recorded host
+versions remain dated evidence until verified on the Mac Studio.
+
+## Public project page
 
 Public project page:
 

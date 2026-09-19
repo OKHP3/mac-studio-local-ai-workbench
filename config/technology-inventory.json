@@ -1,33 +1,2281 @@
 {
-  "inventory_date": "2026-07-20",
-  "project_scope": "Documented local AI workbench and repository tooling",
+  "schema_version": 2,
+  "inventory_date": "2026-09-19",
+  "project_scope": "Repository artifacts and documented Mac Studio stack; live host not inspected",
   "technologies": [
-    {"name":"macOS","role":"host operating system","current":"26.4.1","latest":"26.4.1","source":"repo:mac-studio-setup/system-profile.txt","tracking":"manual"},
-    {"name":"Homebrew","role":"package manager","current":"5.1.8","latest":"6.0.0","source":"https://brew.sh/blog/","tracking":"brew"},
-    {"name":"Git","role":"version control","current":"2.54.0","latest":"2.54.0","source":"repo:docs/03-toolchain.md","tracking":"github-release","repository":"git/git"},
-    {"name":"Python","role":"runtime for Python tooling","current":"3.14.4","latest":"3.14.6","source":"https://www.python.org/downloads/","tracking":"python-release"},
-    {"name":"Node.js","role":"JavaScript runtime and MCP support","current":"26.0.0","latest":"26.5.0","source":"https://nodejs.org/en/blog/","tracking":"node-release"},
-    {"name":"npm","role":"Node package manager","current":"11.12.1","latest":"11.12.1","source":"repo:docs/03-toolchain.md","tracking":"npm"},
-    {"name":"GitHub CLI","role":"repository operations","current":"2.92.0","latest":"2.94.0","source":"repo:docs/03-toolchain.md; https://github.com/cli/cli/releases","tracking":"github-release","repository":"cli/cli"},
-    {"name":"git-lfs","role":"large file support","current":"not captured","latest":"query Homebrew","source":"repo:docs/03-toolchain.md","tracking":"brew"},
-    {"name":"Ollama","role":"local inference server","current":"0.23.1","latest":"0.32.0","source":"https://github.com/ollama/ollama/releases","tracking":"github-release","repository":"ollama/ollama"},
-    {"name":"LM Studio","role":"desktop model workspace and local server","current":"0.4.12","latest":"not confirmed","source":"repo:docs/03-toolchain.md; https://lmstudio.ai/blog","tracking":"manual"},
-    {"name":"mlx-lm","role":"direct Apple Silicon inference","current":"0.31.3","latest":"0.31.3","source":"https://github.com/ml-explore/mlx-lm","tracking":"github-release","repository":"ml-explore/mlx-lm"},
-    {"name":"MLX","role":"Apple Silicon machine-learning framework","current":"not captured","latest":"query Homebrew","source":"repo:manifests/brew-formulae.manual.txt","tracking":"brew"},
-    {"name":"Open WebUI","role":"browser chat interface over Ollama","current":"latest (historical banner v0.9.5)","latest":"0.9.4","source":"https://github.com/open-webui/open-webui/releases","tracking":"github-release","repository":"open-webui/open-webui"},
-    {"name":"Docker Desktop","role":"container runtime","current":"4.72.0","latest":"4.82.0","source":"https://docs.docker.com/desktop/release-notes/","tracking":"manual"},
-    {"name":"OpenClaw","role":"persistent local agent runtime","current":"2026.5.26","latest":"not confirmed","source":"repo:docs/10-openclaw-larry-agent.md; https://github.com/openclaw/openclaw/releases","tracking":"github-release","repository":"openclaw/openclaw"},
-    {"name":"SearXNG","role":"private metasearch service","current":"latest (Docker image, tag not captured)","latest":"not confirmed","source":"repo:docs/03-toolchain.md; https://github.com/searxng/searxng","tracking":"docker-image","image":"searxng/searxng"},
-    {"name":"Qdrant","role":"planned vector database","current":"planned / not deployed","latest":"1.18.2","source":"repo:docs/07-rag-roadmap.md; https://github.com/qdrant/qdrant","tracking":"github-release","repository":"qdrant/qdrant"},
-    {"name":"VS Code","role":"primary editor","current":"1.119.0","latest":"1.127","source":"repo:docs/03-toolchain.md; https://code.visualstudio.com/updates/archive","tracking":"manual"},
-    {"name":"Continue.dev","role":"local Copilot-style editor workflow","current":"1.2.22","latest":"1.3.39","source":"repo:docs/03-toolchain.md; https://github.com/continuedev/continue/blob/main/extensions/vscode/package.json","tracking":"manual"},
-    {"name":"pnpm","role":"Node package management support","current":"not captured","latest":"query Homebrew","source":"repo:manifests/brew-formulae.manual.txt","tracking":"brew"},
-    {"name":"Bash","role":"restore and verification scripts","current":"version not captured","latest":"system-provided","source":"repo:scripts/*.sh","tracking":"manual"},
-    {"name":"JavaScript","role":"language available through Node.js/OpenClaw","current":"no repository source detected","latest":"not applicable","source":"repo scan","tracking":"none"},
-    {"name":"TypeScript","role":"language","current":"not used / no source or config detected","latest":"not applicable","source":"repo scan","tracking":"none"},
-    {"name":"Vite","role":"frontend build tool","current":"not used / no config detected","latest":"not applicable","source":"repo scan","tracking":"none"},
-    {"name":"Tailwind CSS","role":"CSS framework","current":"not used / no config detected","latest":"not applicable","source":"repo scan","tracking":"none"},
-    {"name":"React","role":"UI framework","current":"not used / no config detected","latest":"not applicable","source":"repo scan","tracking":"none"},
-    {"name":"Java","role":"programming language/runtime","current":"not used / no source detected","latest":"not applicable","source":"repo scan","tracking":"none"}
+    {
+      "id": "macos",
+      "name": "macOS",
+      "scope": "host",
+      "role": "Operating system",
+      "recorded": "26.6",
+      "recorded_date": "2026-08-02",
+      "source": {
+        "kind": "html",
+        "url": "https://support.apple.com/en-us/100100",
+        "pattern": "latest version of macOS is\\s+(\\d+(?:\\.\\d+)*)",
+        "publisher": "Apple",
+        "title": "macOS release metadata"
+      },
+      "evidence": [
+        "reports/openclaw-related-runtime-readiness-audit-2026-08-02.md"
+      ],
+      "notes": "May record was 26.4.1. OS compatibility and the supported 26.x patch channel require a separate host check."
+    },
+    {
+      "id": "homebrew",
+      "name": "Homebrew",
+      "scope": "host",
+      "role": "Package manager",
+      "recorded": "5.1.8",
+      "recorded_date": "2026-05-28",
+      "source": {
+        "kind": "github",
+        "url": "https://api.github.com/repos/Homebrew/brew/releases/latest",
+        "publisher": "Homebrew project on GitHub",
+        "title": "Homebrew release metadata"
+      },
+      "evidence": [
+        "docs/03-toolchain.md"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "git",
+      "name": "Git",
+      "scope": "host",
+      "role": "Version control",
+      "recorded": "2.54.0",
+      "recorded_date": "2026-05-28",
+      "source": {
+        "kind": "json",
+        "url": "https://formulae.brew.sh/api/formula/git.json",
+        "field": "versions.stable",
+        "numeric": false,
+        "note": "Stable Homebrew distribution channel; can lag upstream.",
+        "publisher": "Homebrew maintainers",
+        "title": "Git release metadata"
+      },
+      "evidence": [
+        "docs/03-toolchain.md"
+      ],
+      "notes": "",
+      "formula": "git"
+    },
+    {
+      "id": "python",
+      "name": "Python",
+      "scope": "host",
+      "role": "Host and repository tooling runtime",
+      "recorded": "3.14.4",
+      "recorded_date": "2026-05-28",
+      "source": {
+        "kind": "html",
+        "url": "https://www.python.org/downloads/macos/",
+        "pattern": "Latest Python 3 Release\\s*-\\s*Python\\s*(3\\.\\d+\\.\\d+)(?![a-zA-Z0-9.])",
+        "publisher": "Python Software Foundation",
+        "title": "Python release metadata"
+      },
+      "evidence": [
+        "docs/03-toolchain.md"
+      ],
+      "notes": "Host baseline. CI runtime is selected separately. Recheck versioned Homebrew formula before a major Python upgrade.",
+      "formula": "python@3.14"
+    },
+    {
+      "id": "node",
+      "name": "Node.js",
+      "scope": "host",
+      "role": "JavaScript runtime and agent tooling",
+      "recorded": "26.0.0",
+      "recorded_date": "2026-05-28",
+      "source": {
+        "kind": "node",
+        "url": "https://nodejs.org/dist/index.json",
+        "publisher": "Node.js project",
+        "title": "Node.js release metadata"
+      },
+      "evidence": [
+        "docs/03-toolchain.md"
+      ],
+      "notes": "",
+      "formula": "node"
+    },
+    {
+      "id": "npm",
+      "name": "npm",
+      "scope": "host",
+      "role": "JavaScript package manager",
+      "recorded": "11.12.1",
+      "recorded_date": "2026-05-28",
+      "source": {
+        "kind": "json",
+        "url": "https://registry.npmjs.org/npm/latest",
+        "field": "version",
+        "publisher": "npm publisher on npm",
+        "title": "npm release metadata"
+      },
+      "evidence": [
+        "docs/03-toolchain.md"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "gh",
+      "name": "GitHub CLI",
+      "scope": "host",
+      "role": "Repository operations",
+      "recorded": "2.92.0",
+      "recorded_date": "2026-05-28",
+      "source": {
+        "kind": "github",
+        "url": "https://api.github.com/repos/cli/cli/releases/latest",
+        "publisher": "cli project on GitHub",
+        "title": "GitHub CLI release metadata"
+      },
+      "evidence": [
+        "docs/03-toolchain.md"
+      ],
+      "notes": "",
+      "formula": "gh"
+    },
+    {
+      "id": "git-lfs",
+      "name": "Git LFS",
+      "scope": "host",
+      "role": "Large file tooling",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "github",
+        "url": "https://api.github.com/repos/git-lfs/git-lfs/releases/latest",
+        "publisher": "git-lfs project on GitHub",
+        "title": "Git LFS release metadata"
+      },
+      "evidence": [
+        "docs/03-toolchain.md"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "ollama",
+      "name": "Ollama",
+      "scope": "host",
+      "role": "Inference server",
+      "recorded": "0.23.1",
+      "recorded_date": "2026-08-02",
+      "source": {
+        "kind": "github",
+        "url": "https://api.github.com/repos/ollama/ollama/releases/latest",
+        "publisher": "ollama project on GitHub",
+        "title": "Ollama release metadata"
+      },
+      "evidence": [
+        "docs/16-local-ai-stack-readiness-research-2026-08-02.md"
+      ],
+      "notes": "",
+      "formula": "ollama"
+    },
+    {
+      "id": "lm-studio",
+      "name": "LM Studio",
+      "scope": "host",
+      "role": "Desktop inference workspace",
+      "recorded": "0.4.12",
+      "recorded_date": "2026-05-28",
+      "source": {
+        "kind": "json",
+        "url": "https://formulae.brew.sh/api/cask/lm-studio.json",
+        "field": "version",
+        "numeric": false,
+        "note": "Stable Homebrew distribution channel; can lag upstream.",
+        "publisher": "Homebrew maintainers",
+        "title": "LM Studio release metadata"
+      },
+      "evidence": [
+        "docs/03-toolchain.md"
+      ],
+      "notes": "LM Studio runtime extension versions are separate from the application version.",
+      "cask": "lm-studio"
+    },
+    {
+      "id": "mlx-lm",
+      "name": "mlx-lm",
+      "scope": "host",
+      "role": "Direct Apple Silicon inference",
+      "recorded": "0.31.3",
+      "recorded_date": "2026-05-28",
+      "source": {
+        "kind": "pypi",
+        "url": "https://pypi.org/pypi/mlx-lm/json",
+        "package": "mlx-lm",
+        "publisher": "mlx-lm publisher on PyPI",
+        "title": "mlx-lm release metadata"
+      },
+      "evidence": [
+        "docs/03-toolchain.md"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "mlx",
+      "name": "MLX",
+      "scope": "host",
+      "role": "Apple Silicon ML framework",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "json",
+        "url": "https://formulae.brew.sh/api/formula/mlx.json",
+        "field": "versions.stable",
+        "numeric": false,
+        "note": "Stable Homebrew distribution channel; can lag upstream.",
+        "publisher": "Homebrew maintainers",
+        "title": "MLX release metadata"
+      },
+      "evidence": [
+        "manifests/brew-formulae.manual.txt"
+      ],
+      "notes": "LM Studio's MLX engine label is not this framework's version.",
+      "formula": "mlx"
+    },
+    {
+      "id": "webui",
+      "name": "Open WebUI",
+      "scope": "host",
+      "role": "Chat and knowledge UI",
+      "recorded": "0.11.0",
+      "recorded_date": "2026-09-12",
+      "source": {
+        "kind": "github",
+        "url": "https://api.github.com/repos/open-webui/open-webui/releases/latest",
+        "publisher": "open-webui project on GitHub",
+        "title": "Open WebUI release metadata"
+      },
+      "evidence": [
+        "docs/18-lan-exposure-fix-2026-09-12.md"
+      ],
+      "notes": "Pinned image recorded in September; supersedes May's floating latest."
+    },
+    {
+      "id": "docker-desktop",
+      "name": "Docker Desktop",
+      "scope": "host",
+      "role": "Mac container platform",
+      "recorded": "4.72.0",
+      "recorded_date": "2026-05-28",
+      "source": {
+        "kind": "json",
+        "url": "https://formulae.brew.sh/api/cask/docker-desktop.json",
+        "field": "version",
+        "numeric": false,
+        "note": "Stable Homebrew distribution channel; can lag upstream.",
+        "publisher": "Homebrew maintainers",
+        "title": "Docker Desktop release metadata"
+      },
+      "evidence": [
+        "docs/03-toolchain.md"
+      ],
+      "notes": "",
+      "cask": "docker-desktop"
+    },
+    {
+      "id": "docker-engine",
+      "name": "Docker Engine",
+      "scope": "host",
+      "role": "Container engine/client",
+      "recorded": "29.6.2",
+      "recorded_date": "2026-08-02",
+      "source": {
+        "kind": "github",
+        "url": "https://api.github.com/repos/moby/moby/releases/latest",
+        "publisher": "moby project on GitHub",
+        "title": "Docker Engine release metadata",
+        "prefix": "docker-v"
+      },
+      "evidence": [
+        "reports/openclaw-related-runtime-readiness-audit-2026-08-02.md"
+      ],
+      "notes": "Docker Desktop controls its bundled engine. Do not independently replace it from a Linux engine release."
+    },
+    {
+      "id": "openclaw",
+      "name": "OpenClaw",
+      "scope": "host",
+      "role": "Larry agent runtime",
+      "recorded": "2026.7.1-2",
+      "recorded_date": "2026-08-02",
+      "source": {
+        "kind": "json",
+        "url": "https://registry.npmjs.org/openclaw/latest",
+        "field": "version",
+        "publisher": "openclaw publisher on npm",
+        "title": "OpenClaw release metadata"
+      },
+      "evidence": [
+        "reports/openclaw-related-runtime-readiness-audit-2026-08-02.md"
+      ],
+      "notes": "Stable npm distribution; numeric -2 is a packaging revision, not a beta."
+    },
+    {
+      "id": "searxng",
+      "name": "SearXNG",
+      "scope": "host",
+      "role": "Private metasearch",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "docker-rolling",
+        "url": "https://hub.docker.com/v2/repositories/searxng/searxng/tags/latest",
+        "publisher": "SearXNG project on Docker Hub",
+        "title": "SearXNG release metadata"
+      },
+      "evidence": [
+        "docs/18-lan-exposure-fix-2026-09-12.md"
+      ],
+      "notes": "Installed tag is latest; exact installed digest unknown. The remote digest is a candidate, not a stable version."
+    },
+    {
+      "id": "qdrant",
+      "name": "Qdrant",
+      "scope": "host",
+      "role": "Vector database service",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "github",
+        "url": "https://api.github.com/repos/qdrant/qdrant/releases/latest",
+        "publisher": "qdrant project on GitHub",
+        "title": "Qdrant release metadata"
+      },
+      "evidence": [
+        "reports/openclaw-related-runtime-readiness-audit-2026-08-02.md",
+        "docs/18-lan-exposure-fix-2026-09-12.md",
+        "docs/diagram-architecture.md"
+      ],
+      "notes": "Service presence confirmed in dated August/September reports. May diagram says 1.18.1 but no recent runtime version was captured; RAG remains unverified."
+    },
+    {
+      "id": "vscode",
+      "name": "Visual Studio Code",
+      "scope": "host",
+      "role": "Editor",
+      "recorded": "1.119.0",
+      "recorded_date": "2026-05-28",
+      "source": {
+        "kind": "json",
+        "url": "https://formulae.brew.sh/api/cask/visual-studio-code.json",
+        "field": "version",
+        "numeric": false,
+        "note": "Stable Homebrew distribution channel; can lag upstream.",
+        "publisher": "Homebrew maintainers",
+        "title": "Visual Studio Code release metadata"
+      },
+      "evidence": [
+        "docs/03-toolchain.md"
+      ],
+      "notes": "",
+      "cask": "visual-studio-code"
+    },
+    {
+      "id": "continue",
+      "name": "Continue VS Code extension",
+      "scope": "host",
+      "role": "Editor AI workflow",
+      "recorded": "1.2.22",
+      "recorded_date": "2026-05-28",
+      "source": {
+        "kind": "marketplace",
+        "url": "https://open-vsx.org/api/Continue/continue/latest",
+        "publisher": "Continue publisher on Eclipse Open VSX",
+        "title": "Continue VS Code extension release metadata"
+      },
+      "evidence": [
+        "docs/03-toolchain.md"
+      ],
+      "notes": "Published Open VSX stable extension channel. Check VS Code Marketplace parity when installing."
+    },
+    {
+      "id": "pnpm",
+      "name": "pnpm",
+      "scope": "host",
+      "role": "Package manager",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "json",
+        "url": "https://registry.npmjs.org/pnpm/latest",
+        "field": "version",
+        "publisher": "pnpm publisher on npm",
+        "title": "pnpm release metadata"
+      },
+      "evidence": [
+        "manifests/brew-formulae.manual.txt"
+      ],
+      "notes": "",
+      "formula": "pnpm"
+    },
+    {
+      "id": "bash",
+      "name": "Bash",
+      "scope": "host",
+      "role": "Verification and recovery shell",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "json",
+        "url": "https://formulae.brew.sh/api/formula/bash.json",
+        "field": "versions.stable",
+        "numeric": false,
+        "note": "Stable Homebrew distribution channel; can lag upstream.",
+        "publisher": "Homebrew maintainers",
+        "title": "Bash release metadata"
+      },
+      "evidence": [
+        "scripts/verify_mac_studio_baseline.sh"
+      ],
+      "notes": "macOS system Bash is OS-managed; upstream/Homebrew Bash is a different install path."
+    },
+    {
+      "id": "zsh",
+      "name": "Zsh",
+      "scope": "host",
+      "role": "Mac login shell",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "json",
+        "url": "https://formulae.brew.sh/api/formula/zsh.json",
+        "field": "versions.stable",
+        "numeric": false,
+        "note": "Stable Homebrew distribution channel; can lag upstream.",
+        "publisher": "Homebrew maintainers",
+        "title": "Zsh release metadata"
+      },
+      "evidence": [
+        "context/threads/mac-studio-toolchain-install-onedrive-git-sync-corruption-incident.md"
+      ],
+      "notes": "System shell updates follow macOS."
+    },
+    {
+      "id": "pip",
+      "name": "pip",
+      "scope": "host",
+      "role": "Python package installation",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "pypi",
+        "url": "https://pypi.org/pypi/pip/json",
+        "package": "pip",
+        "publisher": "pip publisher on PyPI",
+        "title": "pip release metadata"
+      },
+      "evidence": [
+        "context/threads/mac-studio-toolchain-install-onedrive-git-sync-corruption-incident.md"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "huggingface-hub",
+      "name": "Hugging Face Hub client",
+      "scope": "host",
+      "role": "Model download and cache tooling",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "pypi",
+        "url": "https://pypi.org/pypi/huggingface-hub/json",
+        "package": "huggingface-hub",
+        "publisher": "huggingface-hub publisher on PyPI",
+        "title": "Hugging Face Hub client release metadata"
+      },
+      "evidence": [
+        "mac-studio-setup/LOCAL_WORKBENCH_STATUS.md"
+      ],
+      "notes": "Cache/authentication use is recorded; the installed distribution version was not captured."
+    },
+    {
+      "id": "clawhub",
+      "name": "ClawHub",
+      "scope": "host",
+      "role": "OpenClaw skill distribution",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "json",
+        "url": "https://registry.npmjs.org/clawhub/latest",
+        "field": "version",
+        "publisher": "clawhub publisher on npm",
+        "title": "ClawHub release metadata"
+      },
+      "evidence": [
+        "docs/10-openclaw-larry-agent.md"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "mcporter",
+      "name": "MCPorter",
+      "scope": "host",
+      "role": "MCP tooling",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "json",
+        "url": "https://registry.npmjs.org/mcporter/latest",
+        "field": "version",
+        "publisher": "mcporter publisher on npm",
+        "title": "MCPorter release metadata"
+      },
+      "evidence": [
+        "docs/10-openclaw-larry-agent.md"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "tmux",
+      "name": "tmux",
+      "scope": "host",
+      "role": "Terminal multiplexing",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "json",
+        "url": "https://formulae.brew.sh/api/formula/tmux.json",
+        "field": "versions.stable",
+        "numeric": false,
+        "note": "Stable Homebrew distribution channel; can lag upstream.",
+        "publisher": "Homebrew maintainers",
+        "title": "tmux release metadata"
+      },
+      "evidence": [
+        "context/threads/openclaw-larry-onboarding-channel-configuration-issues.md"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "microsoft-edge",
+      "name": "Microsoft Edge",
+      "scope": "host",
+      "role": "Documented desktop workflow tool",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "json",
+        "url": "https://formulae.brew.sh/api/cask/microsoft-edge.json",
+        "field": "version",
+        "numeric": false,
+        "note": "Stable Homebrew distribution channel; can lag upstream.",
+        "publisher": "Homebrew maintainers",
+        "title": "Microsoft Edge release metadata"
+      },
+      "evidence": [
+        "docs/03-toolchain.md"
+      ],
+      "notes": "",
+      "cask": "microsoft-edge"
+    },
+    {
+      "id": "onedrive",
+      "name": "OneDrive",
+      "scope": "host",
+      "role": "Documented desktop workflow tool",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "json",
+        "url": "https://formulae.brew.sh/api/cask/onedrive.json",
+        "field": "version",
+        "numeric": false,
+        "note": "Stable Homebrew distribution channel; can lag upstream.",
+        "publisher": "Homebrew maintainers",
+        "title": "OneDrive release metadata"
+      },
+      "evidence": [
+        "docs/03-toolchain.md"
+      ],
+      "notes": "",
+      "cask": "onedrive"
+    },
+    {
+      "id": "github",
+      "name": "GitHub Desktop",
+      "scope": "host",
+      "role": "Documented desktop workflow tool",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "json",
+        "url": "https://formulae.brew.sh/api/cask/github.json",
+        "field": "version",
+        "numeric": false,
+        "note": "Stable Homebrew distribution channel; can lag upstream.",
+        "publisher": "Homebrew maintainers",
+        "title": "GitHub Desktop release metadata"
+      },
+      "evidence": [
+        "docs/03-toolchain.md"
+      ],
+      "notes": "",
+      "cask": "github"
+    },
+    {
+      "id": "claude",
+      "name": "Claude Desktop",
+      "scope": "host",
+      "role": "Documented desktop workflow tool",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "json",
+        "url": "https://formulae.brew.sh/api/cask/claude.json",
+        "field": "version",
+        "numeric": false,
+        "note": "Stable Homebrew distribution channel; can lag upstream.",
+        "publisher": "Homebrew maintainers",
+        "title": "Claude Desktop release metadata"
+      },
+      "evidence": [
+        "docs/03-toolchain.md"
+      ],
+      "notes": "",
+      "cask": "claude"
+    },
+    {
+      "id": "chatgpt",
+      "name": "ChatGPT Desktop",
+      "scope": "host",
+      "role": "Documented desktop workflow tool",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "json",
+        "url": "https://formulae.brew.sh/api/cask/chatgpt.json",
+        "field": "version",
+        "numeric": false,
+        "note": "Stable Homebrew distribution channel; can lag upstream.",
+        "publisher": "Homebrew maintainers",
+        "title": "ChatGPT Desktop release metadata"
+      },
+      "evidence": [
+        "docs/03-toolchain.md"
+      ],
+      "notes": "",
+      "cask": "chatgpt"
+    },
+    {
+      "id": "codex-app",
+      "name": "Codex Desktop",
+      "scope": "host",
+      "role": "Documented desktop workflow tool",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "json",
+        "url": "https://formulae.brew.sh/api/cask/codex-app.json",
+        "field": "version",
+        "numeric": false,
+        "note": "Stable Homebrew distribution channel; can lag upstream.",
+        "publisher": "Homebrew maintainers",
+        "title": "Codex Desktop release metadata"
+      },
+      "evidence": [
+        "docs/03-toolchain.md"
+      ],
+      "notes": "",
+      "cask": "codex-app"
+    },
+    {
+      "id": "notion",
+      "name": "Notion Desktop",
+      "scope": "host",
+      "role": "Documented desktop workflow tool",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "json",
+        "url": "https://formulae.brew.sh/api/cask/notion.json",
+        "field": "version",
+        "numeric": false,
+        "note": "Stable Homebrew distribution channel; can lag upstream.",
+        "publisher": "Homebrew maintainers",
+        "title": "Notion Desktop release metadata"
+      },
+      "evidence": [
+        "docs/03-toolchain.md"
+      ],
+      "notes": "",
+      "cask": "notion"
+    },
+    {
+      "id": "perplexity",
+      "name": "Perplexity",
+      "scope": "host",
+      "role": "Documented desktop workflow tool",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "json",
+        "url": "https://formulae.brew.sh/api/cask/perplexity.json",
+        "field": "version",
+        "numeric": false,
+        "note": "Stable Homebrew distribution channel; can lag upstream.",
+        "publisher": "Homebrew maintainers",
+        "title": "Perplexity release metadata"
+      },
+      "evidence": [
+        "docs/03-toolchain.md"
+      ],
+      "notes": "",
+      "cask": "perplexity"
+    },
+    {
+      "id": "microsoft-office",
+      "name": "Microsoft Office",
+      "scope": "host",
+      "role": "Documented desktop workflow tool",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "json",
+        "url": "https://formulae.brew.sh/api/cask/microsoft-office.json",
+        "field": "version",
+        "numeric": false,
+        "note": "Stable Homebrew distribution channel; can lag upstream.",
+        "publisher": "Homebrew maintainers",
+        "title": "Microsoft Office release metadata"
+      },
+      "evidence": [
+        "docs/03-toolchain.md"
+      ],
+      "notes": "",
+      "cask": "microsoft-office"
+    },
+    {
+      "id": "brew-ada-url",
+      "name": "ada-url",
+      "scope": "support",
+      "role": "Recorded Homebrew support dependency",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "json",
+        "url": "https://formulae.brew.sh/api/formula/ada-url.json",
+        "field": "versions.stable",
+        "numeric": false,
+        "note": "Stable Homebrew distribution channel; can lag upstream.",
+        "publisher": "Homebrew maintainers",
+        "title": "ada-url release metadata"
+      },
+      "evidence": [
+        "mac-studio-setup/brew-formulae.txt"
+      ],
+      "notes": "Name recorded in May; installed version not captured.",
+      "formula": "ada-url"
+    },
+    {
+      "id": "brew-bat",
+      "name": "bat",
+      "scope": "host",
+      "role": "Homebrew utility",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "json",
+        "url": "https://formulae.brew.sh/api/formula/bat.json",
+        "field": "versions.stable",
+        "numeric": false,
+        "note": "Stable Homebrew distribution channel; can lag upstream.",
+        "publisher": "Homebrew maintainers",
+        "title": "bat release metadata"
+      },
+      "evidence": [
+        "mac-studio-setup/brew-formulae.txt"
+      ],
+      "notes": "Name recorded in May; installed version not captured.",
+      "formula": "bat"
+    },
+    {
+      "id": "brew-brotli",
+      "name": "brotli",
+      "scope": "support",
+      "role": "Recorded Homebrew support dependency",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "json",
+        "url": "https://formulae.brew.sh/api/formula/brotli.json",
+        "field": "versions.stable",
+        "numeric": false,
+        "note": "Stable Homebrew distribution channel; can lag upstream.",
+        "publisher": "Homebrew maintainers",
+        "title": "brotli release metadata"
+      },
+      "evidence": [
+        "mac-studio-setup/brew-formulae.txt"
+      ],
+      "notes": "Name recorded in May; installed version not captured.",
+      "formula": "brotli"
+    },
+    {
+      "id": "brew-c-ares",
+      "name": "c-ares",
+      "scope": "support",
+      "role": "Recorded Homebrew support dependency",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "json",
+        "url": "https://formulae.brew.sh/api/formula/c-ares.json",
+        "field": "versions.stable",
+        "numeric": false,
+        "note": "Stable Homebrew distribution channel; can lag upstream.",
+        "publisher": "Homebrew maintainers",
+        "title": "c-ares release metadata"
+      },
+      "evidence": [
+        "mac-studio-setup/brew-formulae.txt"
+      ],
+      "notes": "Name recorded in May; installed version not captured.",
+      "formula": "c-ares"
+    },
+    {
+      "id": "brew-ca-certificates",
+      "name": "ca-certificates",
+      "scope": "support",
+      "role": "Recorded Homebrew support dependency",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "json",
+        "url": "https://formulae.brew.sh/api/formula/ca-certificates.json",
+        "field": "versions.stable",
+        "numeric": false,
+        "note": "Stable Homebrew distribution channel; can lag upstream.",
+        "publisher": "Homebrew maintainers",
+        "title": "ca-certificates release metadata"
+      },
+      "evidence": [
+        "mac-studio-setup/brew-formulae.txt"
+      ],
+      "notes": "Name recorded in May; installed version not captured.",
+      "formula": "ca-certificates"
+    },
+    {
+      "id": "brew-fd",
+      "name": "fd",
+      "scope": "host",
+      "role": "Homebrew utility",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "json",
+        "url": "https://formulae.brew.sh/api/formula/fd.json",
+        "field": "versions.stable",
+        "numeric": false,
+        "note": "Stable Homebrew distribution channel; can lag upstream.",
+        "publisher": "Homebrew maintainers",
+        "title": "fd release metadata"
+      },
+      "evidence": [
+        "mac-studio-setup/brew-formulae.txt"
+      ],
+      "notes": "Name recorded in May; installed version not captured.",
+      "formula": "fd"
+    },
+    {
+      "id": "brew-fmt",
+      "name": "fmt",
+      "scope": "support",
+      "role": "Recorded Homebrew support dependency",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "json",
+        "url": "https://formulae.brew.sh/api/formula/fmt.json",
+        "field": "versions.stable",
+        "numeric": false,
+        "note": "Stable Homebrew distribution channel; can lag upstream.",
+        "publisher": "Homebrew maintainers",
+        "title": "fmt release metadata"
+      },
+      "evidence": [
+        "mac-studio-setup/brew-formulae.txt"
+      ],
+      "notes": "Name recorded in May; installed version not captured.",
+      "formula": "fmt"
+    },
+    {
+      "id": "brew-fzf",
+      "name": "fzf",
+      "scope": "host",
+      "role": "Homebrew utility",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "json",
+        "url": "https://formulae.brew.sh/api/formula/fzf.json",
+        "field": "versions.stable",
+        "numeric": false,
+        "note": "Stable Homebrew distribution channel; can lag upstream.",
+        "publisher": "Homebrew maintainers",
+        "title": "fzf release metadata"
+      },
+      "evidence": [
+        "mac-studio-setup/brew-formulae.txt"
+      ],
+      "notes": "Name recorded in May; installed version not captured.",
+      "formula": "fzf"
+    },
+    {
+      "id": "brew-gettext",
+      "name": "gettext",
+      "scope": "support",
+      "role": "Recorded Homebrew support dependency",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "json",
+        "url": "https://formulae.brew.sh/api/formula/gettext.json",
+        "field": "versions.stable",
+        "numeric": false,
+        "note": "Stable Homebrew distribution channel; can lag upstream.",
+        "publisher": "Homebrew maintainers",
+        "title": "gettext release metadata"
+      },
+      "evidence": [
+        "mac-studio-setup/brew-formulae.txt"
+      ],
+      "notes": "Name recorded in May; installed version not captured.",
+      "formula": "gettext"
+    },
+    {
+      "id": "brew-hdrhistogram_c",
+      "name": "hdrhistogram_c",
+      "scope": "support",
+      "role": "Recorded Homebrew support dependency",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "json",
+        "url": "https://formulae.brew.sh/api/formula/hdrhistogram_c.json",
+        "field": "versions.stable",
+        "numeric": false,
+        "note": "Stable Homebrew distribution channel; can lag upstream.",
+        "publisher": "Homebrew maintainers",
+        "title": "hdrhistogram_c release metadata"
+      },
+      "evidence": [
+        "mac-studio-setup/brew-formulae.txt"
+      ],
+      "notes": "Name recorded in May; installed version not captured.",
+      "formula": "hdrhistogram_c"
+    },
+    {
+      "id": "brew-icu4c@78",
+      "name": "icu4c@78",
+      "scope": "support",
+      "role": "Recorded Homebrew support dependency",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "json",
+        "url": "https://formulae.brew.sh/api/formula/icu4c@78.json",
+        "field": "versions.stable",
+        "numeric": false,
+        "note": "Stable Homebrew distribution channel; can lag upstream.",
+        "publisher": "Homebrew maintainers",
+        "title": "icu4c@78 release metadata"
+      },
+      "evidence": [
+        "mac-studio-setup/brew-formulae.txt"
+      ],
+      "notes": "Name recorded in May; installed version not captured.",
+      "formula": "icu4c@78"
+    },
+    {
+      "id": "brew-libgit2",
+      "name": "libgit2",
+      "scope": "support",
+      "role": "Recorded Homebrew support dependency",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "json",
+        "url": "https://formulae.brew.sh/api/formula/libgit2.json",
+        "field": "versions.stable",
+        "numeric": false,
+        "note": "Stable Homebrew distribution channel; can lag upstream.",
+        "publisher": "Homebrew maintainers",
+        "title": "libgit2 release metadata"
+      },
+      "evidence": [
+        "mac-studio-setup/brew-formulae.txt"
+      ],
+      "notes": "Name recorded in May; installed version not captured.",
+      "formula": "libgit2"
+    },
+    {
+      "id": "brew-libidn2",
+      "name": "libidn2",
+      "scope": "support",
+      "role": "Recorded Homebrew support dependency",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "json",
+        "url": "https://formulae.brew.sh/api/formula/libidn2.json",
+        "field": "versions.stable",
+        "numeric": false,
+        "note": "Stable Homebrew distribution channel; can lag upstream.",
+        "publisher": "Homebrew maintainers",
+        "title": "libidn2 release metadata"
+      },
+      "evidence": [
+        "mac-studio-setup/brew-formulae.txt"
+      ],
+      "notes": "Name recorded in May; installed version not captured.",
+      "formula": "libidn2"
+    },
+    {
+      "id": "brew-libnghttp2",
+      "name": "libnghttp2",
+      "scope": "support",
+      "role": "Recorded Homebrew support dependency",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "json",
+        "url": "https://formulae.brew.sh/api/formula/libnghttp2.json",
+        "field": "versions.stable",
+        "numeric": false,
+        "note": "Stable Homebrew distribution channel; can lag upstream.",
+        "publisher": "Homebrew maintainers",
+        "title": "libnghttp2 release metadata"
+      },
+      "evidence": [
+        "mac-studio-setup/brew-formulae.txt"
+      ],
+      "notes": "Name recorded in May; installed version not captured.",
+      "formula": "libnghttp2"
+    },
+    {
+      "id": "brew-libnghttp3",
+      "name": "libnghttp3",
+      "scope": "support",
+      "role": "Recorded Homebrew support dependency",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "json",
+        "url": "https://formulae.brew.sh/api/formula/libnghttp3.json",
+        "field": "versions.stable",
+        "numeric": false,
+        "note": "Stable Homebrew distribution channel; can lag upstream.",
+        "publisher": "Homebrew maintainers",
+        "title": "libnghttp3 release metadata"
+      },
+      "evidence": [
+        "mac-studio-setup/brew-formulae.txt"
+      ],
+      "notes": "Name recorded in May; installed version not captured.",
+      "formula": "libnghttp3"
+    },
+    {
+      "id": "brew-libngtcp2",
+      "name": "libngtcp2",
+      "scope": "support",
+      "role": "Recorded Homebrew support dependency",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "json",
+        "url": "https://formulae.brew.sh/api/formula/libngtcp2.json",
+        "field": "versions.stable",
+        "numeric": false,
+        "note": "Stable Homebrew distribution channel; can lag upstream.",
+        "publisher": "Homebrew maintainers",
+        "title": "libngtcp2 release metadata"
+      },
+      "evidence": [
+        "mac-studio-setup/brew-formulae.txt"
+      ],
+      "notes": "Name recorded in May; installed version not captured.",
+      "formula": "libngtcp2"
+    },
+    {
+      "id": "brew-libssh2",
+      "name": "libssh2",
+      "scope": "support",
+      "role": "Recorded Homebrew support dependency",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "json",
+        "url": "https://formulae.brew.sh/api/formula/libssh2.json",
+        "field": "versions.stable",
+        "numeric": false,
+        "note": "Stable Homebrew distribution channel; can lag upstream.",
+        "publisher": "Homebrew maintainers",
+        "title": "libssh2 release metadata"
+      },
+      "evidence": [
+        "mac-studio-setup/brew-formulae.txt"
+      ],
+      "notes": "Name recorded in May; installed version not captured.",
+      "formula": "libssh2"
+    },
+    {
+      "id": "brew-libunistring",
+      "name": "libunistring",
+      "scope": "support",
+      "role": "Recorded Homebrew support dependency",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "json",
+        "url": "https://formulae.brew.sh/api/formula/libunistring.json",
+        "field": "versions.stable",
+        "numeric": false,
+        "note": "Stable Homebrew distribution channel; can lag upstream.",
+        "publisher": "Homebrew maintainers",
+        "title": "libunistring release metadata"
+      },
+      "evidence": [
+        "mac-studio-setup/brew-formulae.txt"
+      ],
+      "notes": "Name recorded in May; installed version not captured.",
+      "formula": "libunistring"
+    },
+    {
+      "id": "brew-libuv",
+      "name": "libuv",
+      "scope": "support",
+      "role": "Recorded Homebrew support dependency",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "json",
+        "url": "https://formulae.brew.sh/api/formula/libuv.json",
+        "field": "versions.stable",
+        "numeric": false,
+        "note": "Stable Homebrew distribution channel; can lag upstream.",
+        "publisher": "Homebrew maintainers",
+        "title": "libuv release metadata"
+      },
+      "evidence": [
+        "mac-studio-setup/brew-formulae.txt"
+      ],
+      "notes": "Name recorded in May; installed version not captured.",
+      "formula": "libuv"
+    },
+    {
+      "id": "brew-llhttp",
+      "name": "llhttp",
+      "scope": "support",
+      "role": "Recorded Homebrew support dependency",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "json",
+        "url": "https://formulae.brew.sh/api/formula/llhttp.json",
+        "field": "versions.stable",
+        "numeric": false,
+        "note": "Stable Homebrew distribution channel; can lag upstream.",
+        "publisher": "Homebrew maintainers",
+        "title": "llhttp release metadata"
+      },
+      "evidence": [
+        "mac-studio-setup/brew-formulae.txt"
+      ],
+      "notes": "Name recorded in May; installed version not captured.",
+      "formula": "llhttp"
+    },
+    {
+      "id": "brew-lz4",
+      "name": "lz4",
+      "scope": "support",
+      "role": "Recorded Homebrew support dependency",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "json",
+        "url": "https://formulae.brew.sh/api/formula/lz4.json",
+        "field": "versions.stable",
+        "numeric": false,
+        "note": "Stable Homebrew distribution channel; can lag upstream.",
+        "publisher": "Homebrew maintainers",
+        "title": "lz4 release metadata"
+      },
+      "evidence": [
+        "mac-studio-setup/brew-formulae.txt"
+      ],
+      "notes": "Name recorded in May; installed version not captured.",
+      "formula": "lz4"
+    },
+    {
+      "id": "brew-merve",
+      "name": "merve",
+      "scope": "support",
+      "role": "Recorded Homebrew support dependency",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "json",
+        "url": "https://formulae.brew.sh/api/formula/merve.json",
+        "field": "versions.stable",
+        "numeric": false,
+        "note": "Stable Homebrew distribution channel; can lag upstream.",
+        "publisher": "Homebrew maintainers",
+        "title": "merve release metadata"
+      },
+      "evidence": [
+        "mac-studio-setup/brew-formulae.txt"
+      ],
+      "notes": "Name recorded in May; installed version not captured.",
+      "formula": "merve"
+    },
+    {
+      "id": "brew-mlx-c",
+      "name": "mlx-c",
+      "scope": "support",
+      "role": "Recorded Homebrew support dependency",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "json",
+        "url": "https://formulae.brew.sh/api/formula/mlx-c.json",
+        "field": "versions.stable",
+        "numeric": false,
+        "note": "Stable Homebrew distribution channel; can lag upstream.",
+        "publisher": "Homebrew maintainers",
+        "title": "mlx-c release metadata"
+      },
+      "evidence": [
+        "mac-studio-setup/brew-formulae.txt"
+      ],
+      "notes": "Name recorded in May; installed version not captured.",
+      "formula": "mlx-c"
+    },
+    {
+      "id": "brew-mpdecimal",
+      "name": "mpdecimal",
+      "scope": "support",
+      "role": "Recorded Homebrew support dependency",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "json",
+        "url": "https://formulae.brew.sh/api/formula/mpdecimal.json",
+        "field": "versions.stable",
+        "numeric": false,
+        "note": "Stable Homebrew distribution channel; can lag upstream.",
+        "publisher": "Homebrew maintainers",
+        "title": "mpdecimal release metadata"
+      },
+      "evidence": [
+        "mac-studio-setup/brew-formulae.txt"
+      ],
+      "notes": "Name recorded in May; installed version not captured.",
+      "formula": "mpdecimal"
+    },
+    {
+      "id": "brew-nbytes",
+      "name": "nbytes",
+      "scope": "support",
+      "role": "Recorded Homebrew support dependency",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "json",
+        "url": "https://formulae.brew.sh/api/formula/nbytes.json",
+        "field": "versions.stable",
+        "numeric": false,
+        "note": "Stable Homebrew distribution channel; can lag upstream.",
+        "publisher": "Homebrew maintainers",
+        "title": "nbytes release metadata"
+      },
+      "evidence": [
+        "mac-studio-setup/brew-formulae.txt"
+      ],
+      "notes": "Name recorded in May; installed version not captured.",
+      "formula": "nbytes"
+    },
+    {
+      "id": "brew-oniguruma",
+      "name": "oniguruma",
+      "scope": "support",
+      "role": "Recorded Homebrew support dependency",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "json",
+        "url": "https://formulae.brew.sh/api/formula/oniguruma.json",
+        "field": "versions.stable",
+        "numeric": false,
+        "note": "Stable Homebrew distribution channel; can lag upstream.",
+        "publisher": "Homebrew maintainers",
+        "title": "oniguruma release metadata"
+      },
+      "evidence": [
+        "mac-studio-setup/brew-formulae.txt"
+      ],
+      "notes": "Name recorded in May; installed version not captured.",
+      "formula": "oniguruma"
+    },
+    {
+      "id": "brew-openssl@3",
+      "name": "openssl@3",
+      "scope": "support",
+      "role": "Recorded Homebrew support dependency",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "json",
+        "url": "https://formulae.brew.sh/api/formula/openssl@3.json",
+        "field": "versions.stable",
+        "numeric": false,
+        "note": "Stable Homebrew distribution channel; can lag upstream.",
+        "publisher": "Homebrew maintainers",
+        "title": "openssl@3 release metadata"
+      },
+      "evidence": [
+        "mac-studio-setup/brew-formulae.txt"
+      ],
+      "notes": "Name recorded in May; installed version not captured.",
+      "formula": "openssl@3"
+    },
+    {
+      "id": "brew-pcre2",
+      "name": "pcre2",
+      "scope": "support",
+      "role": "Recorded Homebrew support dependency",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "json",
+        "url": "https://formulae.brew.sh/api/formula/pcre2.json",
+        "field": "versions.stable",
+        "numeric": false,
+        "note": "Stable Homebrew distribution channel; can lag upstream.",
+        "publisher": "Homebrew maintainers",
+        "title": "pcre2 release metadata"
+      },
+      "evidence": [
+        "mac-studio-setup/brew-formulae.txt"
+      ],
+      "notes": "Name recorded in May; installed version not captured.",
+      "formula": "pcre2"
+    },
+    {
+      "id": "brew-readline",
+      "name": "readline",
+      "scope": "support",
+      "role": "Recorded Homebrew support dependency",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "json",
+        "url": "https://formulae.brew.sh/api/formula/readline.json",
+        "field": "versions.stable",
+        "numeric": false,
+        "note": "Stable Homebrew distribution channel; can lag upstream.",
+        "publisher": "Homebrew maintainers",
+        "title": "readline release metadata"
+      },
+      "evidence": [
+        "mac-studio-setup/brew-formulae.txt"
+      ],
+      "notes": "Name recorded in May; installed version not captured.",
+      "formula": "readline"
+    },
+    {
+      "id": "brew-ripgrep",
+      "name": "ripgrep",
+      "scope": "host",
+      "role": "Homebrew utility",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "json",
+        "url": "https://formulae.brew.sh/api/formula/ripgrep.json",
+        "field": "versions.stable",
+        "numeric": false,
+        "note": "Stable Homebrew distribution channel; can lag upstream.",
+        "publisher": "Homebrew maintainers",
+        "title": "ripgrep release metadata"
+      },
+      "evidence": [
+        "mac-studio-setup/brew-formulae.txt"
+      ],
+      "notes": "Name recorded in May; installed version not captured.",
+      "formula": "ripgrep"
+    },
+    {
+      "id": "brew-simdjson",
+      "name": "simdjson",
+      "scope": "support",
+      "role": "Recorded Homebrew support dependency",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "json",
+        "url": "https://formulae.brew.sh/api/formula/simdjson.json",
+        "field": "versions.stable",
+        "numeric": false,
+        "note": "Stable Homebrew distribution channel; can lag upstream.",
+        "publisher": "Homebrew maintainers",
+        "title": "simdjson release metadata"
+      },
+      "evidence": [
+        "mac-studio-setup/brew-formulae.txt"
+      ],
+      "notes": "Name recorded in May; installed version not captured.",
+      "formula": "simdjson"
+    },
+    {
+      "id": "brew-simdutf",
+      "name": "simdutf",
+      "scope": "support",
+      "role": "Recorded Homebrew support dependency",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "json",
+        "url": "https://formulae.brew.sh/api/formula/simdutf.json",
+        "field": "versions.stable",
+        "numeric": false,
+        "note": "Stable Homebrew distribution channel; can lag upstream.",
+        "publisher": "Homebrew maintainers",
+        "title": "simdutf release metadata"
+      },
+      "evidence": [
+        "mac-studio-setup/brew-formulae.txt"
+      ],
+      "notes": "Name recorded in May; installed version not captured.",
+      "formula": "simdutf"
+    },
+    {
+      "id": "brew-sqlite",
+      "name": "sqlite",
+      "scope": "support",
+      "role": "Recorded Homebrew support dependency",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "json",
+        "url": "https://formulae.brew.sh/api/formula/sqlite.json",
+        "field": "versions.stable",
+        "numeric": false,
+        "note": "Stable Homebrew distribution channel; can lag upstream.",
+        "publisher": "Homebrew maintainers",
+        "title": "sqlite release metadata"
+      },
+      "evidence": [
+        "mac-studio-setup/brew-formulae.txt"
+      ],
+      "notes": "Name recorded in May; installed version not captured.",
+      "formula": "sqlite"
+    },
+    {
+      "id": "brew-tree",
+      "name": "tree",
+      "scope": "host",
+      "role": "Homebrew utility",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "json",
+        "url": "https://formulae.brew.sh/api/formula/tree.json",
+        "field": "versions.stable",
+        "numeric": false,
+        "note": "Stable Homebrew distribution channel; can lag upstream.",
+        "publisher": "Homebrew maintainers",
+        "title": "tree release metadata"
+      },
+      "evidence": [
+        "mac-studio-setup/brew-formulae.txt"
+      ],
+      "notes": "Name recorded in May; installed version not captured.",
+      "formula": "tree"
+    },
+    {
+      "id": "brew-uvwasi",
+      "name": "uvwasi",
+      "scope": "support",
+      "role": "Recorded Homebrew support dependency",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "json",
+        "url": "https://formulae.brew.sh/api/formula/uvwasi.json",
+        "field": "versions.stable",
+        "numeric": false,
+        "note": "Stable Homebrew distribution channel; can lag upstream.",
+        "publisher": "Homebrew maintainers",
+        "title": "uvwasi release metadata"
+      },
+      "evidence": [
+        "mac-studio-setup/brew-formulae.txt"
+      ],
+      "notes": "Name recorded in May; installed version not captured.",
+      "formula": "uvwasi"
+    },
+    {
+      "id": "brew-wget",
+      "name": "wget",
+      "scope": "host",
+      "role": "Homebrew utility",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "json",
+        "url": "https://formulae.brew.sh/api/formula/wget.json",
+        "field": "versions.stable",
+        "numeric": false,
+        "note": "Stable Homebrew distribution channel; can lag upstream.",
+        "publisher": "Homebrew maintainers",
+        "title": "wget release metadata"
+      },
+      "evidence": [
+        "mac-studio-setup/brew-formulae.txt"
+      ],
+      "notes": "Name recorded in May; installed version not captured.",
+      "formula": "wget"
+    },
+    {
+      "id": "brew-xz",
+      "name": "xz",
+      "scope": "support",
+      "role": "Recorded Homebrew support dependency",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "json",
+        "url": "https://formulae.brew.sh/api/formula/xz.json",
+        "field": "versions.stable",
+        "numeric": false,
+        "note": "Stable Homebrew distribution channel; can lag upstream.",
+        "publisher": "Homebrew maintainers",
+        "title": "xz release metadata"
+      },
+      "evidence": [
+        "mac-studio-setup/brew-formulae.txt"
+      ],
+      "notes": "Name recorded in May; installed version not captured.",
+      "formula": "xz"
+    },
+    {
+      "id": "brew-yq",
+      "name": "yq",
+      "scope": "host",
+      "role": "Homebrew utility",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "json",
+        "url": "https://formulae.brew.sh/api/formula/yq.json",
+        "field": "versions.stable",
+        "numeric": false,
+        "note": "Stable Homebrew distribution channel; can lag upstream.",
+        "publisher": "Homebrew maintainers",
+        "title": "yq release metadata"
+      },
+      "evidence": [
+        "mac-studio-setup/brew-formulae.txt"
+      ],
+      "notes": "Name recorded in May; installed version not captured.",
+      "formula": "yq"
+    },
+    {
+      "id": "brew-zstd",
+      "name": "zstd",
+      "scope": "support",
+      "role": "Recorded Homebrew support dependency",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "json",
+        "url": "https://formulae.brew.sh/api/formula/zstd.json",
+        "field": "versions.stable",
+        "numeric": false,
+        "note": "Stable Homebrew distribution channel; can lag upstream.",
+        "publisher": "Homebrew maintainers",
+        "title": "zstd release metadata"
+      },
+      "evidence": [
+        "mac-studio-setup/brew-formulae.txt"
+      ],
+      "notes": "Name recorded in May; installed version not captured.",
+      "formula": "zstd"
+    },
+    {
+      "id": "mermaid",
+      "name": "Mermaid",
+      "scope": "repository",
+      "role": "Diagram source syntax",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "json",
+        "url": "https://registry.npmjs.org/mermaid/latest",
+        "field": "version",
+        "publisher": "mermaid publisher on npm",
+        "title": "Mermaid release metadata"
+      },
+      "evidence": [
+        "docs/12-architecture-diagrams.md"
+      ],
+      "notes": "No renderer is pinned in this repository. GitHub Markdown and editor previews choose their own renderer versions."
+    },
+    {
+      "id": "site-mermaid",
+      "name": "Mermaid public website renderer",
+      "scope": "external-site",
+      "role": "Vendored renderer in OKHP3/OverKill-Hill",
+      "recorded": "11.17.2",
+      "recorded_date": "2026-09-19",
+      "source": {
+        "kind": "json",
+        "url": "https://registry.npmjs.org/mermaid/latest",
+        "field": "version",
+        "publisher": "mermaid publisher on npm",
+        "title": "Mermaid public website renderer release metadata"
+      },
+      "evidence": [
+        "https://github.com/OKHP3/OverKill-Hill/blob/main/assets/vendor/mermaid/VERSION"
+      ],
+      "notes": "Read from the separate website repository. Updates and rendering tests belong there."
+    },
+    {
+      "id": "action-checkout",
+      "name": "actions/checkout",
+      "scope": "repository",
+      "role": "GitHub Actions dependency",
+      "recorded": "7.0.1",
+      "recorded_date": "2026-09-19",
+      "source": {
+        "kind": "github",
+        "url": "https://api.github.com/repos/actions/checkout/releases/latest",
+        "publisher": "actions project on GitHub",
+        "title": "actions/checkout release metadata"
+      },
+      "evidence": [
+        ".github/workflows/technology-updates.yml"
+      ],
+      "notes": "Updated by this change from checkout v4, or newly added. Immutable workflow SHA pin is authoritative; Dependabot maintains it.",
+      "workflow_action": "actions/checkout"
+    },
+    {
+      "id": "action-setup-python",
+      "name": "actions/setup-python",
+      "scope": "repository",
+      "role": "GitHub Actions dependency",
+      "recorded": "7.0.0",
+      "recorded_date": "2026-09-19",
+      "source": {
+        "kind": "github",
+        "url": "https://api.github.com/repos/actions/setup-python/releases/latest",
+        "publisher": "actions project on GitHub",
+        "title": "actions/setup-python release metadata"
+      },
+      "evidence": [
+        ".github/workflows/technology-updates.yml"
+      ],
+      "notes": "Updated by this change from checkout v4, or newly added. Immutable workflow SHA pin is authoritative; Dependabot maintains it.",
+      "workflow_action": "actions/setup-python"
+    },
+    {
+      "id": "action-upload-artifact",
+      "name": "actions/upload-artifact",
+      "scope": "repository",
+      "role": "GitHub Actions dependency",
+      "recorded": "7.0.1",
+      "recorded_date": "2026-09-19",
+      "source": {
+        "kind": "github",
+        "url": "https://api.github.com/repos/actions/upload-artifact/releases/latest",
+        "publisher": "actions project on GitHub",
+        "title": "actions/upload-artifact release metadata"
+      },
+      "evidence": [
+        ".github/workflows/technology-updates.yml"
+      ],
+      "notes": "Updated by this change from checkout v4, or newly added. Immutable workflow SHA pin is authoritative; Dependabot maintains it.",
+      "workflow_action": "actions/upload-artifact"
+    },
+    {
+      "id": "github-runner",
+      "name": "GitHub-hosted Ubuntu runner",
+      "scope": "repository",
+      "role": "Scheduled monitoring runtime",
+      "recorded": "24.04",
+      "recorded_date": "2026-09-19",
+      "source": {
+        "kind": "none",
+        "reason": "Runner image receives provider updates; OS line is explicit in the workflow.",
+        "url": "https://github.com/actions/runner-images",
+        "publisher": "GitHub",
+        "title": "GitHub-hosted Ubuntu runner release metadata"
+      },
+      "evidence": [
+        ".github/workflows/technology-updates.yml"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "caddy",
+      "name": "Caddy",
+      "scope": "planned",
+      "role": "Future HTTPS front door",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "github",
+        "url": "https://api.github.com/repos/caddyserver/caddy/releases/latest",
+        "publisher": "caddyserver project on GitHub",
+        "title": "Caddy release metadata"
+      },
+      "evidence": [
+        "docs/local-web-portal-https.md"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "'javascript-/-ecmascript'",
+      "name": "JavaScript / ECMAScript",
+      "scope": "format",
+      "role": "Format, language or platform facility",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "none",
+        "reason": "Language support follows Node/browser. Vendored skill support includes .mjs files; no application JS in this repository.",
+        "url": "https://tc39.es/ecma262/",
+        "publisher": "Project publisher or official distribution registry",
+        "title": "JavaScript / ECMAScript release metadata"
+      },
+      "evidence": [
+        "README.md"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "'markdown-/-gfm'",
+      "name": "Markdown / GFM",
+      "scope": "format",
+      "role": "Format, language or platform facility",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "none",
+        "reason": "Document format; GitHub owns the renderer. No parser dependency pinned here.",
+        "url": "https://github.github.com/gfm/",
+        "publisher": "GitHub",
+        "title": "Markdown / GFM release metadata"
+      },
+      "evidence": [
+        "README.md"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "'yaml'",
+      "name": "YAML",
+      "scope": "format",
+      "role": "Format, language or platform facility",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "none",
+        "reason": "Front matter and workflow format. No standalone YAML package pinned for this tracker.",
+        "url": "https://yaml.org/spec/1.2.2/",
+        "publisher": "Project publisher or official distribution registry",
+        "title": "YAML release metadata"
+      },
+      "evidence": [
+        "README.md"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "'json'",
+      "name": "JSON",
+      "scope": "format",
+      "role": "Format, language or platform facility",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "none",
+        "reason": "Data format, parsed with Python standard library.",
+        "url": "https://www.rfc-editor.org/rfc/rfc8259",
+        "publisher": "Project publisher or official distribution registry",
+        "title": "JSON release metadata"
+      },
+      "evidence": [
+        "README.md"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "'mermaid-svg-output'",
+      "name": "Mermaid SVG output",
+      "scope": "format",
+      "role": "Format, language or platform facility",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "none",
+        "reason": "Diagram output format, renderer managed elsewhere.",
+        "url": "https://www.w3.org/TR/SVG2/",
+        "publisher": "Project publisher or official distribution registry",
+        "title": "Mermaid SVG output release metadata"
+      },
+      "evidence": [
+        "README.md"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "'mcp'",
+      "name": "MCP",
+      "scope": "format",
+      "role": "Format, language or platform facility",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "none",
+        "reason": "Protocol negotiation and each connector's version must be captured on the host; no connector SBOM is published.",
+        "url": "https://modelcontextprotocol.io/specification/versioning",
+        "publisher": "Project publisher or official distribution registry",
+        "title": "MCP release metadata"
+      },
+      "evidence": [
+        "README.md"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "'gguf-/-safetensors-/-mlx-weights'",
+      "name": "GGUF / Safetensors / MLX weights",
+      "scope": "format",
+      "role": "Format, language or platform facility",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "none",
+        "reason": "Model artifact formats; capture file hash and quantization, not a generic latest package version.",
+        "url": "https://huggingface.co/docs/safetensors/",
+        "publisher": "Project publisher or official distribution registry",
+        "title": "GGUF / Safetensors / MLX weights release metadata"
+      },
+      "evidence": [
+        "README.md"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "'launchd-/-keychain-/-rosetta-/-apfs'",
+      "name": "launchd / Keychain / Rosetta / APFS",
+      "scope": "format",
+      "role": "Format, language or platform facility",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "none",
+        "reason": "OS-managed capabilities; update through macOS.",
+        "url": "https://support.apple.com/en-us/100100",
+        "publisher": "Apple",
+        "title": "launchd / Keychain / Rosetta / APFS release metadata"
+      },
+      "evidence": [
+        "README.md"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "github-/-github-pages-/-actions",
+      "name": "GitHub / GitHub Pages / Actions",
+      "scope": "service",
+      "role": "Vendor-managed service",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "none",
+        "reason": "No user-controlled stable release number. Review provider changes and connector compatibility.",
+        "url": "https://www.githubstatus.com/",
+        "publisher": "GitHub",
+        "title": "GitHub / GitHub Pages / Actions release metadata"
+      },
+      "evidence": [
+        "docs/08-council-of-ais-methodology.md"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "replit",
+      "name": "Replit",
+      "scope": "service",
+      "role": "Vendor-managed service",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "none",
+        "reason": "No user-controlled stable release number. Review provider changes and connector compatibility.",
+        "url": "https://status.replit.com/",
+        "publisher": "Project publisher or official distribution registry",
+        "title": "Replit release metadata"
+      },
+      "evidence": [
+        "docs/08-council-of-ais-methodology.md"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "notion-/-cloud-ai-services",
+      "name": "Notion / cloud AI services",
+      "scope": "service",
+      "role": "Vendor-managed service",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "none",
+        "reason": "No user-controlled stable release number. Review provider changes and connector compatibility.",
+        "url": "https://www.notion-status.com/",
+        "publisher": "Project publisher or official distribution registry",
+        "title": "Notion / cloud AI services release metadata"
+      },
+      "evidence": [
+        "docs/08-council-of-ais-methodology.md"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "typescript",
+      "name": "TypeScript",
+      "scope": "absent",
+      "role": "Requested technology; not an application dependency here",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "json",
+        "url": "https://registry.npmjs.org/typescript/latest",
+        "field": "version",
+        "publisher": "typescript publisher on npm",
+        "title": "TypeScript release metadata"
+      },
+      "evidence": [
+        "AGENTS.md"
+      ],
+      "notes": "Mentions in vendored skills are guidance, not adoption by the workbench."
+    },
+    {
+      "id": "vite",
+      "name": "Vite",
+      "scope": "absent",
+      "role": "Requested technology; not an application dependency here",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "json",
+        "url": "https://registry.npmjs.org/vite/latest",
+        "field": "version",
+        "publisher": "vite publisher on npm",
+        "title": "Vite release metadata"
+      },
+      "evidence": [
+        "AGENTS.md"
+      ],
+      "notes": "Mentions in vendored skills are guidance, not adoption by the workbench."
+    },
+    {
+      "id": "tailwindcss",
+      "name": "Tailwind CSS",
+      "scope": "absent",
+      "role": "Requested technology; not an application dependency here",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "json",
+        "url": "https://registry.npmjs.org/tailwindcss/latest",
+        "field": "version",
+        "publisher": "tailwindcss publisher on npm",
+        "title": "Tailwind CSS release metadata"
+      },
+      "evidence": [
+        "AGENTS.md"
+      ],
+      "notes": "Mentions in vendored skills are guidance, not adoption by the workbench."
+    },
+    {
+      "id": "react",
+      "name": "React",
+      "scope": "absent",
+      "role": "Requested technology; not an application dependency here",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "json",
+        "url": "https://registry.npmjs.org/react/latest",
+        "field": "version",
+        "publisher": "react publisher on npm",
+        "title": "React release metadata"
+      },
+      "evidence": [
+        "AGENTS.md"
+      ],
+      "notes": "Mentions in vendored skills are guidance, not adoption by the workbench."
+    },
+    {
+      "id": "java",
+      "name": "Java",
+      "scope": "absent",
+      "role": "Not evidenced as a project dependency",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "none",
+        "reason": "No source, runtime manifest or use found in project artifacts.",
+        "url": null,
+        "publisher": "Project publisher or official distribution registry",
+        "title": "Java release metadata"
+      },
+      "evidence": [
+        "AGENTS.md"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "model-llama3.1:8b",
+      "name": "llama3.1:8b",
+      "scope": "model",
+      "role": "Ollama model",
+      "recorded": "46e0c10c039e",
+      "recorded_date": "2026-05-12",
+      "source": {
+        "kind": "none",
+        "reason": "Intentional model selection. Pin digest and test memory/quality before replacing weights.",
+        "url": "https://ollama.com/library/llama3.1",
+        "publisher": "Project publisher or official distribution registry",
+        "title": "llama3.1:8b release metadata"
+      },
+      "evidence": [
+        "manifests/ollama_model_inventory_2026-05-12.txt"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "model-mistral-small3.1:24b",
+      "name": "mistral-small3.1:24b",
+      "scope": "model",
+      "role": "Ollama model",
+      "recorded": "b9aaf0c2586a",
+      "recorded_date": "2026-05-12",
+      "source": {
+        "kind": "none",
+        "reason": "Intentional model selection. Pin digest and test memory/quality before replacing weights.",
+        "url": "https://ollama.com/library/mistral-small3.1",
+        "publisher": "Project publisher or official distribution registry",
+        "title": "mistral-small3.1:24b release metadata"
+      },
+      "evidence": [
+        "manifests/ollama_model_inventory_2026-05-12.txt"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "model-codestral:22b",
+      "name": "codestral:22b",
+      "scope": "model",
+      "role": "Ollama model",
+      "recorded": "0898a8b286d5",
+      "recorded_date": "2026-05-12",
+      "source": {
+        "kind": "none",
+        "reason": "Intentional model selection. Pin digest and test memory/quality before replacing weights.",
+        "url": "https://ollama.com/library/codestral",
+        "publisher": "Project publisher or official distribution registry",
+        "title": "codestral:22b release metadata"
+      },
+      "evidence": [
+        "manifests/ollama_model_inventory_2026-05-12.txt"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "model-gemma3:27b",
+      "name": "gemma3:27b",
+      "scope": "model",
+      "role": "Ollama model",
+      "recorded": "a418f5838eaf",
+      "recorded_date": "2026-05-12",
+      "source": {
+        "kind": "none",
+        "reason": "Intentional model selection. Pin digest and test memory/quality before replacing weights.",
+        "url": "https://ollama.com/library/gemma3",
+        "publisher": "Project publisher or official distribution registry",
+        "title": "gemma3:27b release metadata"
+      },
+      "evidence": [
+        "manifests/ollama_model_inventory_2026-05-12.txt"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "model-gemma3:12b",
+      "name": "gemma3:12b",
+      "scope": "model",
+      "role": "Ollama model",
+      "recorded": "f4031aab637d",
+      "recorded_date": "2026-05-12",
+      "source": {
+        "kind": "none",
+        "reason": "Intentional model selection. Pin digest and test memory/quality before replacing weights.",
+        "url": "https://ollama.com/library/gemma3",
+        "publisher": "Project publisher or official distribution registry",
+        "title": "gemma3:12b release metadata"
+      },
+      "evidence": [
+        "manifests/ollama_model_inventory_2026-05-12.txt"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "model-phi4:14b",
+      "name": "phi4:14b",
+      "scope": "model",
+      "role": "Ollama model",
+      "recorded": "ac896e5b8b34",
+      "recorded_date": "2026-05-12",
+      "source": {
+        "kind": "none",
+        "reason": "Intentional model selection. Pin digest and test memory/quality before replacing weights.",
+        "url": "https://ollama.com/library/phi4",
+        "publisher": "Project publisher or official distribution registry",
+        "title": "phi4:14b release metadata"
+      },
+      "evidence": [
+        "manifests/ollama_model_inventory_2026-05-12.txt"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "model-ministral-3:8b",
+      "name": "ministral-3:8b",
+      "scope": "model",
+      "role": "Later recorded Ollama model",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "none",
+        "reason": "Model present in September record; digest not captured. No automatic model-family upgrade.",
+        "url": "https://ollama.com/library/ministral-3",
+        "publisher": "Project publisher or official distribution registry",
+        "title": "ministral-3:8b release metadata"
+      },
+      "evidence": [
+        "mac-studio-setup/LOCAL_WORKBENCH_STATUS.md"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "model-command-r7b:latest",
+      "name": "command-r7b:latest",
+      "scope": "model",
+      "role": "Later recorded Ollama model",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "none",
+        "reason": "Model present in September record; digest not captured. No automatic model-family upgrade.",
+        "url": "https://ollama.com/library/command-r7b",
+        "publisher": "Project publisher or official distribution registry",
+        "title": "command-r7b:latest release metadata"
+      },
+      "evidence": [
+        "mac-studio-setup/LOCAL_WORKBENCH_STATUS.md"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "model-llama3.2:3b",
+      "name": "llama3.2:3b",
+      "scope": "model",
+      "role": "Later recorded Ollama model",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "none",
+        "reason": "Model present in September record; digest not captured. No automatic model-family upgrade.",
+        "url": "https://ollama.com/library/llama3.2",
+        "publisher": "Project publisher or official distribution registry",
+        "title": "llama3.2:3b release metadata"
+      },
+      "evidence": [
+        "mac-studio-setup/LOCAL_WORKBENCH_STATUS.md"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "model-nomic-embed-text:latest",
+      "name": "nomic-embed-text:latest",
+      "scope": "model",
+      "role": "Later recorded Ollama model",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "none",
+        "reason": "Model present in September record; digest not captured. No automatic model-family upgrade.",
+        "url": "https://ollama.com/library/nomic-embed-text",
+        "publisher": "Project publisher or official distribution registry",
+        "title": "nomic-embed-text:latest release metadata"
+      },
+      "evidence": [
+        "mac-studio-setup/LOCAL_WORKBENCH_STATUS.md"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "lm-models",
+      "name": "LM Studio / direct MLX model collection",
+      "scope": "model",
+      "role": "Local model weights",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "none",
+        "reason": "Model identities and quantizations require per-model capture, not semantic-version ordering.",
+        "url": "https://huggingface.co/models",
+        "publisher": "Project publisher or official distribution registry",
+        "title": "LM Studio / direct MLX model collection release metadata"
+      },
+      "evidence": [
+        "manifests/lm_studio_model_inventory_2026-05-12.txt",
+        "docs/04-model-inventory.md",
+        "reports/openclaw-related-runtime-readiness-audit-2026-08-02.md"
+      ],
+      "notes": "Includes Gemma 3/4 variants, Phi-4-mini, gpt-oss-20b and nomic embeddings. August endpoint reported 26 models but no complete immutable inventory."
+    },
+    {
+      "id": "skills",
+      "name": "Vendored Agent Skills",
+      "scope": "vendored",
+      "role": "Agent support content",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "none",
+        "reason": "Review promotion provenance and source diffs. No automatic edits to vendored skills.",
+        "url": null,
+        "publisher": "Project publisher or official distribution registry",
+        "title": "Vendored Agent Skills release metadata"
+      },
+      "evidence": [
+        ".agents/skills/okhp3-as-is-process-capture/package.json",
+        "skills/okhp3-skill-promotion/SKILL.md"
+      ],
+      "notes": "Private @bp-skill packages record 0.1.0 and Node's built-in tests. Python support uses the standard library; package examples in SKILL.md are not application dependencies."
+    }
   ]
 }
