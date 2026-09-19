@@ -2,6 +2,11 @@ name: Track technology updates
 
 on:
   workflow_dispatch:
+    inputs:
+      update_issue:
+        description: Update the shared review issue (disable for a read-only validation run)
+        type: boolean
+        default: true
   schedule:
     - cron: "17 14 * * 1"
 
@@ -33,7 +38,13 @@ jobs:
       - name: Check releases and maintain the review issue
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: python scripts/check_technology_updates.py --output-dir .tmp/technology-report --issue
+          UPDATE_ISSUE: ${{ github.event_name == 'schedule' || inputs.update_issue }}
+        run: |
+          if [ "$UPDATE_ISSUE" = "true" ]; then
+            python scripts/check_technology_updates.py --output-dir .tmp/technology-report --issue
+          else
+            python scripts/check_technology_updates.py --output-dir .tmp/technology-report
+          fi
       - name: Preserve report even when a source fails
         if: ${{ always() }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1

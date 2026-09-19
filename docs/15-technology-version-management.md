@@ -100,6 +100,8 @@ reviewed audit snapshot. The newest scheduled evidence lives in Actions.
 
 These controls activate after merge to the default branch. Run the workflow
 once after merging and verify its artifact and single review issue. GitHub
+also permits a manual validation run on a branch: disable the update_issue
+input to query releases and save artifacts without changing an issue. GitHub
 schedules can be delayed and public schedules may be disabled after 60 days of
 inactivity. Check the last successful run during monthly maintenance and
 re-enable when necessary. This is monitoring, not an exact-time guarantee.

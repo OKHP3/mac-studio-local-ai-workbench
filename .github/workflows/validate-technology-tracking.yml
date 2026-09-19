@@ -8,6 +8,8 @@ on:
       - "scripts/*technology*"
       - "tests/**"
       - "manifests/**"
+      - "reports/technology-update-report.md"
+      - "docs/15-technology-version-management.md"
   push:
     branches: [main]
     paths:
@@ -16,6 +18,8 @@ on:
       - "scripts/*technology*"
       - "tests/**"
       - "manifests/**"
+      - "reports/technology-update-report.md"
+      - "docs/15-technology-version-management.md"
   workflow_dispatch:
 
 permissions:
