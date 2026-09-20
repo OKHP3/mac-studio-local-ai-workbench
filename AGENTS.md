@@ -19,7 +19,7 @@ This repository is the sanitized, durable artifact layer for a Mac Studio M4 Max
 - The strict six-model Ollama benchmark was completed on 2026-05-30. `gemma3:12b` and `gemma3:27b` scored 5/5 under the documented strict prompt set.
 - The repository contains shell scripts intended for baseline verification and restore, plus manifests for Homebrew formulae, casks, and model inventories. The dated `mac-studio-setup/` copies pass shell syntax validation. The current root copies have CRLF line endings and fail `bash -n` in this checkout, so they need separate script maintenance before being relied on.
 - The documented inference paths are Ollama, LM Studio, and direct `mlx-lm`. Open WebUI is the documented chat front door. OpenClaw and SearXNG form the documented autonomous agent and private search layer.
-- RAG and vector storage are planned, not represented as a completed repository capability. The local web portal and HTTPS front door are also future architecture work.
+- Dated August and September records confirm a running Qdrant service. End-to-end RAG ingestion, retrieval, and citation remain unverified. The local web portal and HTTPS front door are future architecture work.
 - This is not a hosted service, enterprise platform, or production deployment. It is a personal infrastructure case study and reference build.
 
 ### Inferred
@@ -29,7 +29,7 @@ This repository is the sanitized, durable artifact layer for a Mac Studio M4 Max
 
 ### Unknown or intentionally not asserted
 
-- No repository evidence establishes a formal release process, CI pipeline, package publication flow, or supported cross-machine automation contract.
+- Technology maintenance now has a weekly release-monitoring workflow, a validation workflow and Dependabot for GitHub Actions. There is no application release pipeline or supported automatic cross-machine upgrade contract.
 - The repository does not prove that every historical pending smoke test in `docs/06-definition-of-done.md` has since been completed. Treat dated status documents as records, not live telemetry.
 - Version numbers and host paths in dated documents describe captured workstation state and may be stale. Verify the host before treating them as current.
 
@@ -67,11 +67,14 @@ The root `AGENTS.md` is the canonical project guide. `CLAUDE.md` is intentionall
 - `config/env.example`: sanitized example environment variables. It contains paths and tuning values, never secrets.
 - `docs/publication-boundary.md`: publication hygiene boundary for this repository.
 - `reports/public-release-check-2026-05-13.md`: dated public-release scan and its limitations.
+- `config/technology-inventory.json`, `reports/technology-update-report.md`, and `docs/15-technology-version-management.md`: source-backed inventory, reviewed comparison and adoption policy. Scheduled results are Actions artifacts; recorded host versions are not live telemetry.
+- `scripts/check_technology_updates.py`, `scripts/capture_technology_versions.py`, and `tests/`: release monitoring, a read-only Mac version collector, and standard-library behavioral tests.
+- `.github/`: release monitoring and validation workflows plus Dependabot action updates.
 - `.agents/skills/`: checked-in agent skill assets seeded in June 2026.
 
 ## Technology and architecture
 
-The repository itself has no application package, dependency manifest, build system, or test framework. It is primarily Markdown, shell, plain-text manifests, JSON templates, Mermaid, and YAML front matter.
+The repository has no application package, application dependency lockfile or build system. It is primarily Markdown, shell, Python maintenance scripts, plain-text manifests, JSON, Mermaid and YAML. Technology monitoring uses Python's standard library and unittest. Vendored skills may have their own support manifests and JavaScript modules; these are not workbench application dependencies.
 
 The documented host architecture is:
 
@@ -118,13 +121,14 @@ bash -n mac-studio-setup/restore_mac_studio_baseline.sh \
 
 The root verification and restore scripts are the intended repository-aware entry points, but their current CRLF line endings must be corrected before they can be relied on. The `mac-studio-setup/` copies use the dated baseline layout and do not perform the expanded storage and container checks. Both script families are host-dependent. The restore scripts run `brew update`, install curated manifest entries, and start Ollama. Do not run them automatically as part of documentation-only changes.
 
-There is no repository-local application test suite. For documentation and script changes, use the narrowest practical checks:
+There is no repository-local application test suite. Technology tracking has focused unittest coverage. For documentation and script changes, use the narrowest practical checks:
 
 1. Re-read every changed guidance or documentation file.
 2. Run `bash -n` on changed shell scripts. Resolve the known CRLF issue in the root scripts before treating those checks as passing.
 3. Verify referenced files and commands exist where practical.
 4. Run `git diff --check`.
 5. Run the host verification script only when the Mac Studio services and paths are intentionally in scope.
+6. For technology tracking changes, run `python3 scripts/check_technology_updates.py --validate-only` and `python3 -m unittest discover -s tests -v` (Windows: `py -3`). Run live release checks with `--output-dir .tmp/technology-report`; no host upgrade occurs.
 
 ## Safe change procedure
 
@@ -139,8 +143,8 @@ There is no repository-local application test suite. For documentation and scrip
 
 - Several documents are dated snapshots and contain exact versions, host paths, and pending checklists. Their freshness is not guaranteed.
 - `scripts/` and `mac-studio-setup/` contain parallel script copies with different input locations. Keep their scopes clear when editing.
-- The repository has no CI or automated Markdown validation evident in the current tree.
-- RAG, Qdrant, Caddy, the local portal, and broader network access remain documented plans or architecture notes. Do not describe them as deployed without new evidence.
+- CI validates technology monitoring; it does not validate the Mac's services or all Markdown.
+- Qdrant and some LAN access are documented in dated August/September evidence. RAG integration, Caddy and the portal remain unverified or planned. Verify host state before treating the records as current.
 - A formal branch strategy, release cadence, and owner-approved definition of current status are not established in repository evidence.
 
 ## Keeping this guide current
