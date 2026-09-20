@@ -17,6 +17,7 @@ import urllib.request
 ROOT = Path(__file__).resolve().parents[1]
 MARKER = "<!-- workbench-technology-tracker:v2 -->"
 TITLE = "Technology updates require review"
+REPOSITORY_FILES = "https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/"
 SCOPES = {"host", "support", "repository", "external-site", "planned", "absent", "format", "service", "model", "vendored"}
 
 
@@ -186,7 +187,7 @@ def render(results, stamp):
              "Recorded versions are dated repository evidence, not a fresh Mac Studio inspection.",
              "Latest values are source observations, not installed or compatibility-tested versions.",
              "Homebrew rows track the stable version available in the named formula/cask channel.",
-             "See [maintenance plan](../docs/15-technology-version-management.md) for boundaries and adoption steps.", "",
+             f"See [maintenance plan]({REPOSITORY_FILES}docs/15-technology-version-management.md) for boundaries and adoption steps.", "",
              f"Inventory entries: {len(results)}. Newer than recorded: {updates}. Source failures: {errors}.", ""]
     for scope in ["host", "repository", "external-site", "support", "planned", "format", "service", "vendored", "model", "absent"]:
         group = [r for r in results if r["scope"] == scope]
@@ -205,7 +206,7 @@ def render(results, stamp):
                 recorded += " (" + row["recorded_date"] + ")"
             refs = []
             for index, evidence in enumerate(row["evidence"], 1):
-                target = evidence if evidence.startswith("https://") else "../" + evidence.replace(" ", "%20")
+                target = evidence if evidence.startswith("https://") else REPOSITORY_FILES + urllib.parse.quote(evidence, safe="/")
                 refs.append(f"[evidence {index}]({target})")
             if obs.get("url"):
                 refs.append(f"[release source]({obs['url']})")

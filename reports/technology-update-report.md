@@ -5,7 +5,7 @@ Checked (UTC): 2026-09-19T03:08:45+00:00
 Recorded versions are dated repository evidence, not a fresh Mac Studio inspection.
 Latest values are source observations, not installed or compatibility-tested versions.
 Homebrew rows track the stable version available in the named formula/cask channel.
-See [maintenance plan](../docs/15-technology-version-management.md) for boundaries and adoption steps.
+See [maintenance plan](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/docs/15-technology-version-management.md) for boundaries and adoption steps.
 
 Inventory entries: 111. Newer than recorded: 16. Source failures: 0.
 
@@ -13,60 +13,60 @@ Inventory entries: 111. Newer than recorded: 16. Source failures: 0.
 
 | Technology | Recorded version (date) | Latest stable / channel | Result | Evidence and release source |
 |---|---|---|---|---|
-| macOS | 26.6 (2026-08-02) | 27 | update-available | [evidence 1](../reports/openclaw-related-runtime-readiness-audit-2026-08-02.md); [release source](https://support.apple.com/en-us/100100) |
-| Homebrew | 5.1.8 (2026-05-28) | 7.0.4 | update-available | [evidence 1](../docs/03-toolchain.md); [release source](https://github.com/Homebrew/brew/releases/tag/7.0.4) |
-| Git | 2.54.0 (2026-05-28) | 2.55.0 | update-available | [evidence 1](../docs/03-toolchain.md); [release source](https://formulae.brew.sh/api/formula/git.json) |
-| Python | 3.14.4 (2026-05-28) | 3.14.7 | update-available | [evidence 1](../docs/03-toolchain.md); [release source](https://www.python.org/downloads/macos/) |
-| Node.js | 26.0.0 (2026-05-28) | 26.9.0 | update-available | [evidence 1](../docs/03-toolchain.md); [release source](https://nodejs.org/dist/index.json) |
-| npm | 11.12.1 (2026-05-28) | 12.0.2 | update-available | [evidence 1](../docs/03-toolchain.md); [release source](https://registry.npmjs.org/npm/latest) |
-| GitHub CLI | 2.92.0 (2026-05-28) | 2.101.0 | update-available | [evidence 1](../docs/03-toolchain.md); [release source](https://github.com/cli/cli/releases/tag/v2.101.0) |
-| Git LFS | Unknown | 3.8.0 | installed-unknown | [evidence 1](../docs/03-toolchain.md); [release source](https://github.com/git-lfs/git-lfs/releases/tag/v3.8.0) |
-| Ollama | 0.23.1 (2026-08-02) | 0.34.2 | update-available | [evidence 1](../docs/16-local-ai-stack-readiness-research-2026-08-02.md); [release source](https://github.com/ollama/ollama/releases/tag/v0.34.2) |
-| LM Studio | 0.4.12 (2026-05-28) | 0.4.24 | update-available | [evidence 1](../docs/03-toolchain.md); [release source](https://formulae.brew.sh/api/cask/lm-studio.json) |
-| mlx-lm | 0.31.3 (2026-05-28) | 0.31.3 | matches-record | [evidence 1](../docs/03-toolchain.md); [release source](https://pypi.org/project/mlx-lm/0.31.3/) |
-| MLX | Unknown | 0.32.1 | installed-unknown | [evidence 1](../manifests/brew-formulae.manual.txt); [release source](https://formulae.brew.sh/api/formula/mlx.json) |
-| Open WebUI | 0.11.0 (2026-09-12) | 0.11.3 | update-available | [evidence 1](../docs/18-lan-exposure-fix-2026-09-12.md); [release source](https://github.com/open-webui/open-webui/releases/tag/v0.11.3) |
-| Docker Desktop | 4.72.0 (2026-05-28) | 4.91.0 | update-available | [evidence 1](../docs/03-toolchain.md); [release source](https://formulae.brew.sh/api/cask/docker-desktop.json) |
-| Docker Engine | 29.6.2 (2026-08-02) | 29.8.1 | update-available | [evidence 1](../reports/openclaw-related-runtime-readiness-audit-2026-08-02.md); [release source](https://github.com/moby/moby/releases/tag/docker-v29.8.1) |
-| OpenClaw | 2026.7.1-2 (2026-08-02) | 2026.9.5 | update-available | [evidence 1](../reports/openclaw-related-runtime-readiness-audit-2026-08-02.md); [release source](https://registry.npmjs.org/openclaw/latest) |
-| SearXNG | Unknown | rolling digest sha256:e0027a772aeeea55bf642256aae6fb3344ffa5f25ca665898c2ea821101334c4 | rolling-review | [evidence 1](../docs/18-lan-exposure-fix-2026-09-12.md); [release source](https://hub.docker.com/v2/repositories/searxng/searxng/tags/latest) |
-| Qdrant | Unknown | 1.19.1 | installed-unknown | [evidence 1](../reports/openclaw-related-runtime-readiness-audit-2026-08-02.md); [evidence 2](../docs/18-lan-exposure-fix-2026-09-12.md); [evidence 3](../docs/diagram-architecture.md); [release source](https://github.com/qdrant/qdrant/releases/tag/v1.19.1) |
-| Visual Studio Code | 1.119.0 (2026-05-28) | 1.138.0 | update-available | [evidence 1](../docs/03-toolchain.md); [release source](https://formulae.brew.sh/api/cask/visual-studio-code.json) |
-| Continue VS Code extension | 1.2.22 (2026-05-28) | 2.0.0 | update-available | [evidence 1](../docs/03-toolchain.md); [release source](https://open-vsx.org/api/Continue/continue/2.0.0) |
-| pnpm | Unknown | 12.4.2 | installed-unknown | [evidence 1](../manifests/brew-formulae.manual.txt); [release source](https://registry.npmjs.org/pnpm/latest) |
-| Bash | Unknown | 5.3.20 | installed-unknown | [evidence 1](../scripts/verify_mac_studio_baseline.sh); [release source](https://formulae.brew.sh/api/formula/bash.json) |
-| Zsh | Unknown | 5.9.2 | installed-unknown | [evidence 1](../context/threads/mac-studio-toolchain-install-onedrive-git-sync-corruption-incident.md); [release source](https://formulae.brew.sh/api/formula/zsh.json) |
-| pip | Unknown | 26.2.1 | installed-unknown | [evidence 1](../context/threads/mac-studio-toolchain-install-onedrive-git-sync-corruption-incident.md); [release source](https://pypi.org/project/pip/26.2.1/) |
-| Hugging Face Hub client | Unknown | 1.32.0 | installed-unknown | [evidence 1](../mac-studio-setup/LOCAL_WORKBENCH_STATUS.md); [release source](https://pypi.org/project/huggingface-hub/1.32.0/) |
-| ClawHub | Unknown | 0.23.3 | installed-unknown | [evidence 1](../docs/10-openclaw-larry-agent.md); [release source](https://registry.npmjs.org/clawhub/latest) |
-| MCPorter | Unknown | 0.13.13 | installed-unknown | [evidence 1](../docs/10-openclaw-larry-agent.md); [release source](https://registry.npmjs.org/mcporter/latest) |
-| tmux | Unknown | 3.7c | installed-unknown | [evidence 1](../context/threads/openclaw-larry-onboarding-channel-configuration-issues.md); [release source](https://formulae.brew.sh/api/formula/tmux.json) |
-| Microsoft Edge | Unknown | 153.0.4234.48 | installed-unknown | [evidence 1](../docs/03-toolchain.md); [release source](https://formulae.brew.sh/api/cask/microsoft-edge.json) |
-| OneDrive | Unknown | 26.153.0809.0004 | installed-unknown | [evidence 1](../docs/03-toolchain.md); [release source](https://formulae.brew.sh/api/cask/onedrive.json) |
-| GitHub Desktop | Unknown | 3.6.6-8b85519e | installed-unknown | [evidence 1](../docs/03-toolchain.md); [release source](https://formulae.brew.sh/api/cask/github.json) |
-| Claude Desktop | Unknown | 2.2553.1 | installed-unknown | [evidence 1](../docs/03-toolchain.md); [release source](https://formulae.brew.sh/api/cask/claude.json) |
-| ChatGPT Desktop | Unknown | 26.915.31945 | installed-unknown | [evidence 1](../docs/03-toolchain.md); [release source](https://formulae.brew.sh/api/cask/chatgpt.json) |
-| Codex Desktop | Unknown | 26.623.141536 | installed-unknown | [evidence 1](../docs/03-toolchain.md); [release source](https://formulae.brew.sh/api/cask/codex-app.json) |
-| Notion Desktop | Unknown | 7.34.0 | installed-unknown | [evidence 1](../docs/03-toolchain.md); [release source](https://formulae.brew.sh/api/cask/notion.json) |
-| Perplexity | Unknown | 26.37.1 | installed-unknown | [evidence 1](../docs/03-toolchain.md); [release source](https://formulae.brew.sh/api/cask/perplexity.json) |
-| Microsoft Office | Unknown | 16.113.26091740 | installed-unknown | [evidence 1](../docs/03-toolchain.md); [release source](https://formulae.brew.sh/api/cask/microsoft-office.json) |
-| bat | Unknown | 0.26.1 | installed-unknown | [evidence 1](../mac-studio-setup/brew-formulae.txt); [release source](https://formulae.brew.sh/api/formula/bat.json) |
-| fd | Unknown | 10.5.0 | installed-unknown | [evidence 1](../mac-studio-setup/brew-formulae.txt); [release source](https://formulae.brew.sh/api/formula/fd.json) |
-| fzf | Unknown | 0.74.4 | installed-unknown | [evidence 1](../mac-studio-setup/brew-formulae.txt); [release source](https://formulae.brew.sh/api/formula/fzf.json) |
-| ripgrep | Unknown | 15.2.0 | installed-unknown | [evidence 1](../mac-studio-setup/brew-formulae.txt); [release source](https://formulae.brew.sh/api/formula/ripgrep.json) |
-| tree | Unknown | 2.3.2 | installed-unknown | [evidence 1](../mac-studio-setup/brew-formulae.txt); [release source](https://formulae.brew.sh/api/formula/tree.json) |
-| wget | Unknown | 1.25.0 | installed-unknown | [evidence 1](../mac-studio-setup/brew-formulae.txt); [release source](https://formulae.brew.sh/api/formula/wget.json) |
-| yq | Unknown | 4.53.6 | installed-unknown | [evidence 1](../mac-studio-setup/brew-formulae.txt); [release source](https://formulae.brew.sh/api/formula/yq.json) |
+| macOS | 26.6 (2026-08-02) | 27 | update-available | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/reports/openclaw-related-runtime-readiness-audit-2026-08-02.md); [release source](https://support.apple.com/en-us/100100) |
+| Homebrew | 5.1.8 (2026-05-28) | 7.0.4 | update-available | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/docs/03-toolchain.md); [release source](https://github.com/Homebrew/brew/releases/tag/7.0.4) |
+| Git | 2.54.0 (2026-05-28) | 2.55.0 | update-available | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/docs/03-toolchain.md); [release source](https://formulae.brew.sh/api/formula/git.json) |
+| Python | 3.14.4 (2026-05-28) | 3.14.7 | update-available | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/docs/03-toolchain.md); [release source](https://www.python.org/downloads/macos/) |
+| Node.js | 26.0.0 (2026-05-28) | 26.9.0 | update-available | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/docs/03-toolchain.md); [release source](https://nodejs.org/dist/index.json) |
+| npm | 11.12.1 (2026-05-28) | 12.0.2 | update-available | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/docs/03-toolchain.md); [release source](https://registry.npmjs.org/npm/latest) |
+| GitHub CLI | 2.92.0 (2026-05-28) | 2.101.0 | update-available | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/docs/03-toolchain.md); [release source](https://github.com/cli/cli/releases/tag/v2.101.0) |
+| Git LFS | Unknown | 3.8.0 | installed-unknown | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/docs/03-toolchain.md); [release source](https://github.com/git-lfs/git-lfs/releases/tag/v3.8.0) |
+| Ollama | 0.23.1 (2026-08-02) | 0.34.2 | update-available | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/docs/16-local-ai-stack-readiness-research-2026-08-02.md); [release source](https://github.com/ollama/ollama/releases/tag/v0.34.2) |
+| LM Studio | 0.4.12 (2026-05-28) | 0.4.24 | update-available | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/docs/03-toolchain.md); [release source](https://formulae.brew.sh/api/cask/lm-studio.json) |
+| mlx-lm | 0.31.3 (2026-05-28) | 0.31.3 | matches-record | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/docs/03-toolchain.md); [release source](https://pypi.org/project/mlx-lm/0.31.3/) |
+| MLX | Unknown | 0.32.1 | installed-unknown | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/manifests/brew-formulae.manual.txt); [release source](https://formulae.brew.sh/api/formula/mlx.json) |
+| Open WebUI | 0.11.0 (2026-09-12) | 0.11.3 | update-available | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/docs/18-lan-exposure-fix-2026-09-12.md); [release source](https://github.com/open-webui/open-webui/releases/tag/v0.11.3) |
+| Docker Desktop | 4.72.0 (2026-05-28) | 4.91.0 | update-available | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/docs/03-toolchain.md); [release source](https://formulae.brew.sh/api/cask/docker-desktop.json) |
+| Docker Engine | 29.6.2 (2026-08-02) | 29.8.1 | update-available | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/reports/openclaw-related-runtime-readiness-audit-2026-08-02.md); [release source](https://github.com/moby/moby/releases/tag/docker-v29.8.1) |
+| OpenClaw | 2026.7.1-2 (2026-08-02) | 2026.9.5 | update-available | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/reports/openclaw-related-runtime-readiness-audit-2026-08-02.md); [release source](https://registry.npmjs.org/openclaw/latest) |
+| SearXNG | Unknown | rolling digest sha256:e0027a772aeeea55bf642256aae6fb3344ffa5f25ca665898c2ea821101334c4 | rolling-review | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/docs/18-lan-exposure-fix-2026-09-12.md); [release source](https://hub.docker.com/v2/repositories/searxng/searxng/tags/latest) |
+| Qdrant | Unknown | 1.19.1 | installed-unknown | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/reports/openclaw-related-runtime-readiness-audit-2026-08-02.md); [evidence 2](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/docs/18-lan-exposure-fix-2026-09-12.md); [evidence 3](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/docs/diagram-architecture.md); [release source](https://github.com/qdrant/qdrant/releases/tag/v1.19.1) |
+| Visual Studio Code | 1.119.0 (2026-05-28) | 1.138.0 | update-available | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/docs/03-toolchain.md); [release source](https://formulae.brew.sh/api/cask/visual-studio-code.json) |
+| Continue VS Code extension | 1.2.22 (2026-05-28) | 2.0.0 | update-available | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/docs/03-toolchain.md); [release source](https://open-vsx.org/api/Continue/continue/2.0.0) |
+| pnpm | Unknown | 12.4.2 | installed-unknown | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/manifests/brew-formulae.manual.txt); [release source](https://registry.npmjs.org/pnpm/latest) |
+| Bash | Unknown | 5.3.20 | installed-unknown | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/scripts/verify_mac_studio_baseline.sh); [release source](https://formulae.brew.sh/api/formula/bash.json) |
+| Zsh | Unknown | 5.9.2 | installed-unknown | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/context/threads/mac-studio-toolchain-install-onedrive-git-sync-corruption-incident.md); [release source](https://formulae.brew.sh/api/formula/zsh.json) |
+| pip | Unknown | 26.2.1 | installed-unknown | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/context/threads/mac-studio-toolchain-install-onedrive-git-sync-corruption-incident.md); [release source](https://pypi.org/project/pip/26.2.1/) |
+| Hugging Face Hub client | Unknown | 1.32.0 | installed-unknown | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/mac-studio-setup/LOCAL_WORKBENCH_STATUS.md); [release source](https://pypi.org/project/huggingface-hub/1.32.0/) |
+| ClawHub | Unknown | 0.23.3 | installed-unknown | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/docs/10-openclaw-larry-agent.md); [release source](https://registry.npmjs.org/clawhub/latest) |
+| MCPorter | Unknown | 0.13.13 | installed-unknown | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/docs/10-openclaw-larry-agent.md); [release source](https://registry.npmjs.org/mcporter/latest) |
+| tmux | Unknown | 3.7c | installed-unknown | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/context/threads/openclaw-larry-onboarding-channel-configuration-issues.md); [release source](https://formulae.brew.sh/api/formula/tmux.json) |
+| Microsoft Edge | Unknown | 153.0.4234.48 | installed-unknown | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/docs/03-toolchain.md); [release source](https://formulae.brew.sh/api/cask/microsoft-edge.json) |
+| OneDrive | Unknown | 26.153.0809.0004 | installed-unknown | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/docs/03-toolchain.md); [release source](https://formulae.brew.sh/api/cask/onedrive.json) |
+| GitHub Desktop | Unknown | 3.6.6-8b85519e | installed-unknown | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/docs/03-toolchain.md); [release source](https://formulae.brew.sh/api/cask/github.json) |
+| Claude Desktop | Unknown | 2.2553.1 | installed-unknown | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/docs/03-toolchain.md); [release source](https://formulae.brew.sh/api/cask/claude.json) |
+| ChatGPT Desktop | Unknown | 26.915.31945 | installed-unknown | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/docs/03-toolchain.md); [release source](https://formulae.brew.sh/api/cask/chatgpt.json) |
+| Codex Desktop | Unknown | 26.623.141536 | installed-unknown | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/docs/03-toolchain.md); [release source](https://formulae.brew.sh/api/cask/codex-app.json) |
+| Notion Desktop | Unknown | 7.34.0 | installed-unknown | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/docs/03-toolchain.md); [release source](https://formulae.brew.sh/api/cask/notion.json) |
+| Perplexity | Unknown | 26.37.1 | installed-unknown | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/docs/03-toolchain.md); [release source](https://formulae.brew.sh/api/cask/perplexity.json) |
+| Microsoft Office | Unknown | 16.113.26091740 | installed-unknown | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/docs/03-toolchain.md); [release source](https://formulae.brew.sh/api/cask/microsoft-office.json) |
+| bat | Unknown | 0.26.1 | installed-unknown | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/mac-studio-setup/brew-formulae.txt); [release source](https://formulae.brew.sh/api/formula/bat.json) |
+| fd | Unknown | 10.5.0 | installed-unknown | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/mac-studio-setup/brew-formulae.txt); [release source](https://formulae.brew.sh/api/formula/fd.json) |
+| fzf | Unknown | 0.74.4 | installed-unknown | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/mac-studio-setup/brew-formulae.txt); [release source](https://formulae.brew.sh/api/formula/fzf.json) |
+| ripgrep | Unknown | 15.2.0 | installed-unknown | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/mac-studio-setup/brew-formulae.txt); [release source](https://formulae.brew.sh/api/formula/ripgrep.json) |
+| tree | Unknown | 2.3.2 | installed-unknown | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/mac-studio-setup/brew-formulae.txt); [release source](https://formulae.brew.sh/api/formula/tree.json) |
+| wget | Unknown | 1.25.0 | installed-unknown | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/mac-studio-setup/brew-formulae.txt); [release source](https://formulae.brew.sh/api/formula/wget.json) |
+| yq | Unknown | 4.53.6 | installed-unknown | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/mac-studio-setup/brew-formulae.txt); [release source](https://formulae.brew.sh/api/formula/yq.json) |
 
 ## Repository
 
 | Technology | Recorded version (date) | Latest stable / channel | Result | Evidence and release source |
 |---|---|---|---|---|
-| Mermaid | Unknown | 12.0.0 | installed-unknown | [evidence 1](../docs/12-architecture-diagrams.md); [release source](https://registry.npmjs.org/mermaid/latest) |
-| actions/checkout | 7.0.1 (2026-09-19) | 7.0.1 | matches-record | [evidence 1](../.github/workflows/technology-updates.yml); [release source](https://github.com/actions/checkout/releases/tag/v7.0.1) |
-| actions/setup-python | 7.0.0 (2026-09-19) | 7.0.0 | matches-record | [evidence 1](../.github/workflows/technology-updates.yml); [release source](https://github.com/actions/setup-python/releases/tag/v7.0.0) |
-| actions/upload-artifact | 7.0.1 (2026-09-19) | 7.0.1 | matches-record | [evidence 1](../.github/workflows/technology-updates.yml); [release source](https://github.com/actions/upload-artifact/releases/tag/v7.0.1) |
-| GitHub-hosted Ubuntu runner | 24.04 (2026-09-19) | Not versioned / manual | manual-review | [evidence 1](../.github/workflows/technology-updates.yml); [release source](https://github.com/actions/runner-images) |
+| Mermaid | Unknown | 12.0.0 | installed-unknown | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/docs/12-architecture-diagrams.md); [release source](https://registry.npmjs.org/mermaid/latest) |
+| actions/checkout | 7.0.1 (2026-09-19) | 7.0.1 | matches-record | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/.github/workflows/technology-updates.yml); [release source](https://github.com/actions/checkout/releases/tag/v7.0.1) |
+| actions/setup-python | 7.0.0 (2026-09-19) | 7.0.0 | matches-record | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/.github/workflows/technology-updates.yml); [release source](https://github.com/actions/setup-python/releases/tag/v7.0.0) |
+| actions/upload-artifact | 7.0.1 (2026-09-19) | 7.0.1 | matches-record | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/.github/workflows/technology-updates.yml); [release source](https://github.com/actions/upload-artifact/releases/tag/v7.0.1) |
+| GitHub-hosted Ubuntu runner | 24.04 (2026-09-19) | Not versioned / manual | manual-review | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/.github/workflows/technology-updates.yml); [release source](https://github.com/actions/runner-images) |
 
 ## External Site
 
@@ -78,97 +78,97 @@ Inventory entries: 111. Newer than recorded: 16. Source failures: 0.
 
 | Technology | Recorded version (date) | Latest stable / channel | Result | Evidence and release source |
 |---|---|---|---|---|
-| ada-url | Unknown | 4.0.0 | installed-unknown | [evidence 1](../mac-studio-setup/brew-formulae.txt); [release source](https://formulae.brew.sh/api/formula/ada-url.json) |
-| brotli | Unknown | 1.2.0 | installed-unknown | [evidence 1](../mac-studio-setup/brew-formulae.txt); [release source](https://formulae.brew.sh/api/formula/brotli.json) |
-| c-ares | Unknown | 1.34.8 | installed-unknown | [evidence 1](../mac-studio-setup/brew-formulae.txt); [release source](https://formulae.brew.sh/api/formula/c-ares.json) |
-| ca-certificates | Unknown | 2026-08-13 | installed-unknown | [evidence 1](../mac-studio-setup/brew-formulae.txt); [release source](https://formulae.brew.sh/api/formula/ca-certificates.json) |
-| fmt | Unknown | 12.2.0 | installed-unknown | [evidence 1](../mac-studio-setup/brew-formulae.txt); [release source](https://formulae.brew.sh/api/formula/fmt.json) |
-| gettext | Unknown | 1.0 | installed-unknown | [evidence 1](../mac-studio-setup/brew-formulae.txt); [release source](https://formulae.brew.sh/api/formula/gettext.json) |
-| hdrhistogram_c | Unknown | 0.11.10 | installed-unknown | [evidence 1](../mac-studio-setup/brew-formulae.txt); [release source](https://formulae.brew.sh/api/formula/hdrhistogram_c.json) |
-| icu4c@78 | Unknown | 78.3 | installed-unknown | [evidence 1](../mac-studio-setup/brew-formulae.txt); [release source](https://formulae.brew.sh/api/formula/icu4c@78.json) |
-| libgit2 | Unknown | 1.9.7 | installed-unknown | [evidence 1](../mac-studio-setup/brew-formulae.txt); [release source](https://formulae.brew.sh/api/formula/libgit2.json) |
-| libidn2 | Unknown | 2.3.8 | installed-unknown | [evidence 1](../mac-studio-setup/brew-formulae.txt); [release source](https://formulae.brew.sh/api/formula/libidn2.json) |
-| libnghttp2 | Unknown | 1.70.0 | installed-unknown | [evidence 1](../mac-studio-setup/brew-formulae.txt); [release source](https://formulae.brew.sh/api/formula/libnghttp2.json) |
-| libnghttp3 | Unknown | 1.18.0 | installed-unknown | [evidence 1](../mac-studio-setup/brew-formulae.txt); [release source](https://formulae.brew.sh/api/formula/libnghttp3.json) |
-| libngtcp2 | Unknown | 1.25.0 | installed-unknown | [evidence 1](../mac-studio-setup/brew-formulae.txt); [release source](https://formulae.brew.sh/api/formula/libngtcp2.json) |
-| libssh2 | Unknown | 1.11.1 | installed-unknown | [evidence 1](../mac-studio-setup/brew-formulae.txt); [release source](https://formulae.brew.sh/api/formula/libssh2.json) |
-| libunistring | Unknown | 1.4.2 | installed-unknown | [evidence 1](../mac-studio-setup/brew-formulae.txt); [release source](https://formulae.brew.sh/api/formula/libunistring.json) |
-| libuv | Unknown | 1.52.1 | installed-unknown | [evidence 1](../mac-studio-setup/brew-formulae.txt); [release source](https://formulae.brew.sh/api/formula/libuv.json) |
-| llhttp | Unknown | 9.4.3 | installed-unknown | [evidence 1](../mac-studio-setup/brew-formulae.txt); [release source](https://formulae.brew.sh/api/formula/llhttp.json) |
-| lz4 | Unknown | 1.10.0 | installed-unknown | [evidence 1](../mac-studio-setup/brew-formulae.txt); [release source](https://formulae.brew.sh/api/formula/lz4.json) |
-| merve | Unknown | 1.2.2 | installed-unknown | [evidence 1](../mac-studio-setup/brew-formulae.txt); [release source](https://formulae.brew.sh/api/formula/merve.json) |
-| mlx-c | Unknown | 0.6.0 | installed-unknown | [evidence 1](../mac-studio-setup/brew-formulae.txt); [release source](https://formulae.brew.sh/api/formula/mlx-c.json) |
-| mpdecimal | Unknown | 4.0.1 | installed-unknown | [evidence 1](../mac-studio-setup/brew-formulae.txt); [release source](https://formulae.brew.sh/api/formula/mpdecimal.json) |
-| nbytes | Unknown | 0.1.4 | installed-unknown | [evidence 1](../mac-studio-setup/brew-formulae.txt); [release source](https://formulae.brew.sh/api/formula/nbytes.json) |
-| oniguruma | Unknown | 6.9.10 | installed-unknown | [evidence 1](../mac-studio-setup/brew-formulae.txt); [release source](https://formulae.brew.sh/api/formula/oniguruma.json) |
-| openssl@3 | Unknown | 3.6.4 | installed-unknown | [evidence 1](../mac-studio-setup/brew-formulae.txt); [release source](https://formulae.brew.sh/api/formula/openssl@3.json) |
-| pcre2 | Unknown | 10.48 | installed-unknown | [evidence 1](../mac-studio-setup/brew-formulae.txt); [release source](https://formulae.brew.sh/api/formula/pcre2.json) |
-| readline | Unknown | 8.3.6 | installed-unknown | [evidence 1](../mac-studio-setup/brew-formulae.txt); [release source](https://formulae.brew.sh/api/formula/readline.json) |
-| simdjson | Unknown | 4.6.11 | installed-unknown | [evidence 1](../mac-studio-setup/brew-formulae.txt); [release source](https://formulae.brew.sh/api/formula/simdjson.json) |
-| simdutf | Unknown | 9.2.0 | installed-unknown | [evidence 1](../mac-studio-setup/brew-formulae.txt); [release source](https://formulae.brew.sh/api/formula/simdutf.json) |
-| sqlite | Unknown | 3.53.4 | installed-unknown | [evidence 1](../mac-studio-setup/brew-formulae.txt); [release source](https://formulae.brew.sh/api/formula/sqlite.json) |
-| uvwasi | Unknown | 0.0.23 | installed-unknown | [evidence 1](../mac-studio-setup/brew-formulae.txt); [release source](https://formulae.brew.sh/api/formula/uvwasi.json) |
-| xz | Unknown | 5.8.4 | installed-unknown | [evidence 1](../mac-studio-setup/brew-formulae.txt); [release source](https://formulae.brew.sh/api/formula/xz.json) |
-| zstd | Unknown | 1.5.7 | installed-unknown | [evidence 1](../mac-studio-setup/brew-formulae.txt); [release source](https://formulae.brew.sh/api/formula/zstd.json) |
+| ada-url | Unknown | 4.0.0 | installed-unknown | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/mac-studio-setup/brew-formulae.txt); [release source](https://formulae.brew.sh/api/formula/ada-url.json) |
+| brotli | Unknown | 1.2.0 | installed-unknown | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/mac-studio-setup/brew-formulae.txt); [release source](https://formulae.brew.sh/api/formula/brotli.json) |
+| c-ares | Unknown | 1.34.8 | installed-unknown | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/mac-studio-setup/brew-formulae.txt); [release source](https://formulae.brew.sh/api/formula/c-ares.json) |
+| ca-certificates | Unknown | 2026-08-13 | installed-unknown | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/mac-studio-setup/brew-formulae.txt); [release source](https://formulae.brew.sh/api/formula/ca-certificates.json) |
+| fmt | Unknown | 12.2.0 | installed-unknown | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/mac-studio-setup/brew-formulae.txt); [release source](https://formulae.brew.sh/api/formula/fmt.json) |
+| gettext | Unknown | 1.0 | installed-unknown | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/mac-studio-setup/brew-formulae.txt); [release source](https://formulae.brew.sh/api/formula/gettext.json) |
+| hdrhistogram_c | Unknown | 0.11.10 | installed-unknown | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/mac-studio-setup/brew-formulae.txt); [release source](https://formulae.brew.sh/api/formula/hdrhistogram_c.json) |
+| icu4c@78 | Unknown | 78.3 | installed-unknown | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/mac-studio-setup/brew-formulae.txt); [release source](https://formulae.brew.sh/api/formula/icu4c@78.json) |
+| libgit2 | Unknown | 1.9.7 | installed-unknown | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/mac-studio-setup/brew-formulae.txt); [release source](https://formulae.brew.sh/api/formula/libgit2.json) |
+| libidn2 | Unknown | 2.3.8 | installed-unknown | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/mac-studio-setup/brew-formulae.txt); [release source](https://formulae.brew.sh/api/formula/libidn2.json) |
+| libnghttp2 | Unknown | 1.70.0 | installed-unknown | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/mac-studio-setup/brew-formulae.txt); [release source](https://formulae.brew.sh/api/formula/libnghttp2.json) |
+| libnghttp3 | Unknown | 1.18.0 | installed-unknown | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/mac-studio-setup/brew-formulae.txt); [release source](https://formulae.brew.sh/api/formula/libnghttp3.json) |
+| libngtcp2 | Unknown | 1.25.0 | installed-unknown | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/mac-studio-setup/brew-formulae.txt); [release source](https://formulae.brew.sh/api/formula/libngtcp2.json) |
+| libssh2 | Unknown | 1.11.1 | installed-unknown | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/mac-studio-setup/brew-formulae.txt); [release source](https://formulae.brew.sh/api/formula/libssh2.json) |
+| libunistring | Unknown | 1.4.2 | installed-unknown | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/mac-studio-setup/brew-formulae.txt); [release source](https://formulae.brew.sh/api/formula/libunistring.json) |
+| libuv | Unknown | 1.52.1 | installed-unknown | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/mac-studio-setup/brew-formulae.txt); [release source](https://formulae.brew.sh/api/formula/libuv.json) |
+| llhttp | Unknown | 9.4.3 | installed-unknown | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/mac-studio-setup/brew-formulae.txt); [release source](https://formulae.brew.sh/api/formula/llhttp.json) |
+| lz4 | Unknown | 1.10.0 | installed-unknown | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/mac-studio-setup/brew-formulae.txt); [release source](https://formulae.brew.sh/api/formula/lz4.json) |
+| merve | Unknown | 1.2.2 | installed-unknown | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/mac-studio-setup/brew-formulae.txt); [release source](https://formulae.brew.sh/api/formula/merve.json) |
+| mlx-c | Unknown | 0.6.0 | installed-unknown | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/mac-studio-setup/brew-formulae.txt); [release source](https://formulae.brew.sh/api/formula/mlx-c.json) |
+| mpdecimal | Unknown | 4.0.1 | installed-unknown | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/mac-studio-setup/brew-formulae.txt); [release source](https://formulae.brew.sh/api/formula/mpdecimal.json) |
+| nbytes | Unknown | 0.1.4 | installed-unknown | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/mac-studio-setup/brew-formulae.txt); [release source](https://formulae.brew.sh/api/formula/nbytes.json) |
+| oniguruma | Unknown | 6.9.10 | installed-unknown | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/mac-studio-setup/brew-formulae.txt); [release source](https://formulae.brew.sh/api/formula/oniguruma.json) |
+| openssl@3 | Unknown | 3.6.4 | installed-unknown | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/mac-studio-setup/brew-formulae.txt); [release source](https://formulae.brew.sh/api/formula/openssl@3.json) |
+| pcre2 | Unknown | 10.48 | installed-unknown | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/mac-studio-setup/brew-formulae.txt); [release source](https://formulae.brew.sh/api/formula/pcre2.json) |
+| readline | Unknown | 8.3.6 | installed-unknown | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/mac-studio-setup/brew-formulae.txt); [release source](https://formulae.brew.sh/api/formula/readline.json) |
+| simdjson | Unknown | 4.6.11 | installed-unknown | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/mac-studio-setup/brew-formulae.txt); [release source](https://formulae.brew.sh/api/formula/simdjson.json) |
+| simdutf | Unknown | 9.2.0 | installed-unknown | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/mac-studio-setup/brew-formulae.txt); [release source](https://formulae.brew.sh/api/formula/simdutf.json) |
+| sqlite | Unknown | 3.53.4 | installed-unknown | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/mac-studio-setup/brew-formulae.txt); [release source](https://formulae.brew.sh/api/formula/sqlite.json) |
+| uvwasi | Unknown | 0.0.23 | installed-unknown | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/mac-studio-setup/brew-formulae.txt); [release source](https://formulae.brew.sh/api/formula/uvwasi.json) |
+| xz | Unknown | 5.8.4 | installed-unknown | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/mac-studio-setup/brew-formulae.txt); [release source](https://formulae.brew.sh/api/formula/xz.json) |
+| zstd | Unknown | 1.5.7 | installed-unknown | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/mac-studio-setup/brew-formulae.txt); [release source](https://formulae.brew.sh/api/formula/zstd.json) |
 
 ## Planned
 
 | Technology | Recorded version (date) | Latest stable / channel | Result | Evidence and release source |
 |---|---|---|---|---|
-| Caddy | Unknown | 2.11.4 | planned | [evidence 1](../docs/local-web-portal-https.md); [release source](https://github.com/caddyserver/caddy/releases/tag/v2.11.4) |
+| Caddy | Unknown | 2.11.4 | planned | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/docs/local-web-portal-https.md); [release source](https://github.com/caddyserver/caddy/releases/tag/v2.11.4) |
 
 ## Format
 
 | Technology | Recorded version (date) | Latest stable / channel | Result | Evidence and release source |
 |---|---|---|---|---|
-| JavaScript / ECMAScript | Unknown | Not versioned / manual | format | [evidence 1](../README.md); [release source](https://tc39.es/ecma262/) |
-| Markdown / GFM | Unknown | Not versioned / manual | format | [evidence 1](../README.md); [release source](https://github.github.com/gfm/) |
-| YAML | Unknown | Not versioned / manual | format | [evidence 1](../README.md); [release source](https://yaml.org/spec/1.2.2/) |
-| JSON | Unknown | Not versioned / manual | format | [evidence 1](../README.md); [release source](https://www.rfc-editor.org/rfc/rfc8259) |
-| Mermaid SVG output | Unknown | Not versioned / manual | format | [evidence 1](../README.md); [release source](https://www.w3.org/TR/SVG2/) |
-| MCP | Unknown | Not versioned / manual | format | [evidence 1](../README.md); [release source](https://modelcontextprotocol.io/specification/versioning) |
-| GGUF / Safetensors / MLX weights | Unknown | Not versioned / manual | format | [evidence 1](../README.md); [release source](https://huggingface.co/docs/safetensors/) |
-| launchd / Keychain / Rosetta / APFS | Unknown | Not versioned / manual | format | [evidence 1](../README.md); [release source](https://support.apple.com/en-us/100100) |
+| JavaScript / ECMAScript | Unknown | Not versioned / manual | format | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/README.md); [release source](https://tc39.es/ecma262/) |
+| Markdown / GFM | Unknown | Not versioned / manual | format | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/README.md); [release source](https://github.github.com/gfm/) |
+| YAML | Unknown | Not versioned / manual | format | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/README.md); [release source](https://yaml.org/spec/1.2.2/) |
+| JSON | Unknown | Not versioned / manual | format | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/README.md); [release source](https://www.rfc-editor.org/rfc/rfc8259) |
+| Mermaid SVG output | Unknown | Not versioned / manual | format | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/README.md); [release source](https://www.w3.org/TR/SVG2/) |
+| MCP | Unknown | Not versioned / manual | format | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/README.md); [release source](https://modelcontextprotocol.io/specification/versioning) |
+| GGUF / Safetensors / MLX weights | Unknown | Not versioned / manual | format | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/README.md); [release source](https://huggingface.co/docs/safetensors/) |
+| launchd / Keychain / Rosetta / APFS | Unknown | Not versioned / manual | format | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/README.md); [release source](https://support.apple.com/en-us/100100) |
 
 ## Service
 
 | Technology | Recorded version (date) | Latest stable / channel | Result | Evidence and release source |
 |---|---|---|---|---|
-| GitHub / GitHub Pages / Actions | Unknown | Not versioned / manual | service | [evidence 1](../docs/08-council-of-ais-methodology.md); [release source](https://www.githubstatus.com/) |
-| Replit | Unknown | Not versioned / manual | service | [evidence 1](../docs/08-council-of-ais-methodology.md); [release source](https://status.replit.com/) |
-| Notion / cloud AI services | Unknown | Not versioned / manual | service | [evidence 1](../docs/08-council-of-ais-methodology.md); [release source](https://www.notion-status.com/) |
+| GitHub / GitHub Pages / Actions | Unknown | Not versioned / manual | service | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/docs/08-council-of-ais-methodology.md); [release source](https://www.githubstatus.com/) |
+| Replit | Unknown | Not versioned / manual | service | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/docs/08-council-of-ais-methodology.md); [release source](https://status.replit.com/) |
+| Notion / cloud AI services | Unknown | Not versioned / manual | service | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/docs/08-council-of-ais-methodology.md); [release source](https://www.notion-status.com/) |
 
 ## Vendored
 
 | Technology | Recorded version (date) | Latest stable / channel | Result | Evidence and release source |
 |---|---|---|---|---|
-| Vendored Agent Skills | Unknown | Not versioned / manual | vendored | [evidence 1](../.agents/skills/okhp3-as-is-process-capture/package.json); [evidence 2](../skills/okhp3-skill-promotion/SKILL.md) |
+| Vendored Agent Skills | Unknown | Not versioned / manual | vendored | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/.agents/skills/okhp3-as-is-process-capture/package.json); [evidence 2](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/skills/okhp3-skill-promotion/SKILL.md) |
 
 ## Model
 
 | Technology | Recorded version (date) | Latest stable / channel | Result | Evidence and release source |
 |---|---|---|---|---|
-| llama3.1:8b | 46e0c10c039e (2026-05-12) | Not versioned / manual | model | [evidence 1](../manifests/OLLAMA_MODEL_INVENTORY_2026-05-12.txt); [release source](https://ollama.com/library/llama3.1) |
-| mistral-small3.1:24b | b9aaf0c2586a (2026-05-12) | Not versioned / manual | model | [evidence 1](../manifests/OLLAMA_MODEL_INVENTORY_2026-05-12.txt); [release source](https://ollama.com/library/mistral-small3.1) |
-| codestral:22b | 0898a8b286d5 (2026-05-12) | Not versioned / manual | model | [evidence 1](../manifests/OLLAMA_MODEL_INVENTORY_2026-05-12.txt); [release source](https://ollama.com/library/codestral) |
-| gemma3:27b | a418f5838eaf (2026-05-12) | Not versioned / manual | model | [evidence 1](../manifests/OLLAMA_MODEL_INVENTORY_2026-05-12.txt); [release source](https://ollama.com/library/gemma3) |
-| gemma3:12b | f4031aab637d (2026-05-12) | Not versioned / manual | model | [evidence 1](../manifests/OLLAMA_MODEL_INVENTORY_2026-05-12.txt); [release source](https://ollama.com/library/gemma3) |
-| phi4:14b | ac896e5b8b34 (2026-05-12) | Not versioned / manual | model | [evidence 1](../manifests/OLLAMA_MODEL_INVENTORY_2026-05-12.txt); [release source](https://ollama.com/library/phi4) |
-| ministral-3:8b | Unknown | Not versioned / manual | model | [evidence 1](../mac-studio-setup/LOCAL_WORKBENCH_STATUS.md); [release source](https://ollama.com/library/ministral-3) |
-| command-r7b:latest | Unknown | Not versioned / manual | model | [evidence 1](../mac-studio-setup/LOCAL_WORKBENCH_STATUS.md); [release source](https://ollama.com/library/command-r7b) |
-| llama3.2:3b | Unknown | Not versioned / manual | model | [evidence 1](../mac-studio-setup/LOCAL_WORKBENCH_STATUS.md); [release source](https://ollama.com/library/llama3.2) |
-| nomic-embed-text:latest | Unknown | Not versioned / manual | model | [evidence 1](../mac-studio-setup/LOCAL_WORKBENCH_STATUS.md); [release source](https://ollama.com/library/nomic-embed-text) |
-| LM Studio / direct MLX model collection | Unknown | Not versioned / manual | model | [evidence 1](../manifests/LM_STUDIO_MODEL_INVENTORY_2026-05-12.txt); [evidence 2](../docs/04-model-inventory.md); [evidence 3](../reports/openclaw-related-runtime-readiness-audit-2026-08-02.md); [release source](https://huggingface.co/models) |
+| llama3.1:8b | 46e0c10c039e (2026-05-12) | Not versioned / manual | model | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/manifests/OLLAMA_MODEL_INVENTORY_2026-05-12.txt); [release source](https://ollama.com/library/llama3.1) |
+| mistral-small3.1:24b | b9aaf0c2586a (2026-05-12) | Not versioned / manual | model | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/manifests/OLLAMA_MODEL_INVENTORY_2026-05-12.txt); [release source](https://ollama.com/library/mistral-small3.1) |
+| codestral:22b | 0898a8b286d5 (2026-05-12) | Not versioned / manual | model | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/manifests/OLLAMA_MODEL_INVENTORY_2026-05-12.txt); [release source](https://ollama.com/library/codestral) |
+| gemma3:27b | a418f5838eaf (2026-05-12) | Not versioned / manual | model | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/manifests/OLLAMA_MODEL_INVENTORY_2026-05-12.txt); [release source](https://ollama.com/library/gemma3) |
+| gemma3:12b | f4031aab637d (2026-05-12) | Not versioned / manual | model | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/manifests/OLLAMA_MODEL_INVENTORY_2026-05-12.txt); [release source](https://ollama.com/library/gemma3) |
+| phi4:14b | ac896e5b8b34 (2026-05-12) | Not versioned / manual | model | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/manifests/OLLAMA_MODEL_INVENTORY_2026-05-12.txt); [release source](https://ollama.com/library/phi4) |
+| ministral-3:8b | Unknown | Not versioned / manual | model | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/mac-studio-setup/LOCAL_WORKBENCH_STATUS.md); [release source](https://ollama.com/library/ministral-3) |
+| command-r7b:latest | Unknown | Not versioned / manual | model | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/mac-studio-setup/LOCAL_WORKBENCH_STATUS.md); [release source](https://ollama.com/library/command-r7b) |
+| llama3.2:3b | Unknown | Not versioned / manual | model | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/mac-studio-setup/LOCAL_WORKBENCH_STATUS.md); [release source](https://ollama.com/library/llama3.2) |
+| nomic-embed-text:latest | Unknown | Not versioned / manual | model | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/mac-studio-setup/LOCAL_WORKBENCH_STATUS.md); [release source](https://ollama.com/library/nomic-embed-text) |
+| LM Studio / direct MLX model collection | Unknown | Not versioned / manual | model | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/manifests/LM_STUDIO_MODEL_INVENTORY_2026-05-12.txt); [evidence 2](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/docs/04-model-inventory.md); [evidence 3](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/reports/openclaw-related-runtime-readiness-audit-2026-08-02.md); [release source](https://huggingface.co/models) |
 
 ## Absent
 
 | Technology | Recorded version (date) | Latest stable / channel | Result | Evidence and release source |
 |---|---|---|---|---|
-| TypeScript | Unknown | 7.0.2 | absent | [evidence 1](../AGENTS.md); [release source](https://registry.npmjs.org/typescript/latest) |
-| Vite | Unknown | 8.3.0 | absent | [evidence 1](../AGENTS.md); [release source](https://registry.npmjs.org/vite/latest) |
-| Tailwind CSS | Unknown | 4.3.3 | absent | [evidence 1](../AGENTS.md); [release source](https://registry.npmjs.org/tailwindcss/latest) |
-| React | Unknown | 19.3.0 | absent | [evidence 1](../AGENTS.md); [release source](https://registry.npmjs.org/react/latest) |
-| Java | Unknown | Not versioned / manual | absent | [evidence 1](../AGENTS.md) |
+| TypeScript | Unknown | 7.0.2 | absent | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/AGENTS.md); [release source](https://registry.npmjs.org/typescript/latest) |
+| Vite | Unknown | 8.3.0 | absent | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/AGENTS.md); [release source](https://registry.npmjs.org/vite/latest) |
+| Tailwind CSS | Unknown | 4.3.3 | absent | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/AGENTS.md); [release source](https://registry.npmjs.org/tailwindcss/latest) |
+| React | Unknown | 19.3.0 | absent | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/AGENTS.md); [release source](https://registry.npmjs.org/react/latest) |
+| Java | Unknown | Not versioned / manual | absent | [evidence 1](https://github.com/OKHP3/mac-studio-local-ai-workbench/blob/main/AGENTS.md) |
 
 ## Qualifications
 
