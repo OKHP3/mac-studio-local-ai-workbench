@@ -23,6 +23,16 @@ def item(scope="host", recorded="1.9.0"):
 
 
 class ReleaseSelection(unittest.TestCase):
+    def test_downloaded_report_keeps_evidence_links_usable(self):
+        row = item()
+        row["evidence"] = ["docs/a file.md", "https://example.com/evidence"]
+        row.update(status="current", observed={"version": "1.9.0"})
+        report = tracker.render([row], "2026-09-20")
+        self.assertIn(tracker.REPOSITORY_FILES + "docs/a%20file.md", report)
+        self.assertIn("[evidence 2](https://example.com/evidence)", report)
+        self.assertIn(tracker.REPOSITORY_FILES + "docs/15-technology-version-management.md", report)
+        self.assertNotIn("](../", report)
+
     def test_numeric_order_and_packaging_revisions(self):
         self.assertGreater(tracker.version_key("1.10.0"), tracker.version_key("1.9.0"))
         self.assertGreater(tracker.version_key("2026.7.1-2"), tracker.version_key("2026.7.1"))
