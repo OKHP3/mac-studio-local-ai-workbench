@@ -136,3 +136,16 @@ GitHub is the durable corpus. It is not automatically a vector database or graph
 - `ollama list` now shows all 10 models: ministral-3:8b, command-r7b:latest, llama3.2:3b, nomic-embed-text:latest, llama3.1:8b, mistral-small3.1:24b, codestral:22b, gemma3:27b, gemma3:12b, phi4:14b.
 - Confirmed visible over the LAN via live curl to `http://<MAC_LAN_IP>:11434/api/tags`, not just locally.
 - Ollama LAN exposure is now fully resolved end to end. Only remaining open item from the 2026-09-12/13 passes is the OpenClaw Gateway (18789) bind address.
+
+## Cross-repo program tracker (2026-09-20)
+
+- A standing readiness/blocker tracker across all three SHOAL repos (this one, infusing-a-soul, shoal-ai-server) now lives at `shoal-ai-server/docs/program-status.md`. Check it first in a new thread before re-deriving status.
+- New finding not yet reflected above: OpenClaw Control on this Mac is currently showing a failed auto-update (2026-09-19) and reports its configured model as unavailable — separate from anything in the LAN-exposure work above. Not yet fixed. See the program tracker for detail.
+
+## LM Studio provider add attempt on this Mac's own OpenClaw (2026-09-20)
+
+- Attempted to add LM Studio as a second model provider inside OpenClaw Control's Models settings page, per Jamie's approval to keep working past the broken-update state.
+- Blocked by the GUI itself, independent of the broken-update issue: the "Add provider" quick-add form only offers a closed list of named cloud providers (Anthropic, Google, Huggingface, Litellm, Nvidia, Ollama Cloud, OpenAI, Opencode Go, OpenRouter, Together, Xai), each with just a provider + API-key field pair. No base-URL override is exposed for any of them.
+- Selecting "OpenAI" does not reveal a custom endpoint field — saving a key there would point at the real OpenAI cloud API, not at LM Studio's local server. Not done.
+- Backed out of the Add Provider form cleanly (Cancel) with nothing saved.
+- Conclusion: the CLI path (`openclaw config set models.providers.lmstudio.type openai` / `.baseUrl http://<MAC_LAN_IP>:1234/v1` / `.apiKey lmstudio`) is required on this Mac too, same as the Windows playbook in `infusing-a-soul`. That in turn needs blocker #1 (the failed update / `openclaw triage`) resolved first, since a broken install is not a reliable place to run config commands. Full detail and cross-repo status: `shoal-ai-server/docs/program-status.md`.
