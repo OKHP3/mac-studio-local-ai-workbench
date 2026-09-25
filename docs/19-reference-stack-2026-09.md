@@ -48,11 +48,33 @@ One Mac Studio M4 Max (36 GB unified memory) serving local models to a chat UI, 
 
 Catalog context windows were cut from 131k to 32k for `llama3.1:8b`, `mistral-small3.1:24b`, `gemma3:*` (a 131k KV cache on a 24B model is what made the bake-off run take minutes on 36 GB). `gpt-oss:20b` runs at 64k (`num_ctx` 65536, `contextWindow` 65536 so compaction triggers at the real limit). Open WebUI defaults to 32k.
 
+## Tool-calling bake-off (LM Studio, 2026-09-25)
+
+Harness: OpenAI-compatible calls to LM Studio over the LAN, temperature 0. Easy = 4 single-shot routing cases (web_search / exec / memory_search / no tool) with 6 tools. Hard = 25 tools, ~6k-token system prompt, two-step search then fetch, must answer `v0.34.4` with a GitHub URL.
+
+| Model (LM Studio) | Easy | Hard (multi-step) | Notes |
+|---|---|---|---|
+| openai/gpt-oss-20b | 4/4 | PASS (33 s) | Exact tag URL |
+| google/gemma-4-26b-a4b-qat | 4/4 | PASS (36 s) | Non-QAT build refused by guardrail (~35 GB) |
+| liquid/lfm2-24b-a2b | 3/4 (declined `exec`) | PASS (33 s incl. load) | MoE, 2B active; fast once loaded |
+| ibm/granite-4-h-tiny | 4/4 | FAIL (search loop) | |
+| liquid/lfm2.5-1.2b | 4/4 | FAIL (hallucinated "2.0.0" without fetching) | Router/utility only |
+| nvidia-nemotron-3-nano-30b-a3b | 4/4 | FAIL (empty, reasoning ate budget) | |
+| phi4:14b (Ollama) | n/a | n/a | No tool support in Ollama; removed from OpenClaw allowlist |
+
+Resulting OpenClaw config: primary `ollama/gpt-oss:20b`; fallbacks `lmstudio/liquid/lfm2-24b-a2b` then `ollama/llama3.1:8b` (cross-engine fallback, so an Ollama tool-parser error does not end the run); `lmstudio/google/gemma-4-26b-a4b-qat` and `lmstudio/liquid/lfm2.5-1.2b` allowlisted. LM Studio provider: `models.providers.lmstudio` (`openai-completions`, `http://127.0.0.1:1234/v1`).
+
+Observed failure worth knowing: `Agent run failed (model: ollama/gpt-oss:20b)` with Ollama returning a malformed-JSON error after the model emitted a bad tool call (about 88k tokens of cumulative context across calls). The same model served by LM Studio passed the hard test.
+
+## Mobile pairing
+
+`gateway.bind` is now `lan` (token auth). Setup codes generate at `ws://<MAC_LAN_IP>:18789`, and OpenClaw automatically downgrades them to **Limited access** because the URL is plaintext. Full access for iPhone/iPad needs `wss://` (Tailscale Serve or a TLS front door).
+
 ## Known limits (open items)
 
 - Host-ops skills (for example `okhp3-openclaw-stack-status`) need `curl`/`docker` on the host; the sandboxed agent cannot reach them (`network=none`). Needs a deliberate choice: a separate non-sandboxed ops agent with exec approvals, or keep them CLI-only.
 - `gpt-oss:20b` still occasionally treats skill names as tools (`tool_search` / `tool_describe` misfires). `mistral-small3.1:24b` lost the bake-off (tool calls failed), so `gpt-oss:20b` stays primary.
-- Gateway is loopback-only; LAN pairing (SHOAL) needs `gateway.bind=lan` plus token auth.
+- Full-access mobile pairing needs TLS (`wss://`); LAN pairing is limited access only.
 - FileVault is on with no auto-login and `autorestart 0`: services recover after a login, not after an unattended power loss.
 - Open WebUI search answers are only as good as the page they land on (it confused LM Studio with another product on the same site).
 
