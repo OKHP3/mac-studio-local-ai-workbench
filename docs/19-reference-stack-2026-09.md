@@ -78,6 +78,10 @@ A session started from the iPhone could not browse: `gpt-oss:20b` called `web_se
 
 Memory budget rule: do not run the same 20B-class model in both engines at once. Loading `openai/gpt-oss-20b` in LM Studio while Ollama held `gpt-oss:20b` and LM Studio held `mistral-small-3.2-24b` was refused by LM Studio's guardrail (HTTP 400 in OpenClaw).
 
+## Skill collection review disabled (2026-09-25)
+
+The weekly "Skill collection review (main)" automation failed 4 runs in a row with `sandbox workspace is not read-write; collection review skipped`. The agent sandbox uses the default `workspaceAccess: none`, and the review is designed to autonomously consolidate, retire and rewrite skills in the agent's skill folder. Here that folder is a symlink into the curated `OKHP3/skillz` repo (`openclaw` family). Granting `rw` would let an unattended 20B model rewrite canonical, git-tracked skills, so the job was turned off instead: `skills.workshop.autonomous.mode: "off"` (global; OpenClaw has no per-agent opt-out yet, see upstream issue #144515). Skill curation stays with the skillz repo tooling (`okhp3-openclaw-skillz-sync`, cataloger).
+
 ## Known limits (open items)
 
 - Host-ops skills (for example `okhp3-openclaw-stack-status`) need `curl`/`docker` on the host; the sandboxed agent cannot reach them (`network=none`). Needs a deliberate choice: a separate non-sandboxed ops agent with exec approvals, or keep them CLI-only.
