@@ -68,7 +68,9 @@ Observed failure worth knowing: `Agent run failed (model: ollama/gpt-oss:20b)` w
 
 ## Mobile pairing
 
-`gateway.bind` is now `lan` (token auth). Setup codes generate at `ws://<MAC_LAN_IP>:18789`, and OpenClaw automatically downgrades them to **Limited access** because the URL is plaintext. Full access for iPhone/iPad needs `wss://` (Tailscale Serve or a TLS front door).
+`gateway.bind` is now `lan` (token auth). Setup codes generate at `ws://<MAC_LAN_IP>:18789`, and OpenClaw automatically downgrades them to **Limited access** because the URL is plaintext. Full access for iPhone/iPad needs `wss://` (Tailscale Serve or a TLS front door). iPad and iPhone paired on 2026-09-25 as Limited access. Upgrade path scripted in `~/Downloads/files/okh-tailscale-setup.sh`: Standalone Tailscale app (the only macOS variant that supports Serve), `gateway.tailscale.mode=serve`, `gateway.bind=loopback`, then re-pair with Full access over `wss://<host>.ts.net`.
+
+Utility model: `lmstudio/liquid/lfm2.5-1.2b` (`agents.defaults.utilityModel`), used for small background jobs only.
 
 ## Known limits (open items)
 
