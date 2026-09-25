@@ -42,11 +42,16 @@ One Mac Studio M4 Max (36 GB unified memory) serving local models to a chat UI, 
 | Open WebUI, web search task | Correct Ollama version, cited `github.com` |
 | OpenClaw memory embeddings | Ready (Ollama / nomic-embed-text) |
 | OpenClaw config edits | Hot-reloaded, `valid: true` in config audit |
+| Agent model bake-off, same web task | `gpt-oss:20b`: correct answer + URL, 52 s. `mistral-small3.1:24b`: 2 min 38 s to first action at 131k ctx, then both tool calls failed and it (honestly) gave up |
+
+## Context budget
+
+Catalog context windows were cut from 131k to 32k for `llama3.1:8b`, `mistral-small3.1:24b`, `gemma3:*` (a 131k KV cache on a 24B model is what made the bake-off run take minutes on 36 GB). `gpt-oss:20b` runs at 64k (`num_ctx` 65536, `contextWindow` 65536 so compaction triggers at the real limit). Open WebUI defaults to 32k.
 
 ## Known limits (open items)
 
 - Host-ops skills (for example `okhp3-openclaw-stack-status`) need `curl`/`docker` on the host; the sandboxed agent cannot reach them (`network=none`). Needs a deliberate choice: a separate non-sandboxed ops agent with exec approvals, or keep them CLI-only.
-- `gpt-oss:20b` still occasionally treats skill names as tools (`tool_search` / `tool_describe` misfires). A 24B-class tool model (`mistral-small3.1:24b`) is allowlisted for comparison.
+- `gpt-oss:20b` still occasionally treats skill names as tools (`tool_search` / `tool_describe` misfires). `mistral-small3.1:24b` lost the bake-off (tool calls failed), so `gpt-oss:20b` stays primary.
 - Gateway is loopback-only; LAN pairing (SHOAL) needs `gateway.bind=lan` plus token auth.
 - FileVault is on with no auto-login and `autorestart 0`: services recover after a login, not after an unattended power loss.
 - Open WebUI search answers are only as good as the page they land on (it confused LM Studio with another product on the same site).
