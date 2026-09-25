@@ -68,7 +68,7 @@ Observed failure worth knowing: `Agent run failed (model: ollama/gpt-oss:20b)` w
 
 ## Mobile pairing
 
-`gateway.bind` is now `lan` (token auth). Setup codes generate at `ws://<MAC_LAN_IP>:18789`, and OpenClaw automatically downgrades them to **Limited access** because the URL is plaintext. Full access for iPhone/iPad needs `wss://` (Tailscale Serve or a TLS front door). iPad and iPhone paired on 2026-09-25 as Limited access. Upgrade path scripted in `~/Downloads/files/okh-tailscale-setup.sh`: Standalone Tailscale app (the only macOS variant that supports Serve), `gateway.tailscale.mode=serve`, `gateway.bind=loopback`, then re-pair with Full access over `wss://<host>.ts.net`.
+`gateway.bind` is now `lan` (token auth). Setup codes generate at `ws://<MAC_LAN_IP>:18789`, and OpenClaw automatically downgrades them to **Limited access** because the URL is plaintext. Full access for iPhone/iPad needs `wss://` (Tailscale Serve or a TLS front door). iPad and iPhone paired on 2026-09-25 as Limited access. 2026-09-25 07:45: Tailscale Standalone 1.102.4 installed, Serve enabled, `gateway.tailscale.mode=serve` + `gateway.bind=loopback` (validation requires loopback first, then serve). Gateway reachable at `https://<host>.<tailnet>.ts.net` (200). Old Limited pairings for iPhone and iPad removed; new setup codes issue as **Full access** over `wss://`. Script: `~/Downloads/files/okh-tailscale-setup.sh`: Standalone Tailscale app (the only macOS variant that supports Serve), `gateway.tailscale.mode=serve`, `gateway.bind=loopback`, then re-pair with Full access over `wss://<host>.ts.net`.
 
 Utility model: `lmstudio/liquid/lfm2.5-1.2b` (`agents.defaults.utilityModel`), used for small background jobs only.
 
