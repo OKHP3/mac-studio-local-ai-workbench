@@ -72,6 +72,12 @@ Observed failure worth knowing: `Agent run failed (model: ollama/gpt-oss:20b)` w
 
 Utility model: `lmstudio/liquid/lfm2.5-1.2b` (`agents.defaults.utilityModel`), used for small background jobs only.
 
+## Tool Search off for local models (2026-09-25)
+
+A session started from the iPhone could not browse: `gpt-oss:20b` called `web_search` directly ("Tool web_search not found", because it was deferred behind Tool Search) and sent malformed `tool_search` batches ("set limit on each batch query"). Fix: `tools.toolSearch: false`. Session tool count went from 11 to 20 with web tools directly visible. The same Seahawks question then ran 6 searches and 6 fetches and returned a table (Week 1 vs Patriots 13-10, Sep 9; Week 2 vs Cardinals 31-7, Sep 20). Residual: Ollama's gpt-oss parser sometimes leaks raw Harmony `commentary to=functions...` text into the answer's source list.
+
+Memory budget rule: do not run the same 20B-class model in both engines at once. Loading `openai/gpt-oss-20b` in LM Studio while Ollama held `gpt-oss:20b` and LM Studio held `mistral-small-3.2-24b` was refused by LM Studio's guardrail (HTTP 400 in OpenClaw).
+
 ## Known limits (open items)
 
 - Host-ops skills (for example `okhp3-openclaw-stack-status`) need `curl`/`docker` on the host; the sandboxed agent cannot reach them (`network=none`). Needs a deliberate choice: a separate non-sandboxed ops agent with exec approvals, or keep them CLI-only.
