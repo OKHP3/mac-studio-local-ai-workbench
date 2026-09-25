@@ -82,6 +82,10 @@ Memory budget rule: do not run the same 20B-class model in both engines at once.
 
 The weekly "Skill collection review (main)" automation failed 4 runs in a row with `sandbox workspace is not read-write; collection review skipped`. The agent sandbox uses the default `workspaceAccess: none`, and the review is designed to autonomously consolidate, retire and rewrite skills in the agent's skill folder. Here that folder is a symlink into the curated `OKHP3/skillz` repo (`openclaw` family). Granting `rw` would let an unattended 20B model rewrite canonical, git-tracked skills, so the job was turned off instead: `skills.workshop.autonomous.mode: "off"` (global; OpenClaw has no per-agent opt-out yet, see upstream issue #144515). Skill curation stays with the skillz repo tooling (`okhp3-openclaw-skillz-sync`, cataloger).
 
+## Tailscale must stay running (2026-09-25)
+
+Quitting the Tailscale app (for example from the Dock) takes the Mac off the tailnet and every phone/iPad loses OpenClaw ("Gateway reconnect failed ... :443", NSURLError -1001). Settings that avoid it: Launch Tailscale at login ON, Hide Dock Icon ON (the app lives in the menu bar once its windows close), VPN On Demand enabled. Close windows, never Quit. `okh-postboot-check.sh` now also checks the `ts.net` gateway URL and whether the Tailscale app is running.
+
 ## Known limits (open items)
 
 - Host-ops skills (for example `okhp3-openclaw-stack-status`) need `curl`/`docker` on the host; the sandboxed agent cannot reach them (`network=none`). Needs a deliberate choice: a separate non-sandboxed ops agent with exec approvals, or keep them CLI-only.
