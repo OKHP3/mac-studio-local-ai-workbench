@@ -10,7 +10,6 @@ Software:
       User Name: OverKill-Hill (okh)
       Secure Virtual Memory: Enabled
       System Integrity Protection: Enabled
-      Time since boot: 6 days, 6 hours, 17 minutes
 
 Hardware:
 
@@ -24,8 +23,5 @@ Hardware:
       Memory: 36 GB
       System Firmware Version: 18000.101.7
       OS Loader Version: 18000.101.7
-      Serial Number (system): ***REDACTED***
-      Hardware UUID: ***REDACTED***
-      Provisioning UDID: ***REDACTED***
       Activation Lock Status: Enabled
 

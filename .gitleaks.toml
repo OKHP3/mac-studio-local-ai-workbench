@@ -1,0 +1,47 @@
+# Publishing hygiene rules for a public repo documenting a real home machine.
+# Generic patterns only: no real values live in this file.
+# Real literal values go in the untracked local denylist: .git/info/okh-denylist
+
+title = "mac-studio-local-ai-workbench publishing hygiene"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Rule definitions themselves"
+paths = ['''\.gitleaks\.toml''', '''\.githooks/''']
+
+[[rules]]
+id = "apple-serial-number"
+description = "Apple hardware serial number from system_profiler output"
+regex = '''Serial Number[^:\n]*:\s*[A-Z0-9]{10,12}'''
+
+[[rules]]
+id = "apple-hardware-uuid"
+description = "Hardware UUID from system_profiler output"
+regex = '''Hardware UUID:\s*[0-9A-F]{8}-[0-9A-F]{4}-'''
+
+[[rules]]
+id = "apple-provisioning-udid"
+description = "Provisioning UDID from system_profiler output"
+regex = '''Provisioning UDID:\s*[0-9A-F]{8}-'''
+
+[[rules]]
+id = "tailscale-tailnet-name"
+description = "Real tailnet name (use <tailnet>.ts.net)"
+regex = '''tail[0-9a-f]{4,}\.ts\.net'''
+
+[[rules]]
+id = "tailscale-cgnat-ip"
+description = "Tailscale 100.64.0.0/10 device address"
+regex = '''\b100\.(6[4-9]|[7-9][0-9]|1[01][0-9]|12[0-7])\.[0-9]{1,3}\.[0-9]{1,3}\b'''
+
+[[rules]]
+id = "rfc1918-lan-ip"
+description = "Private LAN address (use <MAC_LAN_IP>)"
+regex = '''\b(10\.[0-9]{1,3}|192\.168|172\.(1[6-9]|2[0-9]|3[01]))\.[0-9]{1,3}\.[0-9]{1,3}\b'''
+
+[[rules]]
+id = "macos-home-path"
+description = "Absolute macOS home path (use ~)"
+regex = '''/Users/[A-Za-z0-9._-]+/'''

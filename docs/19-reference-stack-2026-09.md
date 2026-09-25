@@ -97,3 +97,7 @@ Quitting the Tailscale app (for example from the Dock) takes the Mac off the tai
 ## Operator scripts
 
 `~/Downloads/files/`: `okh-stack-inventory.sh` (read-only audit), `okh-stack-apply.sh` (update + hardening), `okh-postboot-check.sh` (PASS/FAIL after reboot), `okh-ollama-tune.sh` (memory tuning).
+
+## Publishing hygiene
+
+This repo is public and documents a real machine, so machine and network identifiers are replaced with placeholders: `<MAC_LAN_IP>`, `<ROUTER_IP>`, `<HOME_SSID>`, `<host>.<tailnet>.ts.net`, and `~` for the home path. Hardware serials and UUIDs are never committed. `.gitleaks.toml` holds generic detection rules and `.githooks/pre-commit` enforces them (enable per clone with `git config core.hooksPath .githooks`). Real literal values live only in the untracked `.git/info/okh-denylist`.
