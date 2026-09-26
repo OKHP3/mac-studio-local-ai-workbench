@@ -1,0 +1,36 @@
+{
+  "name": "mac-studio-local-ai-workbench",
+  "version": "1.0.0",
+  "description": "Public project site for the Mac Studio Local AI Workbench",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "vite --host 0.0.0.0 --port 5000",
+    "build": "vite build",
+    "check": "npm run build && npm run check:dist",
+    "check:dist": "node scripts/check-dist.mjs",
+    "test:smoke": "playwright test",
+    "validate": "npm run check && npm run test:smoke",
+    "preview": "vite preview --host 0.0.0.0 --port 5000"
+  },
+  "keywords": [
+    "local-ai",
+    "mac-studio",
+    "ollama",
+    "openclaw"
+  ],
+  "author": "OverKill Hill P3",
+  "license": "MIT",
+  "dependencies": {
+    "@vitejs/plugin-react": "^6.1.1",
+    "lucide-react": "^1.47.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "react-markdown": "^10.1.0",
+    "remark-gfm": "^4.0.1",
+    "vite": "^8.3.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.63.0"
+  }
+}
