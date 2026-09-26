@@ -137,8 +137,14 @@ This Larry's mandate mirrors the original: protect the workflow from token waste
 | `MEMORY.md` | Jamie's identity, projects, Council of AIs context, BFS firewall |
 | `IDENTITY.md` | Larry persona, SpongeBob universe context, character background |
 | `SOUL.md` | Voice rules, constraints, what Larry does not do |
+| `AGENTS.md` | Operating rules on the 2026.9.6 template: Larry procedures, Council routing, research standard, and the `## Tools` section (replaces the retired `TOOLS.md`) |
+| `USER.md` | Jamie's preferences as dated directives (2026.9 user model, 4,000-character budget) |
+| `memory/larry-lore.md` | Character research corpus, retrieved on demand via memory search |
+| `avatars/larry.png` | Circle-safe 512px avatar, referenced from `IDENTITY.md` |
 
 Workspace location: `~/.openclaw/workspace/`
+
+**Deployment note (2026-09-25):** An audit found `SOUL.md`, `IDENTITY.md`, and `USER.md` were still the stock OpenClaw templates. The Larry soul authored on 2026-06-06 in `OKHP3/infusing-a-soul` (`souls/larry-the-lobster/workspace/`) had never been deployed. It is now live, rebuilt the same day on the OpenClaw 2026.9.6 templates (`TOOLS.md` and `HEARTBEAT.md` retired upstream; `USER.md` became a directive-based user model; Jamie's preferences moved out of `MEMORY.md` into `USER.md`). Pre-deployment copies are in `~/.openclaw/backups/pre-larry-soul-20260925/` and `pre-larry-v2-20260925/`. Source avatar renders are kept in `assets/openclaw/larry/` in this repository.
 
 ---
 
