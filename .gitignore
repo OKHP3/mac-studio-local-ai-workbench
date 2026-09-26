@@ -80,3 +80,9 @@ logs/
 *.log
 .tmp/
 tmp/
+
+# Replit documentation viewer
+dist/
+screenshots/
+test-results/
+playwright-report/

@@ -1,0 +1,3 @@
+/.gitignore text eol=lf
+/.githooks/* text eol=lf
+/scripts/post-merge.sh text eol=lf
