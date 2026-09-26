@@ -2,7 +2,7 @@
 title: "Mac Studio Local AI Workbench"
 artifact_type: "project_readme"
 created_date: "2026-05-13"
-updated_date: "2026-05-28"
+updated_date: "2026-09-26"
 project: "Mac Studio Local AI Workbench"
 status: "baseline-complete-agent-online"
 ---
@@ -13,7 +13,7 @@ This repository captures the governed baseline build of a Mac Studio M4 Max loca
 
 The purpose is not merely to document that local AI tools were installed. The purpose is to preserve the operating model, scripts, benchmarks, decisions, and future RAG roadmap needed to make the workstation maintainable, recoverable, and useful.
 
-## Current status
+## Baseline status (May 2026)
 
 Baseline phase: **DONE**
 
@@ -153,6 +153,36 @@ Public project page:
 https://overkillhill.com/projects/mac-studio-local-ai-workbench/
 ```
 
-## Current verdict
+## Documentation viewer (September 26, 2026)
+
+The Replit documentation viewer is included in `src/` and `public/`. It renders
+27 public documents, including the September reference stack, Open WebUI,
+Docker, and LM Studio records. The landing page describes the May baseline;
+dated records are historical evidence rather than live host telemetry.
+
+With Node 24 installed:
+
+```bash
+npm ci
+npm run dev
+```
+
+For a production build, use `npm run check`. For desktop and mobile smoke
+coverage, install Chromium with `npx playwright install chromium`, then run
+`npm run test:smoke`. GitHub validates the viewer and technology tracking.
+This recovery does not establish an automatic website deployment or control
+the Mac Studio services.
+
+### Safe synchronization
+
+Start with `git status --short --branch` and `git fetch origin`. From a clean,
+non-divergent branch, use `git pull --ff-only`. Configure `git config pull.ff only`
+and enable the publication guard with `git config core.hooksPath .githooks` once
+per clone. If history diverges after a redaction, preserve a private recovery
+copy and review unique files on a new branch from `origin/main`. Do not merge
+the old unsanitized history into the canonical branch. See [AGENTS.md](AGENTS.md)
+for the repository boundaries and recovery procedure.
+
+## Baseline verdict (May 2026)
 
 The Mac Studio M4 Max is a functional, governed local AI workbench with an active autonomous agent layer. The baseline is documented, benchmarked, verified, and archived. The next phase is the RAG corpus build, expanded model benchmarks, and the architecture diagram.

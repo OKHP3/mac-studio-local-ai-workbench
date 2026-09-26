@@ -31,7 +31,7 @@ const layers = [
   { icon: Monitor, label: "Interface", value: "Open WebUI", meta: "Interactive chat" },
   { icon: Bot, label: "Agent", value: "OpenClaw / Larry", meta: "Background execution" },
   { icon: Search, label: "Search", value: "SearXNG", meta: "Private web research" },
-  { icon: Database, label: "Knowledge", value: "RAG layer", meta: "Planned next phase", planned: true },
+  { icon: Database, label: "Knowledge", value: "RAG layer", meta: "Integration unverified", planned: true },
 ];
 
 const principles = [
@@ -60,7 +60,7 @@ const milestones = [
   ["May 12", "Baseline complete", "Storage, runtimes, benchmarks, and recovery verified."],
   ["May 28", "Agent online", "OpenClaw agent Larry joined the local stack."],
   ["May 30", "Strict benchmark", "Six Ollama models tested against a fixed prompt set."],
-  ["Next", "RAG corpus", "Governed retrieval and vector storage remain planned.", true],
+  ["Next", "RAG corpus", "Governed retrieval remains planned; Qdrant is recorded in later snapshots.", true],
 ];
 
 const docsGroups = [...new Set(documents.map(({ group }) => group))];
@@ -272,7 +272,7 @@ function App() {
           <div className="hero-orbit hero-orbit--one" aria-hidden="true" />
           <div className="hero-orbit hero-orbit--two" aria-hidden="true" />
           <div className="hero-content">
-            <div className="eyebrow reveal"><span className="status-dot" /> Baseline complete · Agent online</div>
+            <div className="eyebrow reveal"><span className="status-dot" /> May 2026 baseline · Agent documented online</div>
             <h1 className="reveal reveal--2">Local AI.<br /><span>Built to hold.</span></h1>
             <p className="hero-lede reveal reveal--3">
               A Mac Studio M4 Max transformed into a governed AI workbench: externalized,
@@ -385,9 +385,9 @@ function App() {
 
         <section className="closing">
           <TerminalSquare size={30} />
-          <span className="kicker">THE CURRENT VERDICT</span>
+          <span className="kicker">THE DOCUMENTED BASELINE</span>
           <h2>The foundation is documented.<br /><span>The next layer is knowledge.</span></h2>
-          <p>The local AI workbench is functional, governed, benchmarked, and recoverable. The next phase is a curated RAG corpus, expanded model tests, and deeper automation.</p>
+          <p>The May 2026 baseline records a functional, governed, benchmarked, and recoverable workbench. Read the dated documentation for subsequent changes. Host availability and end-to-end RAG remain separate verification tasks.</p>
           <div className="closing-actions">
             <a className="button button--primary" href="https://github.com/OKHP3/mac-studio-local-ai-workbench" target="_blank" rel="noreferrer"><TerminalSquare size={17} /> Explore on GitHub</a>
             <a className="button button--ghost-light" href="https://overkillhill.com/projects/mac-studio-local-ai-workbench/" target="_blank" rel="noreferrer">Project archive <ArrowUpRight size={17} /></a>

@@ -63,7 +63,7 @@ test("documentation index and direct document links work under the Pages subpath
 
   await expect(page).toHaveURL(new RegExp(`${pagesBase.replaceAll("/", "\\/")}#\\/docs$`));
   await expect(page.getByRole("heading", { level: 1, name: "The full field manual." })).toBeVisible();
-  await expect(page.locator(".docs-index-grid > a")).toHaveCount(23);
+  await expect(page.locator(".docs-index-grid > a")).toHaveCount(27);
   await page.getByRole("link", { name: /Project overview/ }).first().click();
   await expect(page).toHaveURL(/#\/docs\/project-overview$/);
   await expect(page.getByRole("heading", { level: 1, name: "Project overview", exact: true })).toBeVisible();

@@ -3,7 +3,7 @@
 ## Project identity
 
 - **Suite:** SHOAL / Workbench
-- **Type:** Public documentation, configuration, manifests, benchmarks, and recovery scripts
+- **Type:** Public documentation with a static viewer, configuration, manifests, benchmarks, and recovery scripts
 - **Repository:** `https://github.com/OKHP3/mac-studio-local-ai-workbench`
 - **Public project page:** `https://overkillhill.com/projects/mac-studio-local-ai-workbench/`
 - **Related repositories:** `shoal-ai-server`, `infusing-a-soul`
@@ -21,6 +21,7 @@ This repository is the sanitized, durable artifact layer for a Mac Studio M4 Max
 - The documented inference paths are Ollama, LM Studio, and direct `mlx-lm`. Open WebUI is the documented chat front door. OpenClaw and SearXNG form the documented autonomous agent and private search layer.
 - Dated August and September records confirm a running Qdrant service. End-to-end RAG ingestion, retrieval, and citation remain unverified. The local web portal and HTTPS front door are future architecture work.
 - This is not a hosted service, enterprise platform, or production deployment. It is a personal infrastructure case study and reference build.
+- A React/Vite documentation viewer was recovered from the Replit work on 2026-09-26. It renders public Markdown and does not control the Mac Studio or report live host health.
 
 ### Inferred
 
@@ -38,6 +39,7 @@ This repository is the sanitized, durable artifact layer for a Mac Studio M4 Max
 Keep this repository focused on the public artifact layer:
 
 - setup and architecture documentation
+- the static public documentation viewer and its assets
 - model and Homebrew manifests
 - benchmark prompts and results
 - restore and non-destructive verification scripts
@@ -57,6 +59,8 @@ The root `AGENTS.md` is the canonical project guide. `CLAUDE.md` is intentionall
 ## Repository map
 
 - `README.md`: public project summary, architecture, current verdict, and repository purpose.
+- `src/`, `public/`, and `index.html`: static documentation viewer and public branding assets. `src/docsCatalog.js` explicitly selects the published documents.
+- `package.json`, `package-lock.json`, `vite.config.js`, and `.replit`: viewer dependencies, build configuration, and Replit preview. `scripts/post-merge.sh` installs locked dependencies and rebuilds without changing Git history.
 - `docs/`: project overview, build journey, storage architecture, toolchain, model inventory, benchmarks, definition of done, RAG roadmap, methodology, agent documentation, and Mermaid diagrams.
 - `benchmarks/`: benchmark prompts and dated comparison artifacts.
 - `manifests/`: repository-level Homebrew and model inventory inputs used by the root scripts.
@@ -74,7 +78,7 @@ The root `AGENTS.md` is the canonical project guide. `CLAUDE.md` is intentionall
 
 ## Technology and architecture
 
-The repository has no application package, application dependency lockfile or build system. It is primarily Markdown, shell, Python maintenance scripts, plain-text manifests, JSON, Mermaid and YAML. Technology monitoring uses Python's standard library and unittest. Vendored skills may have their own support manifests and JavaScript modules; these are not workbench application dependencies.
+The artifact sources are primarily Markdown, shell, Python maintenance scripts, plain-text manifests, JSON, Mermaid and YAML. The static documentation viewer uses React, Vite, and a checked-in npm lockfile; Playwright covers its desktop and mobile routes. Markdown remains the documentation source of truth. Technology monitoring uses Python's standard library and unittest. Vendored skills may have their own support manifests and JavaScript modules; those are separate from viewer dependencies.
 
 The documented host architecture is:
 
@@ -121,7 +125,7 @@ bash -n mac-studio-setup/restore_mac_studio_baseline.sh \
 
 The root verification and restore scripts are the intended repository-aware entry points, but their current CRLF line endings must be corrected before they can be relied on. The `mac-studio-setup/` copies use the dated baseline layout and do not perform the expanded storage and container checks. Both script families are host-dependent. The restore scripts run `brew update`, install curated manifest entries, and start Ollama. Do not run them automatically as part of documentation-only changes.
 
-There is no repository-local application test suite. Technology tracking has focused unittest coverage. For documentation and script changes, use the narrowest practical checks:
+The viewer has Playwright smoke coverage and technology tracking has focused unittest coverage. For documentation and script changes, use the narrowest practical checks:
 
 1. Re-read every changed guidance or documentation file.
 2. Run `bash -n` on changed shell scripts. Resolve the known CRLF issue in the root scripts before treating those checks as passing.
@@ -129,6 +133,14 @@ There is no repository-local application test suite. Technology tracking has foc
 4. Run `git diff --check`.
 5. Run the host verification script only when the Mac Studio services and paths are intentionally in scope.
 6. For technology tracking changes, run `python3 scripts/check_technology_updates.py --validate-only` and `python3 -m unittest discover -s tests -v` (Windows: `py -3`). Run live release checks with `--output-dir .tmp/technology-report`; no host upgrade occurs.
+7. For viewer changes, use Node 24, run `npm ci`, `npm run check`, `npx playwright install chromium`, then `npm run test:smoke`. The analytics case is optional locally; CI builds with a test measurement ID and enables it with `EXPECT_GA4=1` using an intercepted Google script.
+
+## Git synchronization
+
+- Start with `git status --short --branch` and `git fetch origin`. Use `git pull --ff-only` only from a clean branch that can advance to its upstream.
+- Enable the publication guard once per clone with `git config core.hooksPath .githooks`. Configure `git config pull.ff only` to stop accidental merges of divergent history.
+- After a public-history redaction, preserve old refs and uncommitted files privately before recovery. Do not merge the old unsanitized history back into `main`. Review unique files on a fresh branch from `origin/main` and integrate through a pull request.
+- Recovery bundles, local Git metadata, private connector notes, and machine backups must remain outside tracked public files.
 
 ## Safe change procedure
 
@@ -143,7 +155,7 @@ There is no repository-local application test suite. Technology tracking has foc
 
 - Several documents are dated snapshots and contain exact versions, host paths, and pending checklists. Their freshness is not guaranteed.
 - `scripts/` and `mac-studio-setup/` contain parallel script copies with different input locations. Keep their scopes clear when editing.
-- CI validates technology monitoring; it does not validate the Mac's services or all Markdown.
+- CI validates technology monitoring and the static viewer; it does not validate the Mac's services or the factual freshness of every Markdown record.
 - Qdrant and some LAN access are documented in dated August/September evidence. RAG integration, Caddy and the portal remain unverified or planned. Verify host state before treating the records as current.
 - A formal branch strategy, release cadence, and owner-approved definition of current status are not established in repository evidence.
 

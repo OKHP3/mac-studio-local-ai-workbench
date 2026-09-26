@@ -28,6 +28,10 @@ const publicDocuments = [
   { file: "16-openclaw-readiness-and-local-to-cloud-ai-pipeline-2026-08-02.md", slug: "openclaw-readiness-2026-08-02", title: "OpenClaw readiness and pipeline", group: "Historical records", summary: "A dated assessment of agent and local-to-cloud readiness.", snapshotDate: "August 2, 2026" },
   { file: "17-openclaw-hardening-handoff-2026-08-02.md", slug: "openclaw-hardening-2026-08-02", title: "OpenClaw hardening handoff", group: "Historical records", summary: "A dated handoff record for hardening work.", snapshotDate: "August 2, 2026" },
   { file: "18-lan-exposure-fix-2026-09-12.md", slug: "lan-exposure-fix-2026-09-12", title: "LAN exposure fix", group: "Historical records", summary: "A dated record of the LAN exposure correction.", snapshotDate: "September 12, 2026" },
+  { file: "19-reference-stack-2026-09.md", slug: "reference-stack-2026-09", title: "September reference stack", group: "Historical records", summary: "Recorded services, model roles, and remaining integration work.", snapshotDate: "September 25, 2026" },
+  { file: "20-open-webui-tuning-and-remote-access-2026-09.md", slug: "open-webui-tuning-2026-09", title: "Open WebUI tuning and remote access", group: "Historical records", summary: "Recorded chat configuration and remote access boundaries.", snapshotDate: "September 25, 2026" },
+  { file: "21-docker-container-inventory-2026-09.md", slug: "docker-inventory-2026-09", title: "Docker container inventory", group: "Historical records", summary: "Recorded container images, ports, and service roles.", snapshotDate: "September 25, 2026" },
+  { file: "22-lm-studio-tuning-and-remote-access-2026-09.md", slug: "lm-studio-tuning-2026-09", title: "LM Studio tuning and remote access", group: "Historical records", summary: "Recorded model settings, memory constraints, and remote access.", snapshotDate: "September 25, 2026" },
 ];
 
 function prepareMarkdown(source = "") {
