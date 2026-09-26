@@ -82,11 +82,12 @@ Lesson: the `config.value` column has NUMERIC affinity, so numeric settings are 
 
 Open WebUI v0.11 has first-class Skills (`skill` table, Workspace > Skills). With native function calling (the default) every **active** skill is listed by id, name and description in an `<available_skills>` block appended to the system prompt, and the model pulls the full body on demand with the built-in `view_skill` tool. Typing `$` in the chat box picks a skill and injects its full content directly. Inactive skills are invisible to both paths until toggled on.
 
-Design:
-- `okh-openwebui-skills-sync.sh` pulls a dedicated clone (`~/.okh/skillz-openwebui`, never the working clone), builds 326 distribution skills (skips `.agents/`, `docs/`, `skills/` duplicate), and upserts them with a DB backup first. Re-run to refresh; UI toggles are preserved unless `--reset-active`.
-- Active set = `okh-openwebui-skills-active.txt` (30 skills, ~3.3k manifest tokens per prompt). The full 326 would cost ~13k tokens per prompt and degrade gpt-oss:20b's routing.
-- Text references are inlined when SKILL.md + references fit in 40k chars; larger ones are linked to GitHub. Scripts are listed as reference only: Open WebUI has no terminal attached.
-- Future: an Open Terminal server would expose skills as `terminal:<name>` with their files and runnable scripts, at the cost of giving the model a sandboxed shell.
+Design (revised 2026-09-25: quality over quantity):
+- New `openwebui` host family in OKHP3/skillz (branch `feat/openwebui-family`): `okhp3-openwebui-research-brief`, `-decision-memo`, `-draft-critique`, `-capture-note` (Open WebUI Notes via `write_note`), `-model-compare`. Written for Open WebUI built-in tools and 20B local models; validated with agentskills `skills-ref` and the repo's catalog-integrity suite.
+- `openwebui/FAMILY.md` declares the loadout between `OPENWEBUI_LOADOUT` markers: the 5 native skills plus 7 portable ones (evidence-standard, session-handoff, linkedin voice/post/comment, mermaid core/repair). ~1.2k manifest tokens per prompt.
+- Copilot Cowork skills were rejected for this host: their contract returns `NOT SUPPORTED` on mobile, the main Open WebUI surface.
+- `okh-openwebui-skills-sync.sh` imports only the loadout (all active) and deactivates any other skillz skill already in Open WebUI. `SKILLZ_SOURCE`/`SKILLZ_REF` select the clone and branch; default GitHub `main`.
+- Scripts are listed as reference only (no terminal). Evals, agent metadata, and benchmarks are not inlined.
 
 ## Sources
 
