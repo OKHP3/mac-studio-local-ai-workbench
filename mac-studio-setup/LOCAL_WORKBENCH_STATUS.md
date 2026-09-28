@@ -167,3 +167,12 @@ GitHub is the durable corpus. It is not automatically a vector database or graph
   - Live agent test on `ollama/gpt-oss:20b`: model route and tool execution work, but the agent never reached a web-search tool. It looped on `tool_search`, `SKILL.md` reads and `curl` (fails: sandbox containers run `network=none`), then ended with `tool_search tool validation failed: invalid arguments`. The "Ask OpenClaw" helper panel has no tools and hallucinated an Ollama version (v0.6.1); do not use it for factual checks.
   - Open item: expose the web_search tool to the main agent (tool profile / sandbox policy) and re-test; consider a stronger tool-calling model if gpt-oss:20b keeps mis-forming `tool_search` arguments.
 - 2026-09-25 tuning pass: root cause of OpenClaw "Allowed models (1)" was `agents.defaults.modelPolicy.allow` pinned to phi4 (now gpt-oss:20b, mistral-small3.1:24b, llama3.1:8b, gemma3:27b, phi4:14b); stale `gemma4` catalog entry removed; fallback normalized to `ollama/llama3.1:8b`. Web search fixed for the sandboxed agent via `tools.sandbox.tools.alsoAllow: ["group:web","group:memory"]` (agent returned v0.34.4 + GitHub URL). Open WebUI: LM Studio connection added (prefix `lmstudio`), SearXNG web search enabled (lang `en`, 5 results), gpt-oss:20b default with web search on + cite-sources prompt, num_ctx 32768, task model llama3.2:3b, compaction at 24k. Reference write-up: [`docs/19-reference-stack-2026-09.md`](../docs/19-reference-stack-2026-09.md).
+
+## Closeout: update, reboot resilience, model cleanup, answer quality (2026-09-25 to 09-27)
+
+- RESOLVED. All components on latest mainstream versions; cold reboot with no manual launches passed 7/7 health checks. OpenClaw Updates page "up to date".
+- Qdrant `v1.19.1` and SearXNG `2026.9.25-12f8b6515` pinned (auto-rollback script); `open-webui-v0.11.0` rollback container removed; `qdrant-prev` / `searxng-prev` kept until about 2026-10-02.
+- About 230 GB of redundant models removed; OpenClaw allowlist, `agents.defaults.models` and Ollama catalog pruned to match.
+- Answer-quality defaults: thinking `high`, 8 search results, Research & Accuracy Standard in workspace `AGENTS.md`.
+- OpenClaw Control web app reinstalled from the Tailscale Serve URL (`https://<host>.<tailnet>.ts.net/`) so Edge app sync works on every device.
+- Detail: [`docs/19-reference-stack-2026-09.md`](../docs/19-reference-stack-2026-09.md#closeout-2026-09-25-to-2026-09-27-resolved).

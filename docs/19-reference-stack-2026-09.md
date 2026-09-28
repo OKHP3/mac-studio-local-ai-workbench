@@ -1,6 +1,6 @@
 ---
 title: Mac Studio local inference reference stack (September 2026)
-updated_date: 2026-09-25
+updated_date: 2026-09-27
 status: current
 ---
 
@@ -15,8 +15,8 @@ One Mac Studio M4 Max (36 GB unified memory) serving local models to a chat UI, 
 | Inference | Ollama (brew) | 0.34.4 | `0.0.0.0:11434` | `sh.brew.ollama` + `com.okh.ollama-env` LaunchAgents | launchd KeepAlive |
 | Inference | LM Studio (headless service) | 0.4.25 | `0.0.0.0:1234` | Login item + "Enable Local LLM Service" | App service |
 | Chat UI | Open WebUI (Docker) | v0.11.4 | `:3000` | Docker Desktop autostart | `--restart always` |
-| Retrieval | Qdrant (Docker) | v1.19.1 | `:6333/6334` | Docker Desktop autostart | `--restart always` |
-| Search | SearXNG (Docker) | 2026.9.23 | `:8888` | Docker Desktop autostart | `--restart always` |
+| Retrieval | Qdrant (Docker) | v1.19.1 (pinned tag) | `:6333/6334` | Docker Desktop autostart | `--restart always` |
+| Search | SearXNG (Docker) | 2026.9.25 (pinned dated tag) | `:8888` | Docker Desktop autostart | `--restart always` |
 | Agent | OpenClaw gateway ("Larry") | 2026.9.6 | `127.0.0.1:18789` | `ai.openclaw.gateway` LaunchAgent | KeepAlive |
 | Runtime | Docker Desktop / Node | 4.92.0 / 26.10.0 | n/a | Login item / brew | n/a |
 
@@ -91,12 +91,35 @@ Quitting the Tailscale app (for example from the Dock) takes the Mac off the tai
 - Host-ops skills (for example `okhp3-openclaw-stack-status`) need `curl`/`docker` on the host; the sandboxed agent cannot reach them (`network=none`). Needs a deliberate choice: a separate non-sandboxed ops agent with exec approvals, or keep them CLI-only.
 - `gpt-oss:20b` still occasionally treats skill names as tools (`tool_search` / `tool_describe` misfires). `mistral-small3.1:24b` lost the bake-off (tool calls failed), so `gpt-oss:20b` stays primary.
 - Full-access mobile pairing needs TLS (`wss://`); LAN pairing is limited access only.
-- FileVault is on with no auto-login and `autorestart 0`: services recover after a login, not after an unattended power loss.
+- FileVault is on with no auto-login. `pmset autorestart 1` brings the Mac back after a power loss, but services start only after someone logs in at the FileVault prompt.
 - Open WebUI search answers are only as good as the page they land on (it confused LM Studio with another product on the same site).
+
+## Closeout (2026-09-25 to 2026-09-27): resolved
+
+The original ask: every component on its latest mainstream version, and every component back on its own after a reboot. Both are met and proven.
+
+| Check | Result |
+|---|---|
+| Versions | OpenClaw 2026.9.6, Ollama 0.34.4, LM Studio 0.4.25, Docker Desktop 4.92.0, Tailscale 1.102.4, Open WebUI v0.11.4, Qdrant v1.19.1, SearXNG 2026.9.25: all current against npm, Homebrew, GitHub releases and Docker Hub |
+| Cold reboot, no manual launches | All services back; 7/7 health checks PASS (Ollama, LM Studio, Open WebUI, Qdrant, SearXNG, OpenClaw `readyz`, Tailscale Serve URL) |
+| OpenClaw Updates page | "Up to date"; last managed update succeeded; rollback cleanup preview had nothing to retire |
+
+What changed in this pass:
+
+1. **Containers pinned.** Qdrant and SearXNG moved off `:latest` to explicit tags, matching Open WebUI. Floating tags made "current" unverifiable.
+2. **Model pruning.** About 230 GB of duplicate, superseded and bake-off-failing models removed (LM Studio 268 GB to 97 GB, Ollama 95 GB to 34 GB). OpenClaw's allowlist, per-model defaults and Ollama catalog were pruned to match, so no picker offers a model that no longer exists.
+3. **Accuracy over speed.** `agents.defaults.thinkingDefault: "high"`, `tools.web.search.maxResults: 8`, and a "Research & Accuracy Standard" in the agent workspace `AGENTS.md`: current facts need live sources, 2+ searches, read 2 to 3 pages, prefer primary sources, cross-check, state freshness, never gap-fill, cite. The bar is an answer at least as good as a careful manual search. `/think low` per message when speed matters more.
+4. **One app address for every device.** Edge syncs installed web apps across desktops, so an app installed from `localhost` breaks everywhere except the Mac. OpenClaw Control is installed from `https://<host>.<tailnet>.ts.net/` instead, which works on the Mac, the Windows laptop (with Tailscale) and iPhone/iPad.
+
+Root causes worth remembering:
+
+- "Provider rejected the request schema or tool payload" was OpenClaw's rendering of an HTTP 400 from LM Studio's memory guardrail. One old session was pinned to LM Studio's copy of gpt-oss while Ollama's copy was already resident. The duplicate model is gone.
+- Doctor's "device-required" gateway error is doctor's own probe. Run `openclaw doctor --allow-exec` when gateway credentials come from the keychain.
+- `brew outdated` flags LM Studio and Docker Desktop because both self-update and Homebrew's record goes stale. Compare app bundle versions instead.
 
 ## Operator scripts
 
-`~/Downloads/files/`: `okh-stack-inventory.sh` (read-only audit), `okh-stack-apply.sh` (update + hardening), `okh-postboot-check.sh` (PASS/FAIL after reboot), `okh-ollama-tune.sh` (memory tuning).
+`~/Downloads/files/`: `okh-stack-inventory.sh` (read-only audit), `okh-stack-apply.sh` (update + hardening), `okh-postboot-check.sh` (PASS/FAIL after reboot), `okh-ollama-tune.sh` (memory tuning), `okh-final-verify.sh` (installed vs latest, auto-start wiring, health, OpenClaw update follow-ups; read-only), `okh-final-fixes.sh` (container tag pinning with auto-rollback), `okh-model-cleanup.sh` (dry-run-first model pruning; LM Studio folders moved, not deleted).
 
 ## Publishing hygiene
 
