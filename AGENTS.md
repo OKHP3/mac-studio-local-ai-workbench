@@ -162,3 +162,5 @@ The viewer has Playwright smoke coverage and technology tracking has focused uni
 ## Keeping this guide current
 
 When the workbench changes, update the relevant source document first, then revise this guide if the change affects project identity, architecture, commands, boundaries, or validation. Prefer a dated evidence record for host state. Keep this file concise, factual, and useful to a new agent starting from the repository root.
+
+## Imported Claude Cowork project instructions
