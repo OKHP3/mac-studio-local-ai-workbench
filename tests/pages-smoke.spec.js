@@ -1,25 +1,34 @@
 import { expect, test } from "@playwright/test";
 
 const pagesBase = "/mac-studio-local-ai-workbench/";
-const localOrigin = "http://127.0.0.1:4173";
 
-test("loads the production subpath without broken generated assets", async ({ page }) => {
+test("loads the production subpath without broken generated assets @live", async ({ page, baseURL }) => {
+  const siteOrigin = new URL(baseURL).origin;
   const failedResponses = [];
+  const failedRequests = [];
   page.on("response", (response) => {
-    if (response.status() >= 400 && new URL(response.url()).origin === localOrigin) {
+    if (response.status() >= 400 && new URL(response.url()).origin === siteOrigin) {
       failedResponses.push(`${response.status()} ${response.url()}`);
     }
   });
+  page.on("requestfailed", (request) => {
+    if (new URL(request.url()).origin === siteOrigin) {
+      failedRequests.push(`${request.url()}: ${request.failure()?.errorText}`);
+    }
+  });
 
-  await page.goto("./");
+  const response = await page.goto("./");
 
-  await expect(page).toHaveURL(new RegExp(`${pagesBase.replaceAll("/", "\\/")}$`));
+  expect(response?.status()).toBe(200);
+  expect(new URL(baseURL).pathname).toBe(pagesBase);
+  await expect(page).toHaveURL(baseURL);
   await expect(page.getByRole("heading", { level: 1 })).toContainText("Local AI");
   await expect(page.locator("main")).toBeVisible();
   expect(failedResponses).toEqual([]);
+  expect(failedRequests).toEqual([]);
 });
 
-test("every internal anchor points to a rendered section", async ({ page }) => {
+test("every internal anchor points to a rendered section @live", async ({ page }) => {
   await page.goto("./");
 
   const anchors = await page.locator('a[href^="#"]:not([href^="#/"])').evaluateAll((links) =>
@@ -32,7 +41,7 @@ test("every internal anchor points to a rendered section", async ({ page }) => {
   }
 });
 
-test("primary navigation reaches its target at desktop and mobile widths", async ({ page }, testInfo) => {
+test("primary navigation reaches its target at desktop and mobile widths @live", async ({ page, baseURL }, testInfo) => {
   await page.goto("./");
 
   if (testInfo.project.name === "mobile") {
@@ -40,8 +49,12 @@ test("primary navigation reaches its target at desktop and mobile widths", async
   }
 
   await page.getByRole("link", { name: "Architecture", exact: true }).click();
-  await expect(page).toHaveURL(/#architecture$/);
+  await expect(page).toHaveURL(`${baseURL}#architecture`);
   await expect(page.locator("#architecture")).toBeVisible();
+  await expect.poll(() => page.locator("#architecture").evaluate((section) => {
+    const bounds = section.getBoundingClientRect();
+    return bounds.top < window.innerHeight && bounds.bottom > 0;
+  })).toBe(true);
 });
 
 test("external links use valid secure URLs", async ({ page }) => {
@@ -83,7 +96,7 @@ test("updates browser title and description for documentation routes", async ({ 
   );
 });
 
-test("ships Pages-safe install and share assets", async ({ page }) => {
+test("ships Pages-safe install and share assets", async ({ page, baseURL }) => {
   await page.goto("./");
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
     "href",
@@ -105,7 +118,7 @@ test("ships Pages-safe install and share assets", async ({ page }) => {
     `${pagesBase}site.webmanifest`,
   ]));
 
-  const manifestResponse = await page.request.get(`${localOrigin}${pagesBase}site.webmanifest`);
+  const manifestResponse = await page.request.get(new URL("site.webmanifest", baseURL).href);
   expect(manifestResponse.ok()).toBeTruthy();
   const manifest = await manifestResponse.json();
   expect(manifest.icons.map(({ sizes }) => sizes)).toEqual(["192x192", "512x512"]);

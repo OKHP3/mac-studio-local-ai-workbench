@@ -30,7 +30,7 @@ This repository is the sanitized, durable artifact layer for a Mac Studio M4 Max
 
 ### Unknown or intentionally not asserted
 
-- Technology maintenance now has a weekly release-monitoring workflow, a validation workflow and Dependabot for GitHub Actions. There is no application release pipeline or supported automatic cross-machine upgrade contract.
+- Technology maintenance has a weekly release-monitoring workflow, a validation workflow and Dependabot for GitHub Actions. The static viewer has a GitHub Pages build/deploy/live-probe workflow; there is no supported automatic cross-machine upgrade contract for the Mac Studio.
 - The repository does not prove that every historical pending smoke test in `docs/06-definition-of-done.md` has since been completed. Treat dated status documents as records, not live telemetry.
 - Version numbers and host paths in dated documents describe captured workstation state and may be stale. Verify the host before treating them as current.
 

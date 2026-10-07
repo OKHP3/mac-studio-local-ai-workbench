@@ -170,8 +170,29 @@ npm run dev
 For a production build, use `npm run check`. For desktop and mobile smoke
 coverage, install Chromium with `npx playwright install chromium`, then run
 `npm run test:smoke`. GitHub validates the viewer and technology tracking.
-This recovery does not establish an automatic website deployment or control
-the Mac Studio services.
+The `Deploy and verify GitHub Pages` workflow builds and checks the viewer,
+publishes `dist` on pushes to `main` (or a manual workflow run), then probes the
+URL returned by GitHub Pages. In repository settings, Pages must use
+**GitHub Actions** as its build source. The optional repository variable
+`VITE_GA_MEASUREMENT_ID` enables analytics in the published build.
+
+The separate `Verify published Pages site` job checks the home page at
+`/mac-studio-local-ai-workbench/`, generated asset requests, section anchors,
+and Architecture navigation at desktop and mobile widths. It retries failed
+checks twice to allow for publication delay. Failures fail the workflow and
+produce a job summary plus a `pages-live-probe-attempt-N` report with failure
+screenshots and traces (`N` is the workflow run attempt). Each attempt keeps its
+own report. Choose **Re-run failed jobs** to repeat a failed probe without
+rebuilding, uploading, or changing the deployed artifact.
+
+To probe an already-published site without starting a local preview server:
+
+```bash
+PAGES_URL=https://YOUR-PAGES-HOST/mac-studio-local-ai-workbench/ npm run test:smoke
+```
+
+Use the URL shown by the deployment, including the repository subpath.
+These checks do not control or verify the Mac Studio services.
 
 Homepage external links are audited separately every Monday at 14:00 UTC and
 on manual runs. Use `npm run check:links` for a live audit or
