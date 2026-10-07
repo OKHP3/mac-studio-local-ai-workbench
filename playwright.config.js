@@ -5,6 +5,7 @@ const smokePort = 4173;
 
 export default defineConfig({
   testDir: "./tests",
+  testMatch: "**/*.spec.js",
   retries: process.env.CI ? 1 : 0,
   reporter: process.env.CI ? "github" : "list",
   use: {

@@ -173,6 +173,12 @@ coverage, install Chromium with `npx playwright install chromium`, then run
 This recovery does not establish an automatic website deployment or control
 the Mac Studio services.
 
+Homepage external links are audited separately every Monday at 14:00 UTC and
+on manual runs. Use `npm run check:links` for a live audit or
+`npm run test:links` for offline policy tests. See
+[External project link checks](docs/external-link-checks.md) for redirect,
+retry, reporting, and failure rules.
+
 ### Safe synchronization
 
 Start with `git status --short --branch` and `git fetch origin`. From a clean,

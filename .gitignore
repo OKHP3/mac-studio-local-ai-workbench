@@ -86,3 +86,4 @@ dist/
 screenshots/
 test-results/
 playwright-report/
+reports/external-link-checks/
