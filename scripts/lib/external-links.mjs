@@ -39,14 +39,14 @@ export const EXPECTED_CONTENT_RULES = Object.freeze([
   },
 ]);
 
-function isPublicHttpsUrl(value) {
+function isPublicExternalUrl(value) {
   let url;
   try {
     url = new URL(value);
   } catch {
     return false;
   }
-  if (url.protocol !== "https:" || url.username || url.password) return false;
+  if (!["http:", "https:"].includes(url.protocol) || url.username || url.password) return false;
 
   const hostname = url.hostname.toLowerCase().replace(/^\[|\]$/g, "").replace(/\.$/, "");
   if (!hostname || hostname === "localhost" || hostname.endsWith(".localhost")
@@ -74,6 +74,14 @@ function isPublicHttpsUrl(value) {
   return true;
 }
 
+function isPublicHttpsUrl(value) {
+  try {
+    return new URL(value).protocol === "https:" && isPublicExternalUrl(value);
+  } catch {
+    return false;
+  }
+}
+
 function isSharedProjectPage(value) {
   const url = new URL(value);
   const projectPath = "/projects/mac-studio-local-ai-workbench";
@@ -82,12 +90,12 @@ function isSharedProjectPage(value) {
 }
 
 function isPublicMarkdownCitation(value) {
-  return isPublicHttpsUrl(value) && !isSharedProjectPage(value);
+  return isPublicExternalUrl(value) && !isSharedProjectPage(value);
 }
 
 function locationsForHrefSource(source, file) {
   return [...source.matchAll(/\bhref\s*=\s*["'](https?:\/\/[^"']+)["']/g)]
-    .filter((match) => isPublicHttpsUrl(match[1]))
+    .filter((match) => isPublicExternalUrl(match[1]))
     .map((match) => ({
       url: match[1],
       location: { file, line: source.slice(0, match.index).split("\n").length },
@@ -226,7 +234,7 @@ export function extractMarkdownExternalLinks(source, file) {
       const label = (match[2] === undefined || match[2] === "" ? match[1] : match[2])
         .replace(/\\(.)/g, "$1").trim().toLowerCase().replace(/\s+/g, " ");
       const destination = definitions.get(label);
-      if (destination && isPublicHttpsUrl(destination)) {
+      if (destination && isPublicMarkdownCitation(destination)) {
         occurrences.push({ url: new URL(destination).href, line: entry.number });
       }
     }
@@ -334,6 +342,22 @@ export async function checkExternalUrl(originalUrl, {
   if (maxAttempts < 1 || timeoutMs < 1 || maxRedirects < 0) {
     throw new Error("Invalid link-check limits.");
   }
+  try {
+    const destination = new URL(originalUrl);
+    if (destination.protocol === "http:" && isPublicExternalUrl(destination.href)) {
+      return {
+        url: originalUrl,
+        finalUrl: destination.href,
+        outcome: "insecure",
+        detail: "Unencrypted HTTP URL was not requested. Replace it with a verified HTTPS destination.",
+        attempts: 0,
+        status: null,
+        redirects: [],
+      };
+    }
+  } catch {
+    // The normal HTTPS validation below returns an explicit broken result.
+  }
   let lastResult;
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
     let currentUrl = originalUrl;
@@ -431,6 +455,7 @@ export function summarizeResults(results) {
     checked: results.length,
     reachable: results.filter((result) => result.outcome === "ok").length,
     suspicious: results.filter((result) => result.outcome === "suspicious").length,
+    insecure: results.filter((result) => result.outcome === "insecure").length,
     broken: results.filter((result) => result.outcome === "broken").length,
     transient: results.filter((result) => result.outcome === "transient").length,
     restricted: results.filter((result) => result.outcome === "restricted").length,
@@ -446,7 +471,8 @@ export function formatReport(results, checkedAt) {
     const locations = (result.locations ?? [])
       .map(({ file, line }) => `${file}:${line}`)
       .join(", ") || "—";
-    return `| ${cell(result.url)} | ${cell(locations)} | ${result.outcome.toUpperCase()} | ${result.status ?? "network error"} | ${result.attempts} | ${cell(result.finalUrl)} | ${cell(result.detail)} |`;
+    const status = result.outcome === "insecure" ? "not requested" : result.status ?? "network error";
+    return `| ${cell(result.url)} | ${cell(locations)} | ${result.outcome.toUpperCase()} | ${status} | ${result.attempts} | ${cell(result.finalUrl)} | ${cell(result.detail)} |`;
   },
   );
   const redirects = results.flatMap((result) => result.redirects.map((redirect) =>
@@ -454,8 +480,8 @@ export function formatReport(results, checkedAt) {
   ));
   return [
     "# External project link audit", "", `Checked at: ${checkedAt}`, "",
-    `Checked ${summary.checked}; reachable ${summary.reachable}; suspicious ${summary.suspicious}; broken ${summary.broken}; transient ${summary.transient}; restricted ${summary.restricted}; redirected ${summary.redirected}.`,
-    "", "Only confirmed broken HTTP links fail this audit. Suspicious content, transient network/HTTP outages, and restricted results are separate warnings.",
+    `Checked ${summary.checked}; reachable ${summary.reachable}; insecure ${summary.insecure}; suspicious ${summary.suspicious}; broken ${summary.broken}; transient ${summary.transient}; restricted ${summary.restricted}; redirected ${summary.redirected}.`,
+    "", "Insecure HTTP citations and confirmed broken HTTPS links fail this audit. HTTP destinations are reported without being requested. Suspicious content, transient network/HTTP outages, and restricted results are separate warnings.",
     "", "| Source URL | Document locations | Result | HTTP | Attempts | Final destination | Detail |",
     "| --- | --- | --- | --- | --- | --- | --- |", ...rows,
     "", "## Redirects", "", ...(redirects.length ? redirects : ["None."]), "",

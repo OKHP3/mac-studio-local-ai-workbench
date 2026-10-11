@@ -53,6 +53,18 @@ test("extracts actual homepage links and deduplicates repeated repository anchor
   assert.throws(() => extractExternalLinks('<a href="#top">Home</a>'), /No external/);
 });
 
+test("extracts public HTTP homepage anchors for insecure reporting but ignores local HTTP links", () => {
+  const source = [
+    '<a href="http://example.org/source">Insecure citation</a>',
+    '<a href="http://localhost/private">Local</a>',
+    '<a href="https://example.org/secure">Secure citation</a>',
+  ].join("\n");
+  assert.deepEqual(extractExternalLinkOccurrences(source, "src/App.jsx"), [
+    { url: "http://example.org/source", location: { file: "src/App.jsx", line: 1 } },
+    { url: "https://example.org/secure", location: { file: "src/App.jsx", line: 3 } },
+  ]);
+});
+
 test("discovers only the documents selected by the public catalog", async () => {
   const catalogSource = await readFile(new URL("../src/docsCatalog.js", import.meta.url), "utf8");
   const files = extractCatalogDocumentFiles(catalogSource);
@@ -67,8 +79,11 @@ test("discovers only the documents selected by the public catalog", async () => 
 test("extracts inline and reference Markdown links, deduplicates them, and reports citation lines", () => {
   const source = [
     '[Inline](https://example.org/a_(b) "title")',
+    "[Insecure inline](http://example.org/old-source)",
     "See [Guide][official] and [official] again.",
     '[official]: <https://docs.example.org/reference> "Official guide"',
+    "See [Old source][old].",
+    "[old]: http://archive.example.org/old-source",
     "Code: `[not a link](https://ignored.example.org)`",
     "    [also ignored](https://ignored.example.org)",
     "```md",
@@ -80,10 +95,21 @@ test("extracts inline and reference Markdown links, deduplicates them, and repor
   ].join("\n");
   assert.deepEqual(extractMarkdownExternalLinks(source, "docs/example.md"), [
     {
+      url: "http://archive.example.org/old-source",
+      locations: [
+        { file: "docs/example.md", line: 5 },
+        { file: "docs/example.md", line: 6 },
+      ],
+    },
+    {
+      url: "http://example.org/old-source",
+      locations: [{ file: "docs/example.md", line: 2 }],
+    },
+    {
       url: "https://docs.example.org/reference",
       locations: [
-        { file: "docs/example.md", line: 2 },
         { file: "docs/example.md", line: 3 },
+        { file: "docs/example.md", line: 4 },
       ],
     },
     {
@@ -91,6 +117,22 @@ test("extracts inline and reference Markdown links, deduplicates them, and repor
       locations: [{ file: "docs/example.md", line: 1 }],
     },
   ]);
+});
+
+test("public HTTP URLs are reported as insecure without making a request", async () => {
+  let requested = false;
+  const result = await checkExternalUrl("http://example.org/old-source", {
+    fetchImpl: async () => { requested = true; return response(200); },
+  });
+  assert.equal(result.outcome, "insecure");
+  assert.equal(result.attempts, 0);
+  assert.equal(result.status, null);
+  assert.match(result.detail, /was not requested/);
+  assert.equal(requested, false);
+  assert.deepEqual(summarizeResults([result]), {
+    checked: 1, reachable: 0, suspicious: 0, insecure: 1, broken: 0,
+    transient: 0, restricted: 0, redirected: 0,
+  });
 });
 
 test("ignores non-public HTTPS destinations in homepage links and direct checks", async () => {
@@ -157,7 +199,8 @@ test("a successful soft-error page is suspicious, not reachable or broken", asyn
   assert.equal(result.outcome, "suspicious");
   assert.match(result.detail, /Expected Project/);
   assert.deepEqual(summarizeResults([result]), {
-    checked: 1, reachable: 0, suspicious: 1, broken: 0, transient: 0, restricted: 0, redirected: 0,
+    checked: 1, reachable: 0, suspicious: 1, insecure: 0, broken: 0,
+    transient: 0, restricted: 0, redirected: 0,
   });
 });
 
@@ -318,15 +361,22 @@ test("reports retain warnings, failed destinations, attempt counts, and redirect
   assert.match(report, /transient 0/);
 });
 
-test("reports suspicious content separately from HTTP failures and network outages", () => {
+test("reports insecure citations, suspicious content, HTTP failures, and outages distinctly", () => {
   const suspicious = {
     url, finalUrl: url, outcome: "suspicious", detail: "Expected page content was not found.",
     attempts: 1, status: 200, redirects: [], locations: [],
   };
-  const report = formatReport([suspicious], "2026-09-26T00:00:00.000Z");
-  assert.match(report, /suspicious 1; broken 0; transient 0/);
+  const insecure = {
+    url: "http://example.org/source", finalUrl: "http://example.org/source",
+    outcome: "insecure", detail: "Unencrypted HTTP URL was not requested.",
+    attempts: 0, status: null, redirects: [], locations: [],
+  };
+  const report = formatReport([suspicious, insecure], "2026-09-26T00:00:00.000Z");
+  assert.match(report, /reachable 0; insecure 1; suspicious 1; broken 0; transient 0/);
   assert.match(report, /SUSPICIOUS/);
-  assert.match(report, /Only confirmed broken HTTP links fail/);
+  assert.match(report, /INSECURE/);
+  assert.match(report, /HTTP destinations are reported without being requested/);
+  assert.match(report, /\| INSECURE \| not requested \| 0 \|/);
 });
 
 test("the live audit is a scheduled/manual workflow, not a deployment or push dependency", async () => {

@@ -39,7 +39,7 @@ try {
       for (const location of locations) addSource(url, location);
     }
   }
-  if (!sources.size) throw new Error("No public external HTTPS links found in the homepage or published documents.");
+  if (!sources.size) throw new Error("No public external links found in the homepage or published documents.");
 
   const entries = [...sources.values()].sort((a, b) => a.url.localeCompare(b.url));
   const results = new Array(entries.length);
@@ -55,7 +55,7 @@ try {
       if (process.env.GITHUB_ACTIONS === "true" && result.outcome !== "ok") {
         const message = `${entry.url}: ${result.detail} [${entry.locations.map(({ file, line }) => `${file}:${line}`).join(", ")}]`
           .replaceAll("%", "%25").replaceAll("\r", "%0D").replaceAll("\n", "%0A");
-        console.log(`::${result.outcome === "broken" ? "error" : "warning"}::${message}`);
+        console.log(`::${["broken", "insecure"].includes(result.outcome) ? "error" : "warning"}::${message}`);
       }
     }
   };
@@ -72,7 +72,7 @@ try {
   if (process.env.GITHUB_STEP_SUMMARY) await appendFile(process.env.GITHUB_STEP_SUMMARY, markdown);
   console.log(`Audited ${documentFiles.length} published documents.`);
   console.log(`Reports: ${fileURLToPath(reportDirectory)}`);
-  process.exitCode = summary.broken ? 1 : 0;
+  process.exitCode = summary.broken || summary.insecure ? 1 : 0;
 } catch (error) {
   console.error(`Link audit could not run: ${error.message}`);
   process.exitCode = 1;

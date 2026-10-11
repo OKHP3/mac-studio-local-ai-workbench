@@ -1,7 +1,7 @@
 # External project link checks
 
 The **Check external project links** GitHub Actions workflow audits static
-external homepage links in `src/App.jsx` and public HTTPS citations in the
+external homepage links in `src/App.jsx` and public citations in the
 Markdown documents selected by `src/docsCatalog.js` every Monday at 14:00 UTC.
 It can also be started from Actions using **Run workflow**. Scheduled runs
 require this workflow to be present on the repository's default branch.
@@ -22,17 +22,18 @@ It requires Node 20 or later and no extra dependencies or credentials.
 
 ## Results and policy
 
-- The script discovers public HTTPS `href` values in `src/App.jsx` and Markdown
+- The script discovers public HTTP and HTTPS `href` values in `src/App.jsx` and Markdown
   inline links and reference links in catalog-selected documents only. Repeated
   destinations are checked once and their source file and line locations are
   listed in the report.
-- Relative links, internal documentation routes, this project's shared Pages
-  routes, non-HTTPS links, private or local destinations, and links in Markdown
-  code examples are not requested.
+- Public HTTP citations are reported as **INSECURE** and are never requested;
+  insecure citations fail the audit. Relative links, internal documentation
+  routes, this project's shared Pages routes, private or local destinations,
+  and links in Markdown code examples are not requested.
 - Historical and dated records are audited as written. The checker never edits
   source documents or silently replaces old citations with current URLs.
 - GET requests use a 15-second timeout. Successful 2xx responses are reachable.
-- HTTPS redirects are followed explicitly, up to eight hops. Every destination
+- HTTPS links are checked; HTTPS redirects are followed explicitly, up to eight hops. Every destination
   and status is recorded. Permanent 301/308 moves are marked for review, while
   302/303/307 redirects are recorded as temporary. Source links are not changed
   automatically. Redirect loops, absent Location headers, insecure destinations,
@@ -62,9 +63,10 @@ by Git. Check the final destination before updating any redirected source URL.
 ## Boundaries
 
 The expected-content rules apply only to the four named third-party destinations.
-Other citations are checked for HTTP availability only. Suspicious content is
-reported separately from confirmed **BROKEN** HTTP failures and **TRANSIENT**
-network or temporary HTTP outages; only confirmed broken links fail the audit.
+Other HTTPS citations are checked for availability only. **INSECURE** HTTP
+citations fail the audit without a network request. Suspicious content is
+reported separately from confirmed **BROKEN** HTTPS failures and **TRANSIENT**
+network or temporary HTTPS outages; these results remain warnings.
 Bare URLs that are not Markdown links, links in uncataloged documents, and
 analytics or social-image resources are not included. The published
 documentation viewer and its uptime are outside this check.
