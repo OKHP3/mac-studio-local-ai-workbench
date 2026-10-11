@@ -187,6 +187,21 @@ screenshots and traces (`N` is the workflow run attempt). Each attempt keeps its
 own report. Choose **Re-run failed jobs** to repeat a failed probe without
 rebuilding, uploading, or changing the deployed artifact.
 
+The independent **Check published Pages health** workflow
+(`.github/workflows/pages-health.yml`) runs at 00:23, 06:23, 12:23, and 18:23 UTC
+and can be started from **Actions → Check published Pages health → Run workflow**.
+It uses only `contents: read` and `pages: read`, retrieves the actual `html_url`
+from GitHub's repository Pages API, and runs the same live smoke suite without
+building, uploading a Pages artifact, or deploying. URL lookup is limited to
+three attempts with 15-second request timeouts and 5-second retry delays; smoke
+checks retry at most twice and the job is limited to 10 minutes. Missing Pages
+metadata fails the run instead of guessing a URL or starting a local server.
+Each run attempt preserves a `pages-health-probe-attempt-N` diagnostic artifact
+(URL lookup status, HTML report, failure screenshots and traces when available)
+for 14 days and writes a job summary, even on failure. Check Actions for failed
+runs and configure GitHub Actions failure notifications for alerts. GitHub
+schedules can be delayed; this is periodic detection, not continuous monitoring.
+
 To probe an already-published site without starting a local preview server:
 
 ```bash
