@@ -42,6 +42,14 @@ It requires Node 20 or later and no extra dependencies or credentials.
   Persistent temporary errors remain **TRANSIENT** warnings, not passing checks.
 - HTTP 401/403 responses are **RESTRICTED** warnings requiring manual review.
   A bot-protection response is not enough evidence to call a link dead.
+- Four important third-party destinations also have narrowly scoped expected
+  page checks configured in `scripts/lib/external-links.mjs`: the workbench
+  repository, its benchmark directory, the OverKill Hill home page, and the
+  workbench project archive. These rules require the expected final host/path
+  and small identifying text fragments in the HTML response. The checker reads
+  at most 256 KiB and does not compare whole-page snapshots. A 2xx response
+  with an unexpected destination, non-HTML content, or missing identifying text
+  is **SUSPICIOUS**, not a confirmed HTTP failure.
 - Other unsuccessful responses, including 404 and 410, are **BROKEN** results.
   Broken links fail only this independent audit. Invalid source configuration
   or a script error also fails explicitly.
@@ -53,7 +61,14 @@ by Git. Check the final destination before updating any redirected source URL.
 
 ## Boundaries
 
-This checks HTTP availability, not page contents. A server returning 200 for an
-error page cannot be identified reliably here. Bare URLs that are not Markdown
-links, links in uncataloged documents, and analytics or social-image resources
-are not included.
+The expected-content rules apply only to the four named third-party destinations.
+Other citations are checked for HTTP availability only. Suspicious content is
+reported separately from confirmed **BROKEN** HTTP failures and **TRANSIENT**
+network or temporary HTTP outages; only confirmed broken links fail the audit.
+Bare URLs that are not Markdown links, links in uncataloged documents, and
+analytics or social-image resources are not included. The published
+documentation viewer and its uptime are outside this check.
+
+Offline fixtures for the expected pages and a soft-error response are under
+`tests/fixtures/external-links/`; `npm run test:links` exercises the rules
+without contacting third-party sites.

@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises";
 import test from "node:test";
 import {
   checkExternalUrl,
+  EXPECTED_CONTENT_RULES,
   extractCatalogDocumentFiles,
   extractExternalLinkOccurrences,
   extractExternalLinks,
@@ -13,7 +14,15 @@ import {
 
 const url = "https://example.com/project";
 const response = (status, headers = {}) => new Response(null, { status, headers });
+const htmlResponse = (body, headers = {}) => new Response(body, {
+  status: 200,
+  headers: { "content-type": "text/html; charset=utf-8", ...headers },
+});
 const noWait = async () => {};
+const readFixture = (name) => readFile(
+  new URL(`./fixtures/external-links/${name}.html`, import.meta.url),
+  "utf8",
+);
 
 function checker(sequence, options = {}) {
   const requests = [];
@@ -105,6 +114,105 @@ test("successful links use bounded GET requests without automatic redirects", as
   assert.equal(fixture.requests[0].method, "GET");
   assert.equal(fixture.requests[0].redirect, "manual");
   assert.ok(fixture.requests[0].signal instanceof AbortSignal);
+});
+
+test("expected-content rules are explicit and limited to the four homepage destinations", () => {
+  assert.deepEqual(EXPECTED_CONTENT_RULES.map((rule) => rule.url), [
+    "https://github.com/OKHP3/mac-studio-local-ai-workbench",
+    "https://github.com/OKHP3/mac-studio-local-ai-workbench/tree/main/benchmarks",
+    "https://overkillhill.com",
+    "https://overkillhill.com/projects/mac-studio-local-ai-workbench/",
+  ]);
+  assert.ok(EXPECTED_CONTENT_RULES.every((rule) =>
+    rule.expectedText.length > 0 && rule.allowedFinalDestinations.length > 0,
+  ));
+});
+
+test("configured destinations pass when the expected page content is present", async () => {
+  const fixtures = ["repository", "benchmarks", "brand", "project-archive"];
+  for (const [index, rule] of EXPECTED_CONTENT_RULES.entries()) {
+    const destination = new URL(rule.url);
+    const body = await readFixture(fixtures[index]);
+    const result = await checkExternalUrl(rule.url, {
+      fetchImpl: async () => htmlResponse(body),
+      sleep: noWait,
+    });
+    assert.equal(result.outcome, "ok", rule.url);
+    assert.match(result.detail, /expected page content found/);
+    assert.equal(result.finalUrl, destination.href);
+  }
+});
+
+test("a successful soft-error page is suspicious, not reachable or broken", async () => {
+  const rule = {
+    url,
+    allowedFinalDestinations: [{ hostname: "example.com", pathname: "/project" }],
+    expectedText: ["Expected Project"],
+  };
+  const result = await checkExternalUrl(url, {
+    fetchImpl: async () => htmlResponse(await readFixture("soft-error")),
+    expectedContentRules: [rule],
+    sleep: noWait,
+  });
+  assert.equal(result.outcome, "suspicious");
+  assert.match(result.detail, /Expected Project/);
+  assert.deepEqual(summarizeResults([result]), {
+    checked: 1, reachable: 0, suspicious: 1, broken: 0, transient: 0, restricted: 0, redirected: 0,
+  });
+});
+
+test("an unrelated redirect destination is suspicious even if the final page looks valid", async () => {
+  const rule = {
+    url,
+    allowedFinalDestinations: [{ hostname: "example.com", pathname: "/project" }],
+    expectedText: ["Expected Project"],
+  };
+  const result = await checkExternalUrl(url, {
+    fetchImpl: async (destination) => destination === url
+      ? response(302, { location: "https://other.example.org/" })
+      : htmlResponse(await readFixture("project-archive")),
+    expectedContentRules: [rule],
+    sleep: noWait,
+  });
+  assert.equal(result.outcome, "suspicious");
+  assert.equal(result.finalUrl, "https://other.example.org/");
+  assert.match(result.detail, /unexpected destination/);
+});
+
+test("content rules require HTML but do not change unconfigured availability checks", async () => {
+  const rule = {
+    url,
+    allowedFinalDestinations: [{ hostname: "example.com", pathname: "/project" }],
+    expectedText: ["Expected Project"],
+  };
+  const configured = await checkExternalUrl(url, {
+    fetchImpl: async () => new Response("Expected Project", { status: 200, headers: { "content-type": "text/plain" } }),
+    expectedContentRules: [rule],
+    sleep: noWait,
+  });
+  const unconfigured = await checkExternalUrl(url, {
+    fetchImpl: async () => new Response("no HTML here", { status: 200, headers: { "content-type": "text/plain" } }),
+    expectedContentRules: [],
+    sleep: noWait,
+  });
+  assert.equal(configured.outcome, "suspicious");
+  assert.match(configured.detail, /Expected HTML/);
+  assert.equal(unconfigured.outcome, "ok");
+});
+
+test("content rules never turn temporary network outages into suspicious page results", async () => {
+  const rule = {
+    url,
+    allowedFinalDestinations: [{ hostname: "example.com", pathname: "/project" }],
+    expectedText: ["Expected Project"],
+  };
+  const result = await checkExternalUrl(url, {
+    fetchImpl: async () => response(503),
+    expectedContentRules: [rule],
+    maxAttempts: 1,
+    sleep: noWait,
+  });
+  assert.equal(result.outcome, "transient");
 });
 
 test("follows relative and cross-host HTTPS redirects with permanent/temporary provenance", async () => {
@@ -208,6 +316,17 @@ test("reports retain warnings, failed destinations, attempt counts, and redirect
   assert.match(report, /https:\/\/example.com\/gone/);
   assert.match(report, /docs\/source\.md:12/);
   assert.match(report, /transient 0/);
+});
+
+test("reports suspicious content separately from HTTP failures and network outages", () => {
+  const suspicious = {
+    url, finalUrl: url, outcome: "suspicious", detail: "Expected page content was not found.",
+    attempts: 1, status: 200, redirects: [], locations: [],
+  };
+  const report = formatReport([suspicious], "2026-09-26T00:00:00.000Z");
+  assert.match(report, /suspicious 1; broken 0; transient 0/);
+  assert.match(report, /SUSPICIOUS/);
+  assert.match(report, /Only confirmed broken HTTP links fail/);
 });
 
 test("the live audit is a scheduled/manual workflow, not a deployment or push dependency", async () => {

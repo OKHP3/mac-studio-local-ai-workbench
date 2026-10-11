@@ -2,6 +2,42 @@ import { isIP } from "node:net";
 
 const redirectStatuses = new Set([301, 302, 303, 307, 308]);
 const temporaryStatuses = new Set([408, 425, 429]);
+const maxInspectedBodyBytes = 256 * 1024;
+
+// These narrow rules protect only the four homepage destinations whose 200
+// responses should still identify the intended project or brand.
+export const EXPECTED_CONTENT_RULES = Object.freeze([
+  {
+    url: "https://github.com/OKHP3/mac-studio-local-ai-workbench",
+    allowedFinalDestinations: [
+      { hostname: "github.com", pathname: "/OKHP3/mac-studio-local-ai-workbench" },
+    ],
+    expectedText: ["OKHP3/mac-studio-local-ai-workbench"],
+  },
+  {
+    url: "https://github.com/OKHP3/mac-studio-local-ai-workbench/tree/main/benchmarks",
+    allowedFinalDestinations: [
+      { hostname: "github.com", pathname: "/OKHP3/mac-studio-local-ai-workbench/tree/main/benchmarks" },
+    ],
+    expectedText: ["OKHP3/mac-studio-local-ai-workbench", "benchmarks"],
+  },
+  {
+    url: "https://overkillhill.com",
+    allowedFinalDestinations: [
+      { hostname: "overkillhill.com", pathname: "/" },
+      { hostname: "www.overkillhill.com", pathname: "/" },
+    ],
+    expectedText: ["OverKill Hill"],
+  },
+  {
+    url: "https://overkillhill.com/projects/mac-studio-local-ai-workbench/",
+    allowedFinalDestinations: [
+      { hostname: "overkillhill.com", pathname: "/projects/mac-studio-local-ai-workbench" },
+      { hostname: "www.overkillhill.com", pathname: "/projects/mac-studio-local-ai-workbench" },
+    ],
+    expectedText: ["Mac Studio Local AI Workbench"],
+  },
+]);
 
 function isPublicHttpsUrl(value) {
   let url;
@@ -239,12 +275,61 @@ function retryDelay(response, attempt) {
   return Math.min(10_000, 1000 * 2 ** (attempt - 1));
 }
 
+function expectedContentRuleFor(url, rules) {
+  const normalizedUrl = new URL(url).href;
+  return rules.find((rule) => new URL(rule.url).href === normalizedUrl);
+}
+
+function matchesExpectedDestination(finalUrl, allowedDestinations) {
+  const destination = new URL(finalUrl);
+  return allowedDestinations.some((allowed) =>
+    destination.hostname.toLowerCase() === allowed.hostname.toLowerCase()
+      && destination.pathname.replace(/\/+$/, "") === allowed.pathname.replace(/\/+$/, ""),
+  );
+}
+
+async function readBodyPrefix(response, maxBytes = maxInspectedBodyBytes) {
+  if (!response.body) return "";
+  const reader = response.body.getReader();
+  const chunks = [];
+  let bytesRead = 0;
+  try {
+    while (bytesRead < maxBytes) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      const remaining = maxBytes - bytesRead;
+      const chunk = value.subarray(0, remaining);
+      chunks.push(chunk);
+      bytesRead += chunk.byteLength;
+      if (chunk.byteLength < value.byteLength) break;
+    }
+  } finally {
+    await reader.cancel().catch(() => {});
+  }
+  return new TextDecoder().decode(Buffer.concat(chunks));
+}
+
+function visibleTextFromHtml(html) {
+  return html
+    .replace(/<(script|style)\b[^>]*>[\s\S]*?<\/\1\s*>/gi, " ")
+    .replace(/<[^>]*>/g, " ")
+    .replace(/&nbsp;|&#160;/gi, " ")
+    .replace(/&amp;/gi, "&")
+    .replace(/&quot;|&#34;/gi, '"')
+    .replace(/&#39;|&apos;/gi, "'")
+    .replace(/&lt;/gi, "<")
+    .replace(/&gt;/gi, ">")
+    .replace(/\s+/g, " ")
+    .toLocaleLowerCase();
+}
+
 export async function checkExternalUrl(originalUrl, {
   fetchImpl = fetch,
   sleep = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds)),
   timeoutMs = 15_000,
   maxAttempts = 3,
   maxRedirects = 8,
+  expectedContentRules = EXPECTED_CONTENT_RULES,
 } = {}) {
   if (maxAttempts < 1 || timeoutMs < 1 || maxRedirects < 0) {
     throw new Error("Invalid link-check limits.");
@@ -278,9 +363,8 @@ export async function checkExternalUrl(originalUrl, {
             Accept: "text/html,application/xhtml+xml,*/*;q=0.8",
           },
         });
-        // Availability is determined by response headers; don't download whole pages.
-        await response.body?.cancel().catch(() => {});
         if (redirectStatuses.has(response.status)) {
+          await response.body?.cancel().catch(() => {});
           const location = response.headers.get("location");
           if (!location) return result("broken", "Redirect response is missing Location.");
           if (redirects.length >= maxRedirects) return result("broken", "Redirect limit exceeded.");
@@ -298,10 +382,33 @@ export async function checkExternalUrl(originalUrl, {
           continue;
         }
         if (response.status >= 200 && response.status < 300) {
+          const rule = expectedContentRuleFor(originalUrl, expectedContentRules);
+          if (!rule) {
+            // Most citations remain availability-only checks; do not download their pages.
+            await response.body?.cancel().catch(() => {});
+            return result("ok", redirects.length
+              ? "Reachable through redirects. Review permanent moves before updating source links."
+              : "Reachable.");
+          }
+          if (!matchesExpectedDestination(currentUrl, rule.allowedFinalDestinations)) {
+            await response.body?.cancel().catch(() => {});
+            return result("suspicious", `Successful response landed at an unexpected destination for rule "${rule.url}".`);
+          }
+          const contentType = response.headers.get("content-type") ?? "";
+          if (!/^text\/html(?:\s*;|$)|^application\/xhtml\+xml(?:\s*;|$)/i.test(contentType)) {
+            await response.body?.cancel().catch(() => {});
+            return result("suspicious", `Expected HTML content for rule "${rule.url}", received "${contentType || "no content type"}".`);
+          }
+          const body = visibleTextFromHtml(await readBodyPrefix(response));
+          const missingText = rule.expectedText.filter((text) => !body.includes(text.toLocaleLowerCase()));
+          if (missingText.length) {
+            return result("suspicious", `Expected page content was not found for rule "${rule.url}": ${missingText.join(", ")}.`);
+          }
           return result("ok", redirects.length
-            ? "Reachable through redirects. Review permanent moves before updating source links."
-            : "Reachable.");
+            ? "Reachable and expected page content found through redirects. Review permanent moves before updating source links."
+            : "Reachable and expected page content found.");
         }
+        await response.body?.cancel().catch(() => {});
         if (response.status === 401 || response.status === 403) {
           return result("restricted", "Access denied. Verify manually; this is not proof of a dead page.");
         }
@@ -323,6 +430,7 @@ export function summarizeResults(results) {
   return {
     checked: results.length,
     reachable: results.filter((result) => result.outcome === "ok").length,
+    suspicious: results.filter((result) => result.outcome === "suspicious").length,
     broken: results.filter((result) => result.outcome === "broken").length,
     transient: results.filter((result) => result.outcome === "transient").length,
     restricted: results.filter((result) => result.outcome === "restricted").length,
@@ -346,8 +454,8 @@ export function formatReport(results, checkedAt) {
   ));
   return [
     "# External project link audit", "", `Checked at: ${checkedAt}`, "",
-    `Checked ${summary.checked}; reachable ${summary.reachable}; broken ${summary.broken}; transient ${summary.transient}; restricted ${summary.restricted}; redirected ${summary.redirected}.`,
-    "", "Only confirmed broken links fail this audit. Transient and restricted results are warnings, not successful availability checks.",
+    `Checked ${summary.checked}; reachable ${summary.reachable}; suspicious ${summary.suspicious}; broken ${summary.broken}; transient ${summary.transient}; restricted ${summary.restricted}; redirected ${summary.redirected}.`,
+    "", "Only confirmed broken HTTP links fail this audit. Suspicious content, transient network/HTTP outages, and restricted results are separate warnings.",
     "", "| Source URL | Document locations | Result | HTTP | Attempts | Final destination | Detail |",
     "| --- | --- | --- | --- | --- | --- | --- |", ...rows,
     "", "## Redirects", "", ...(redirects.length ? redirects : ["None."]), "",
