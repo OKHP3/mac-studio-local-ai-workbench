@@ -119,7 +119,7 @@ test("extracts inline and reference Markdown links, deduplicates them, and repor
   ]);
 });
 
-test("extracts plain-text HTTPS citations and excludes code, private URLs, HTML attributes, and shared routes", () => {
+test("extracts plain-text and HTML HTTPS citations and excludes code, private URLs, and shared routes", () => {
   const source = [
     "Source: https://example.org/research/report.",
     "[Linked too](https://example.org/research/report)",
@@ -147,7 +147,67 @@ test("extracts plain-text HTTPS citations and excludes code, private URLs, HTML 
         { file: "docs/example.md", line: 2 },
       ],
     },
+    {
+      url: "https://html.example.org/source",
+      locations: [{ file: "docs/example.md", line: 12 }],
+    },
   ]);
+});
+
+test("extracts public HTML anchor citations, handles multiline attributes, deduplicates, and ignores code", () => {
+  const source = [
+    "[Markdown citation](https://example.org/source)",
+    '<a class="source" href="https://example.org/source">HTML duplicate</a>',
+    "<a",
+    "  rel='external' href='https://docs.example.net/reference'>Reference</a>",
+    '<a title="the text href=\'https://fake.example.org/\'" href=https://archive.example.org/item>Archive</a>',
+    '<img href="https://ignored.example.org/not-an-anchor">',
+    '<a href="https://localhost/private">Local</a>',
+    '<a href="https://192.168.1.4/private">Private IP</a>',
+    '<a href="https://overkillhill.com/projects/mac-studio-local-ai-workbench/#/docs/project-overview">Internal route</a>',
+    '<!-- <a href="https://ignored.example.org/comment">commented out</a> [also ignored](https://ignored.example.org/markdown-comment) -->',
+    "<!--",
+    '<a href="https://ignored.example.org/multiline-comment">commented out</a>',
+    "-->",
+    'Inline sample: `<a href="https://ignored.example.org/inline">not a citation</a>`',
+    "```html",
+    '<a href="https://ignored.example.org/fenced">not a citation</a>',
+    "```",
+    "    <a href=\"https://ignored.example.org/indented\">not a citation</a>",
+  ].join("\n");
+
+  assert.deepEqual(extractMarkdownExternalLinks(source, "docs/example.md"), [
+    {
+      url: "https://archive.example.org/item",
+      locations: [{ file: "docs/example.md", line: 5 }],
+    },
+    {
+      url: "https://docs.example.net/reference",
+      locations: [{ file: "docs/example.md", line: 4 }],
+    },
+    {
+      url: "https://example.org/source",
+      locations: [
+        { file: "docs/example.md", line: 1 },
+        { file: "docs/example.md", line: 2 },
+      ],
+    },
+  ]);
+});
+
+test("HTML HTTP citations are reported as insecure and are not requested", async () => {
+  const [citation] = extractMarkdownExternalLinks(
+    '<a href="http://example.org/old-source">Old source</a>',
+    "docs/example.md",
+  );
+  let requested = false;
+  const result = await checkExternalUrl(citation.url, {
+    fetchImpl: async () => { requested = true; return response(200); },
+  });
+  assert.equal(citation.url, "http://example.org/old-source");
+  assert.deepEqual(citation.locations, [{ file: "docs/example.md", line: 1 }]);
+  assert.equal(result.outcome, "insecure");
+  assert.equal(requested, false);
 });
 
 test("public HTTP URLs are reported as insecure without making a request", async () => {

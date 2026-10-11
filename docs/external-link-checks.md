@@ -23,13 +23,15 @@ It requires Node 20 or later and no extra dependencies or credentials.
 ## Results and policy
 
 - The script discovers public HTTP and HTTPS `href` values in `src/App.jsx`, plus
-  Markdown inline links, reference links, and plain-text HTTPS URLs in
-  catalog-selected documents only. Repeated destinations are checked once and
-  their source file and line locations are listed in the report.
+  Markdown inline links, reference links, HTML anchor `href` values, and
+  plain-text HTTPS URLs in catalog-selected documents only. Repeated
+  destinations are checked once and their source file and line locations are
+  listed in the report.
 - Public HTTP citations are reported as **INSECURE** and are never requested;
   insecure citations fail the audit. Relative links, internal documentation
   routes, this project's shared Pages routes, private or local destinations,
-  and links in Markdown code examples are not requested.
+  and links in Markdown code examples (including HTML shown in inline, fenced,
+  or indented code) are not requested.
 - Historical and dated records are audited as written. The checker never edits
   source documents or silently replaces old citations with current URLs.
 - GET requests use a 15-second timeout. Successful 2xx responses are reachable.
@@ -67,10 +69,10 @@ Other HTTPS citations are checked for availability only. **INSECURE** HTTP
 citations fail the audit without a network request. Suspicious content is
 reported separately from confirmed **BROKEN** HTTPS failures and **TRANSIENT**
 network or temporary HTTPS outages; these results remain warnings.
-Bare HTTPS URLs in visible prose of catalog-selected documents are checked.
-Bare HTTP URLs, links in uncataloged documents, and analytics or social-image
-resources are not included. The published documentation viewer and its uptime
-are outside this check.
+Bare HTTPS URLs in visible prose and HTML anchor destinations in
+catalog-selected documents are checked. Bare HTTP URLs, links in uncataloged
+documents, and analytics or social-image resources are not included. The
+published documentation viewer and its uptime are outside this check.
 
 Offline fixtures for the expected pages and a soft-error response are under
 `tests/fixtures/external-links/`; `npm run test:links` exercises the rules

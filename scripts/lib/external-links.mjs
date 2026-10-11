@@ -171,7 +171,9 @@ function hasClosingParenthesis(line, openingParen) {
 }
 
 function markdownLinesWithoutCode(source) {
-  const lines = source.split(/\r?\n/);
+  const lines = source
+    .replace(/<!--[\s\S]*?(?:-->|$)/g, (comment) => comment.replace(/[^\r\n]/g, " "))
+    .split(/\r?\n/);
   let fence;
   return lines.map((line, index) => {
     const fenceMatch = line.match(/^[ \t]{0,3}(`{3,}|~{3,})/);
@@ -207,6 +209,54 @@ function plainTextHttpsUrls(line) {
   return urls;
 }
 
+function parseAnchorHref(tag) {
+  let index = 2;
+  while (index < tag.length - 1) {
+    while (/\s/.test(tag[index] ?? "")) index++;
+    if (tag[index] === "/" || tag[index] === ">") break;
+
+    const attributeStart = index;
+    while (index < tag.length && !/[\s=/>]/.test(tag[index])) index++;
+    if (index === attributeStart) {
+      index++;
+      continue;
+    }
+    const name = tag.slice(attributeStart, index).toLowerCase();
+    while (/\s/.test(tag[index] ?? "")) index++;
+    if (tag[index] !== "=") continue;
+
+    index++;
+    while (/\s/.test(tag[index] ?? "")) index++;
+    const quote = tag[index] === '"' || tag[index] === "'" ? tag[index++] : null;
+    const valueStart = index;
+    if (quote) {
+      while (index < tag.length && tag[index] !== quote) index++;
+    } else {
+      while (index < tag.length && !/[\s>]/.test(tag[index])) index++;
+    }
+    const value = tag.slice(valueStart, index);
+    if (quote && tag[index] === quote) index++;
+    if (name === "href") return { value, attributeStart };
+  }
+  return null;
+}
+
+function htmlAnchorOccurrences(lines) {
+  const source = lines.map(({ line }) => line).join("\n");
+  const occurrences = [];
+  const openingAnchorPattern = /<a\b(?:"[^"]*"|'[^']*'|[^"'<>])*?>/gi;
+  for (const match of source.matchAll(openingAnchorPattern)) {
+    const href = parseAnchorHref(match[0]);
+    if (!href || !isPublicMarkdownCitation(href.value)) continue;
+    const locationIndex = match.index + href.attributeStart;
+    occurrences.push({
+      url: new URL(href.value).href,
+      line: source.slice(0, locationIndex).split("\n").length,
+    });
+  }
+  return occurrences;
+}
+
 export function extractMarkdownExternalLinks(source, file) {
   if (!file || typeof file !== "string") throw new Error("A source document path is required.");
   const lines = markdownLinesWithoutCode(source);
@@ -224,7 +274,7 @@ export function extractMarkdownExternalLinks(source, file) {
     }
   }
 
-  const occurrences = [];
+  const occurrences = htmlAnchorOccurrences(lines);
   for (const entry of lines) {
     if (definitionLineNumbers.has(entry.number)) {
       const definition = entry.line.match(definitionPattern);
@@ -277,6 +327,7 @@ export function extractMarkdownExternalLinks(source, file) {
     if (!existing.locations.some((item) => item.file === file && item.line === line)) {
       existing.locations.push(location);
     }
+    existing.locations.sort((a, b) => a.file.localeCompare(b.file) || a.line - b.line);
     byUrl.set(normalizedUrl, existing);
   }
   return [...byUrl.values()].sort((a, b) => a.url.localeCompare(b.url));
