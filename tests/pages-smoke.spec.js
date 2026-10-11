@@ -84,6 +84,39 @@ test("documentation index and direct document links work under the Pages subpath
   await expect(page.locator("main")).not.toContainText("artifact_type");
 });
 
+test("shared documentation index opens directly @live", async ({ page, baseURL }) => {
+  const response = await page.goto("./#/docs");
+
+  expect(response?.status()).toBe(200);
+  await expect(page).toHaveURL(`${baseURL}#/docs`);
+  await expect(page.getByRole("heading", { level: 1, name: "The full field manual." })).toBeVisible();
+  const overviewLink = page.locator(".docs-index-grid").getByRole("link", { name: /Project overview/ });
+  await expect(overviewLink).toBeVisible();
+  await expect(overviewLink).toHaveAttribute("href", "#/docs/project-overview");
+});
+
+test("shared project overview renders directly and survives refresh @live", async ({ page, baseURL }) => {
+  const documentURL = `${baseURL}#/docs/project-overview`;
+  const response = await page.goto("./#/docs/project-overview");
+  expect(response?.status()).toBe(200);
+
+  // Check the Markdown body, not just the catalog-supplied page title.
+  const expectDocument = async () => {
+    await expect(page).toHaveURL(documentURL);
+    await expect(page.getByRole("heading", { level: 1, name: "Project overview", exact: true })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1);
+    const content = page.locator("article.markdown-body");
+    await expect(content.getByRole("heading", { level: 2, name: "Thesis", exact: true })).toBeVisible();
+    await expect(content).toContainText("This project documents the conversion of a Mac Studio M4 Max");
+    await expect(content).not.toContainText("artifact_type");
+  };
+
+  await expectDocument();
+  const refreshedResponse = await page.reload();
+  expect(refreshedResponse?.status()).toBe(200);
+  await expectDocument();
+});
+
 test("updates browser title and description for documentation routes", async ({ page }) => {
   await page.goto("./");
   await expect(page).toHaveTitle("Mac Studio Local AI Workbench | OverKill Hill P³");

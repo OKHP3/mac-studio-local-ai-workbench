@@ -76,7 +76,7 @@ jobs:
       - run: npx playwright install --with-deps chromium
       - name: Require the published URL
         run: test -n "$PAGES_URL"
-      - name: Probe home, repository subpath, and internal navigation
+      - name: Probe home, navigation, shared documentation, and document refresh
         run: npm run test:smoke
       - name: Preserve probe report and failure traces
         if: ${{ always() }}
@@ -97,6 +97,6 @@ jobs:
           {
             printf '## Published Pages probe: %s\n\n' "$PROBE_STATUS"
             printf 'URL: %s\n\n' "$PAGES_URL"
-            printf 'Checks: home page, repository subpath, section anchors, and desktop/mobile Architecture navigation.\n\n'
+            printf 'Checks: home page, repository subpath, section anchors, Architecture navigation, direct documentation index and project overview, and document refresh (desktop/mobile).\n\n'
             printf 'Inspect the %s artifact for the report and failure traces. To retry a failed probe without changing the deployed artifact, choose **Re-run failed jobs**.\n' "$PROBE_ARTIFACT"
           } >> "$GITHUB_STEP_SUMMARY"

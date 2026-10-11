@@ -178,7 +178,9 @@ URL returned by GitHub Pages. In repository settings, Pages must use
 
 The separate `Verify published Pages site` job checks the home page at
 `/mac-studio-local-ai-workbench/`, generated asset requests, section anchors,
-and Architecture navigation at desktop and mobile widths. It retries failed
+Architecture navigation, direct `#/docs` and `#/docs/project-overview` links,
+rendered project overview content, and document refresh at desktop and mobile
+widths. It retries failed
 checks twice to allow for publication delay. Failures fail the workflow and
 produce a job summary plus a `pages-live-probe-attempt-N` report with failure
 screenshots and traces (`N` is the workflow run attempt). Each attempt keeps its

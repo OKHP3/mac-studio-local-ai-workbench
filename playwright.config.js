@@ -15,7 +15,7 @@ export default defineConfig({
   reporter: publishedURL
     ? [["github"], ["html", { open: "never" }]]
     : process.env.CI ? "github" : "list",
-  // Only the small, read-only deployment probe runs against a public site.
+  // Only the small, read-only probe (including shared docs and refresh) runs against a public site.
   grep: publishedURL ? /@live/ : undefined,
   use: {
     baseURL,
