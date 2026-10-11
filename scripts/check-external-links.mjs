@@ -5,6 +5,7 @@ import {
   extractCatalogDocumentFiles,
   extractExternalLinkOccurrences,
   extractMarkdownExternalLinks,
+  findProjectLinkLabelMismatch,
   formatReport,
   summarizeResults,
 } from "./lib/external-links.mjs";
@@ -17,7 +18,8 @@ try {
   const addSource = (url, location) => {
     const normalizedUrl = new URL(url).href;
     const entry = sources.get(normalizedUrl) ?? { url: normalizedUrl, locations: [] };
-    if (!entry.locations.some((item) => item.file === location.file && item.line === location.line)) {
+    if (!entry.locations.some((item) => item.file === location.file
+      && item.line === location.line && item.label === location.label)) {
       entry.locations.push(location);
     }
     sources.set(normalizedUrl, entry);
@@ -50,8 +52,18 @@ try {
       const entry = entries[index];
       const result = await checkExternalUrl(entry.url);
       result.locations = entry.locations;
+      result.labelWarnings = entry.locations.flatMap((location) => {
+        const mismatch = findProjectLinkLabelMismatch(entry.url, location.label);
+        return mismatch ? [{ url: entry.url, ...location, ...mismatch }] : [];
+      });
       results[index] = result;
       console.log(`${result.outcome.toUpperCase()} ${entry.url} -> ${result.finalUrl} (${result.status ?? "network error"}, ${result.attempts} attempt(s); ${entry.locations.map(({ file, line }) => `${file}:${line}`).join(", ")})`);
+      for (const warning of result.labelWarnings) {
+        const message = `${warning.file}:${warning.line}: label "${warning.label}" identifies ${warning.labeledProject}, but destination identifies ${warning.destinationProject} (${entry.url})`
+          .replaceAll("%", "%25").replaceAll("\r", "%0D").replaceAll("\n", "%0A");
+        console.warn(`WARNING ${message}`);
+        if (process.env.GITHUB_ACTIONS === "true") console.log(`::warning::${message}`);
+      }
       if (process.env.GITHUB_ACTIONS === "true" && result.outcome !== "ok") {
         const message = `${entry.url}: ${result.detail} [${entry.locations.map(({ file, line }) => `${file}:${line}`).join(", ")}]`
           .replaceAll("%", "%25").replaceAll("\r", "%0D").replaceAll("\n", "%0A");

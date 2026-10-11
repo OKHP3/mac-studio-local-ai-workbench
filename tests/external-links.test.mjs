@@ -8,6 +8,7 @@ import {
   extractExternalLinkOccurrences,
   extractExternalLinks,
   extractMarkdownExternalLinks,
+  findProjectLinkLabelMismatch,
   formatReport,
   summarizeResults,
 } from "../scripts/lib/external-links.mjs";
@@ -93,30 +94,82 @@ test("extracts inline and reference Markdown links, deduplicates them, and repor
     "[internal](../docs/project-overview)",
     "[published app route](https://overkillhill.com/projects/mac-studio-local-ai-workbench/#/docs/project-overview)",
   ].join("\n");
-  assert.deepEqual(extractMarkdownExternalLinks(source, "docs/example.md"), [
-    {
-      url: "http://archive.example.org/old-source",
-      locations: [
-        { file: "docs/example.md", line: 5 },
-        { file: "docs/example.md", line: 6 },
-      ],
-    },
-    {
-      url: "http://example.org/old-source",
-      locations: [{ file: "docs/example.md", line: 2 }],
-    },
-    {
-      url: "https://docs.example.org/reference",
-      locations: [
-        { file: "docs/example.md", line: 3 },
-        { file: "docs/example.md", line: 4 },
-      ],
-    },
-    {
-      url: "https://example.org/a_(b)",
-      locations: [{ file: "docs/example.md", line: 1 }],
-    },
+  const links = extractMarkdownExternalLinks(source, "docs/example.md");
+  const byUrl = new Map(links.map((link) => [link.url, link]));
+  assert.deepEqual(
+    byUrl.get("http://archive.example.org/old-source").locations,
+    [
+      { file: "docs/example.md", line: 5, label: "Old source" },
+      { file: "docs/example.md", line: 6 },
+    ],
+  );
+  assert.deepEqual(
+    byUrl.get("https://docs.example.org/reference").locations,
+    [
+      { file: "docs/example.md", line: 3, label: "Guide" },
+      { file: "docs/example.md", line: 3, label: "official" },
+      { file: "docs/example.md", line: 4 },
+    ],
+  );
+  assert.deepEqual(
+    byUrl.get("https://example.org/a_(b)").locations,
+    [{ file: "docs/example.md", line: 1, label: "Inline" }],
+  );
+});
+
+test("retains Markdown labels and warns only when a known project label names another project", () => {
+  const source = [
+    "[Mac Studio Local AI Workbench](https://github.com/OKHP3/mac-studio-local-ai-workbench)",
+    "[SHOAL AI Server](https://github.com/OKHP3/mac-studio-local-ai-workbench)",
+    "See [infusing-a-soul][guide].",
+    "[guide]: https://github.com/OKHP3/shoal-ai-server",
+  ].join("\n");
+  const links = extractMarkdownExternalLinks(source, "docs/example.md");
+  const workbench = links.find((link) => link.url.endsWith("/mac-studio-local-ai-workbench"));
+  assert.deepEqual(workbench.locations.map(({ label }) => label), [
+    "Mac Studio Local AI Workbench",
+    "SHOAL AI Server",
   ]);
+  assert.equal(
+    findProjectLinkLabelMismatch(workbench.url, workbench.locations[0].label),
+    null,
+  );
+  assert.deepEqual(
+    findProjectLinkLabelMismatch(workbench.url, workbench.locations[1].label),
+    {
+      labeledProject: "shoal-ai-server",
+      destinationProject: "mac-studio-local-ai-workbench",
+    },
+  );
+  const shoal = links.find((link) => link.url.endsWith("/shoal-ai-server"));
+  assert.deepEqual(shoal.locations, [
+    { file: "docs/example.md", line: 3, label: "infusing-a-soul" },
+    { file: "docs/example.md", line: 4 },
+  ]);
+  assert.deepEqual(
+    findProjectLinkLabelMismatch(shoal.url, shoal.locations[0].label),
+    {
+      labeledProject: "infusing-a-soul",
+      destinationProject: "shoal-ai-server",
+    },
+  );
+
+  const warningLocation = workbench.locations[1];
+  const mismatch = findProjectLinkLabelMismatch(workbench.url, warningLocation.label);
+  const report = formatReport([{
+    url: workbench.url,
+    finalUrl: workbench.url,
+    outcome: "ok",
+    detail: "Reachable.",
+    attempts: 1,
+    status: 200,
+    redirects: [],
+    locations: workbench.locations,
+    labelWarnings: [{ url: workbench.url, ...warningLocation, ...mismatch }],
+  }], "2026-10-11T00:00:00.000Z");
+  assert.match(report, /SHOAL AI Server/);
+  assert.match(report, /destination identifies mac-studio-local-ai-workbench/);
+  assert.match(report, /reachable 1; insecure 0; suspicious 0; broken 0/);
 });
 
 test("extracts plain-text and HTML HTTPS citations and excludes code, private URLs, and shared routes", () => {
@@ -135,23 +188,14 @@ test("extracts plain-text and HTML HTTPS citations and excludes code, private UR
     '<a href="https://html.example.org/source">HTML attribute</a>',
   ].join("\n");
 
-  assert.deepEqual(extractMarkdownExternalLinks(source, "docs/example.md"), [
-    {
-      url: "https://docs.example.net/guide_(part-1)",
-      locations: [{ file: "docs/example.md", line: 3 }],
-    },
-    {
-      url: "https://example.org/research/report",
-      locations: [
-        { file: "docs/example.md", line: 1 },
-        { file: "docs/example.md", line: 2 },
-      ],
-    },
-    {
-      url: "https://html.example.org/source",
-      locations: [{ file: "docs/example.md", line: 12 }],
-    },
+  const links = extractMarkdownExternalLinks(source, "docs/example.md");
+  const linkedSource = links.find((link) => link.url === "https://example.org/research/report");
+  assert.deepEqual(linkedSource.locations, [
+    { file: "docs/example.md", line: 1 },
+    { file: "docs/example.md", line: 2, label: "Linked too" },
   ]);
+  assert.ok(links.some((link) => link.url === "https://docs.example.net/guide_(part-1)"));
+  assert.ok(links.some((link) => link.url === "https://html.example.org/source"));
 });
 
 test("extracts public HTML anchor citations, handles multiline attributes, deduplicates, and ignores code", () => {
@@ -176,23 +220,14 @@ test("extracts public HTML anchor citations, handles multiline attributes, dedup
     "    <a href=\"https://ignored.example.org/indented\">not a citation</a>",
   ].join("\n");
 
-  assert.deepEqual(extractMarkdownExternalLinks(source, "docs/example.md"), [
-    {
-      url: "https://archive.example.org/item",
-      locations: [{ file: "docs/example.md", line: 5 }],
-    },
-    {
-      url: "https://docs.example.net/reference",
-      locations: [{ file: "docs/example.md", line: 4 }],
-    },
-    {
-      url: "https://example.org/source",
-      locations: [
-        { file: "docs/example.md", line: 1 },
-        { file: "docs/example.md", line: 2 },
-      ],
-    },
+  const links = extractMarkdownExternalLinks(source, "docs/example.md");
+  const markdown = links.find((link) => link.url === "https://example.org/source");
+  assert.deepEqual(markdown.locations, [
+    { file: "docs/example.md", line: 1, label: "Markdown citation" },
+    { file: "docs/example.md", line: 2 },
   ]);
+  assert.ok(links.some((link) => link.url === "https://archive.example.org/item"));
+  assert.ok(links.some((link) => link.url === "https://docs.example.net/reference"));
 });
 
 test("HTML HTTP citations are reported as insecure and are not requested", async () => {

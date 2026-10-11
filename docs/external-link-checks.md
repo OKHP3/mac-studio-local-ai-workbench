@@ -26,7 +26,15 @@ It requires Node 20 or later and no extra dependencies or credentials.
   Markdown inline links, reference links, HTML anchor `href` values, and
   plain-text HTTPS URLs in catalog-selected documents only. Repeated
   destinations are checked once and their source file and line locations are
-  listed in the report.
+  listed in the report. Markdown link locations retain their visible labels,
+  including labels from reference-style links.
+- A separate label warning applies only to links targeting the known
+  `OKHP3/mac-studio-local-ai-workbench`, `OKHP3/infusing-a-soul`, or
+  `OKHP3/shoal-ai-server` GitHub repositories, or the workbench project archive.
+  It warns only when the visible label explicitly names a different one of
+  those projects. Generic labels such as “Guide” are not judged. Warnings are
+  included in the report and GitHub Actions annotations, but do not turn a
+  reachable URL into a failed availability check.
 - Public HTTP citations are reported as **INSECURE** and are never requested;
   insecure citations fail the audit. Relative links, internal documentation
   routes, this project's shared Pages routes, private or local destinations,

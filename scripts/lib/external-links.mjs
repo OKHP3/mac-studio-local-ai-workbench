@@ -39,6 +39,71 @@ export const EXPECTED_CONTENT_RULES = Object.freeze([
   },
 ]);
 
+// Compare labels only for these known project destinations. A warning requires
+// the visible label to explicitly name another project in this same list.
+const PROJECT_LINK_IDENTITIES = Object.freeze([
+  {
+    id: "mac-studio-local-ai-workbench",
+    aliases: ["mac-studio-local-ai-workbench"],
+    destinations: [
+      { hostname: "github.com", pathname: "/OKHP3/mac-studio-local-ai-workbench" },
+      { hostname: "overkillhill.com", pathname: "/projects/mac-studio-local-ai-workbench" },
+    ],
+  },
+  {
+    id: "infusing-a-soul",
+    aliases: ["infusing-a-soul"],
+    destinations: [
+      { hostname: "github.com", pathname: "/OKHP3/infusing-a-soul" },
+    ],
+  },
+  {
+    id: "shoal-ai-server",
+    aliases: ["shoal-ai-server"],
+    destinations: [
+      { hostname: "github.com", pathname: "/OKHP3/shoal-ai-server" },
+    ],
+  },
+]);
+
+const normalizeProjectLabel = (value) => value
+  .toLocaleLowerCase()
+  .replace(/[^a-z0-9]+/g, "-")
+  .replace(/^-|-$/g, "");
+
+function projectIdentityForUrl(value) {
+  let url;
+  try {
+    url = new URL(value);
+  } catch {
+    return null;
+  }
+  const pathname = url.pathname.replace(/\/+$/, "") || "/";
+  return PROJECT_LINK_IDENTITIES.find((identity) =>
+    identity.destinations.some((destination) =>
+      url.hostname.toLowerCase() === destination.hostname
+        && (destination.hostname === "github.com"
+          ? pathname.toLowerCase().startsWith(`${destination.pathname.toLowerCase()}/`)
+            || pathname.toLowerCase() === destination.pathname.toLowerCase()
+          : pathname.toLowerCase() === destination.pathname.toLowerCase()),
+    ),
+  ) ?? null;
+}
+
+export function findProjectLinkLabelMismatch(url, label) {
+  if (typeof label !== "string" || !label.trim()) return null;
+  const destination = projectIdentityForUrl(url);
+  if (!destination) return null;
+  const normalizedLabel = normalizeProjectLabel(
+    label.replace(/<[^>]*>/g, " ").replace(/[*_~`]/g, " "),
+  );
+  const labeledProject = PROJECT_LINK_IDENTITIES.find((identity) =>
+    identity.aliases.some((alias) => normalizedLabel.includes(normalizeProjectLabel(alias))),
+  );
+  if (!labeledProject || labeledProject.id === destination.id) return null;
+  return { labeledProject: labeledProject.id, destinationProject: destination.id };
+}
+
 function isPublicExternalUrl(value) {
   let url;
   try {
@@ -153,6 +218,15 @@ function parseInlineDestination(line, openingParen) {
   if (end === start || depth !== 0) return null;
   if (!hasClosingParenthesis(line, openingParen)) return null;
   return line.slice(start, end).replace(/\\([()\\])/g, "$1");
+}
+
+function visibleMarkdownLabel(value) {
+  return value
+    .replace(/\\(.)/g, "$1")
+    .replace(/<[^>]*>/g, " ")
+    .replace(/[*_~`]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 function hasClosingParenthesis(line, openingParen) {
@@ -296,7 +370,11 @@ export function extractMarkdownExternalLinks(source, file) {
       }
       const destination = parseInlineDestination(entry.line, cursor + 1);
       if (destination && isPublicMarkdownCitation(destination)) {
-        occurrences.push({ url: new URL(destination).href, line: entry.number });
+        occurrences.push({
+          url: new URL(destination).href,
+          line: entry.number,
+          label: visibleMarkdownLabel(entry.line.slice(openingBracket + 1, cursor)),
+        });
       }
       cursor += 2;
     }
@@ -308,7 +386,11 @@ export function extractMarkdownExternalLinks(source, file) {
         .replace(/\\(.)/g, "$1").trim().toLowerCase().replace(/\s+/g, " ");
       const destination = definitions.get(label);
       if (destination && isPublicMarkdownCitation(destination)) {
-        occurrences.push({ url: new URL(destination).href, line: entry.number });
+        occurrences.push({
+          url: new URL(destination).href,
+          line: entry.number,
+          label: visibleMarkdownLabel(match[1]),
+        });
       }
     }
 
@@ -320,14 +402,22 @@ export function extractMarkdownExternalLinks(source, file) {
   }
 
   const byUrl = new Map();
-  for (const { url, line } of occurrences) {
+  for (const { url, line, label } of occurrences) {
     const normalizedUrl = new URL(url).href;
     const existing = byUrl.get(normalizedUrl) ?? { url: normalizedUrl, locations: [] };
-    const location = { file, line };
-    if (!existing.locations.some((item) => item.file === file && item.line === line)) {
+    const location = label === undefined ? { file, line } : { file, line, label };
+    const sameLine = existing.locations.filter((item) => item.file === file && item.line === line);
+    if (label === undefined && sameLine.some((item) => item.label !== undefined)) continue;
+    if (label !== undefined) {
+      existing.locations = existing.locations.filter((item) =>
+        item.file !== file || item.line !== line || item.label !== undefined,
+      );
+    }
+    if (!existing.locations.some((item) => item.file === file && item.line === line && item.label === label)) {
       existing.locations.push(location);
     }
-    existing.locations.sort((a, b) => a.file.localeCompare(b.file) || a.line - b.line);
+    existing.locations.sort((a, b) => a.file.localeCompare(b.file)
+      || a.line - b.line || (a.label ?? "").localeCompare(b.label ?? ""));
     byUrl.set(normalizedUrl, existing);
   }
   return [...byUrl.values()].sort((a, b) => a.url.localeCompare(b.url));
@@ -547,9 +637,10 @@ const cell = (value) => String(value).replaceAll("|", "\\|").replace(/[\r\n]+/g,
 
 export function formatReport(results, checkedAt) {
   const summary = summarizeResults(results);
+  const labelWarnings = results.flatMap((result) => result.labelWarnings ?? []);
   const rows = results.map((result) => {
     const locations = (result.locations ?? [])
-      .map(({ file, line }) => `${file}:${line}`)
+      .map(({ file, line, label }) => `${file}:${line}${label ? ` (“${label}”)` : ""}`)
       .join(", ") || "—";
     const status = result.outcome === "insecure" ? "not requested" : result.status ?? "network error";
     return `| ${cell(result.url)} | ${cell(locations)} | ${result.outcome.toUpperCase()} | ${status} | ${result.attempts} | ${cell(result.finalUrl)} | ${cell(result.detail)} |`;
@@ -564,6 +655,12 @@ export function formatReport(results, checkedAt) {
     "", "Insecure HTTP citations and confirmed broken HTTPS links fail this audit. HTTP destinations are reported without being requested. Suspicious content, transient network/HTTP outages, and restricted results are separate warnings.",
     "", "| Source URL | Document locations | Result | HTTP | Attempts | Final destination | Detail |",
     "| --- | --- | --- | --- | --- | --- | --- |", ...rows,
+    "", "## Project label warnings", "",
+    ...(labelWarnings.length
+      ? labelWarnings.map((warning) =>
+        `- ${cell(warning.file)}:${warning.line}: label “${cell(warning.label)}” identifies ${cell(warning.labeledProject)}, but the destination identifies ${cell(warning.destinationProject)} (${cell(warning.url)}).`,
+      )
+      : ["None."]),
     "", "## Redirects", "", ...(redirects.length ? redirects : ["None."]), "",
   ].join("\n");
 }
