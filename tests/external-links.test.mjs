@@ -1,7 +1,15 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
-import { checkExternalUrl, extractExternalLinks, formatReport, summarizeResults } from "../scripts/lib/external-links.mjs";
+import {
+  checkExternalUrl,
+  extractCatalogDocumentFiles,
+  extractExternalLinkOccurrences,
+  extractExternalLinks,
+  extractMarkdownExternalLinks,
+  formatReport,
+  summarizeResults,
+} from "../scripts/lib/external-links.mjs";
 
 const url = "https://example.com/project";
 const response = (status, headers = {}) => new Response(null, { status, headers });
@@ -34,6 +42,59 @@ test("extracts actual homepage links and deduplicates repeated repository anchor
     "https://overkillhill.com/projects/mac-studio-local-ai-workbench/",
   ]);
   assert.throws(() => extractExternalLinks('<a href="#top">Home</a>'), /No external/);
+});
+
+test("discovers only the documents selected by the public catalog", async () => {
+  const catalogSource = await readFile(new URL("../src/docsCatalog.js", import.meta.url), "utf8");
+  const files = extractCatalogDocumentFiles(catalogSource);
+  assert.ok(files.length > 0);
+  for (const file of files) {
+    assert.match(file, /^[^/\\]+\.md$/);
+    await readFile(new URL(`../docs/${file}`, import.meta.url), "utf8");
+  }
+  assert.throws(() => extractCatalogDocumentFiles("const publicDocuments = [];"), /Every public document/);
+});
+
+test("extracts inline and reference Markdown links, deduplicates them, and reports citation lines", () => {
+  const source = [
+    '[Inline](https://example.org/a_(b) "title")',
+    "See [Guide][official] and [official] again.",
+    '[official]: <https://docs.example.org/reference> "Official guide"',
+    "Code: `[not a link](https://ignored.example.org)`",
+    "    [also ignored](https://ignored.example.org)",
+    "```md",
+    "[fenced](https://ignored.example.org)",
+    "```",
+    "[local](https://localhost/private) and [private IP](https://192.168.1.4/)",
+    "[internal](../docs/project-overview)",
+    "[published app route](https://overkillhill.com/projects/mac-studio-local-ai-workbench/#/docs/project-overview)",
+  ].join("\n");
+  assert.deepEqual(extractMarkdownExternalLinks(source, "docs/example.md"), [
+    {
+      url: "https://docs.example.org/reference",
+      locations: [
+        { file: "docs/example.md", line: 2 },
+        { file: "docs/example.md", line: 3 },
+      ],
+    },
+    {
+      url: "https://example.org/a_(b)",
+      locations: [{ file: "docs/example.md", line: 1 }],
+    },
+  ]);
+});
+
+test("ignores non-public HTTPS destinations in homepage links and direct checks", async () => {
+  const source = '<a href="https://example.org">public</a><a href="https://127.0.0.1">local</a>';
+  assert.deepEqual(extractExternalLinkOccurrences(source, "src/App.jsx"), [
+    { url: "https://example.org", location: { file: "src/App.jsx", line: 1 } },
+  ]);
+  let requested = false;
+  const result = await checkExternalUrl("https://10.0.0.1/private", {
+    fetchImpl: async () => { requested = true; return response(200); },
+  });
+  assert.equal(result.outcome, "broken");
+  assert.equal(requested, false);
 });
 
 test("successful links use bounded GET requests without automatic redirects", async () => {
@@ -140,10 +201,12 @@ test("a redirect to a deleted page fails with the final destination intact", asy
 
 test("reports retain warnings, failed destinations, attempt counts, and redirect details", async () => {
   const result = await checker([response(301, { location: "/gone" }), response(410)]).run();
+  result.locations = [{ file: "docs/source.md", line: 12 }];
   const report = formatReport([result], "2026-09-26T00:00:00.000Z");
   assert.match(report, /BROKEN/);
   assert.match(report, /permanent move/);
   assert.match(report, /https:\/\/example.com\/gone/);
+  assert.match(report, /docs\/source\.md:12/);
   assert.match(report, /transient 0/);
 });
 

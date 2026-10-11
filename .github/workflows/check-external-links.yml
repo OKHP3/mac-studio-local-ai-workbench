@@ -25,7 +25,7 @@ jobs:
           node-version: "24"
       - name: Test link-check policies without external requests
         run: npm run test:links
-      - name: Audit homepage external destinations
+      - name: Audit homepage and published-document external citations
         run: npm run check:links
       - name: Preserve the audit report, including failed checks
         if: always()
