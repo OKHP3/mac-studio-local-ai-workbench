@@ -189,6 +189,24 @@ function markdownLinesWithoutCode(source) {
   });
 }
 
+function plainTextHttpsUrls(line) {
+  // HTML attributes are handled separately from visible Markdown prose.
+  const text = line.replace(/<\/?[A-Za-z][A-Za-z0-9:-]*(?:\s+[^<>]*?)?\s*\/?>/g, " ");
+  const urls = [];
+  for (const match of text.matchAll(/https:\/\/[^\s<>"'`]+/gi)) {
+    let value = match[0].replace(/[.,!?;:]+$/, "");
+    for (const [closing, opening] of [[")", "("], ["]", "["], ["}", "{"]]) {
+      while (value.endsWith(closing)
+        && [...value].filter((character) => character === closing).length
+          > [...value].filter((character) => character === opening).length) {
+        value = value.slice(0, -1);
+      }
+    }
+    urls.push(value);
+  }
+  return urls;
+}
+
 export function extractMarkdownExternalLinks(source, file) {
   if (!file || typeof file !== "string") throw new Error("A source document path is required.");
   const lines = markdownLinesWithoutCode(source);
@@ -212,6 +230,11 @@ export function extractMarkdownExternalLinks(source, file) {
       const definition = entry.line.match(definitionPattern);
       const url = definition && (definition[2] ?? definition[3]).replace(/\\([()\\])/g, "$1");
       if (url && isPublicMarkdownCitation(url)) occurrences.push({ url, line: entry.number });
+      for (const bareUrl of plainTextHttpsUrls(entry.line)) {
+        if (isPublicHttpsUrl(bareUrl) && isPublicMarkdownCitation(bareUrl)) {
+          occurrences.push({ url: bareUrl, line: entry.number });
+        }
+      }
       continue;
     }
     let cursor = 0;
@@ -236,6 +259,12 @@ export function extractMarkdownExternalLinks(source, file) {
       const destination = definitions.get(label);
       if (destination && isPublicMarkdownCitation(destination)) {
         occurrences.push({ url: new URL(destination).href, line: entry.number });
+      }
+    }
+
+    for (const bareUrl of plainTextHttpsUrls(entry.line)) {
+      if (isPublicHttpsUrl(bareUrl) && isPublicMarkdownCitation(bareUrl)) {
+        occurrences.push({ url: bareUrl, line: entry.number });
       }
     }
   }

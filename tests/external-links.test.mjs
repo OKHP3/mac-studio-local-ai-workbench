@@ -119,6 +119,37 @@ test("extracts inline and reference Markdown links, deduplicates them, and repor
   ]);
 });
 
+test("extracts plain-text HTTPS citations and excludes code, private URLs, HTML attributes, and shared routes", () => {
+  const source = [
+    "Source: https://example.org/research/report.",
+    "[Linked too](https://example.org/research/report)",
+    "Another source: (https://docs.example.net/guide_(part-1)).",
+    "`https://ignored.example.org/inline-code`",
+    "```text",
+    "https://ignored.example.org/fenced-code",
+    "```",
+    "    https://ignored.example.org/indented-code",
+    "https://localhost/private and https://192.168.1.4/private",
+    "https://overkillhill.com/projects/mac-studio-local-ai-workbench/#/docs/project-overview",
+    "HTTP is not part of bare HTTPS detection: http://example.org/old-source",
+    '<a href="https://html.example.org/source">HTML attribute</a>',
+  ].join("\n");
+
+  assert.deepEqual(extractMarkdownExternalLinks(source, "docs/example.md"), [
+    {
+      url: "https://docs.example.net/guide_(part-1)",
+      locations: [{ file: "docs/example.md", line: 3 }],
+    },
+    {
+      url: "https://example.org/research/report",
+      locations: [
+        { file: "docs/example.md", line: 1 },
+        { file: "docs/example.md", line: 2 },
+      ],
+    },
+  ]);
+});
+
 test("public HTTP URLs are reported as insecure without making a request", async () => {
   let requested = false;
   const result = await checkExternalUrl("http://example.org/old-source", {
