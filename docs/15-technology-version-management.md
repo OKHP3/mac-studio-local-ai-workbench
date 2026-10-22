@@ -2,7 +2,7 @@
 title: "Technology Version Management"
 artifact_type: "maintenance_plan"
 created_date: "2026-07-20"
-updated_date: "2026-09-19"
+updated_date: "2026-10-22"
 project: "Mac Studio Local AI Workbench"
 status: "implemented-in-repository"
 ---
@@ -11,7 +11,7 @@ status: "implemented-in-repository"
 
 The workbench has a source-backed inventory, a stable-release checker, a Mac
 version collector, weekly release monitoring, and Dependabot updates for its
-GitHub Actions. These controls propose and track upgrades. They do not establish
+GitHub Actions and npm viewer dependencies. These controls propose and track upgrades. They do not establish
 that an upgrade has been installed on the Mac Studio.
 
 ## Inventory and scope
@@ -24,17 +24,42 @@ that an upgrade has been installed on the Mac Studio.
 - [Validation workflow](../.github/workflows/validate-technology-tracking.yml)
 - [Dependabot configuration](../.github/dependabot.yml)
 
-The September 19 UTC review covers 111 entries: documented host tools, every
+The October 22 UTC inventory covers 122 entries: documented host tools, every
 entry in the current Homebrew install manifests and historical full formula
 list, repository tooling, formats, cloud services, model identities, planned
 technology and absent frameworks. This is a repository-evidence inventory, not
 a complete software bill of materials of a running Mac or every container.
 
-TypeScript, Vite, Tailwind and React are not application dependencies here.
-Their upstream versions are reference-only entries. Python and Bash are used
-by maintenance scripts. JavaScript modules also exist in vendored skill
-support. Mermaid source is used throughout the documentation, but this
-repository does not pin a renderer.
+The September 19 report is a historical audit that predates recovery of the
+React/Vite viewer on September 26. Its absent-framework findings do not describe
+the current application. Current direct dependencies are listed below; the
+lockfile records their exact versions and every transitive npm package.
+
+| Viewer dependency | Locked version on October 22 UTC |
+|---|---|
+| React / React DOM | 19.3.0 / 19.3.0 |
+| Vite / Vite React plugin | 8.3.0 / 6.1.1 |
+| React Markdown / Remark GFM | 10.1.0 / 4.0.1 |
+| Lucide React | 1.47.0 |
+| Playwright Test | 1.63.0 |
+
+The checker reads these versions directly from `package-lock.json` on every run,
+then queries each package's npm `latest` release metadata. Inventory validation
+fails when a direct manifest dependency or workflow action is missing, or when
+an application dependency is classified as absent. npm changes trigger this
+validation. New transitive packages remain represented by the lockfile and are
+updated through the dependency graph rather than independently installed.
+
+TypeScript and Tailwind remain absent application dependencies. JavaScript,
+JSX, CSS and HTML implement the viewer. Python and Bash support maintenance.
+Mermaid is documentation syntax; no Mermaid renderer is pinned in this viewer.
+The viewer's Markdown parser packages are tracked separately from the Markdown
+format. Vendored skill support remains a separate maintenance surface.
+
+CI selects Node 24 and receives its patch releases through `setup-node`.
+Replit's checked-in configuration currently declares `nodejs-20` and Python
+3.12. These selectors do not prove the installed patch versions. A Replit
+runtime migration and Mac upgrades require their own environment validation.
 
 The public website belongs to OKHP3/OverKill-Hill. Its vendored Mermaid VERSION
 was independently read through GitHub as 11.17.2 on this review. Updating that
@@ -90,7 +115,10 @@ failures. Those behaviors are replaced. Dated historical records are preserved.
 6. Preserve failed lookups as unknown and fail the run after saving the report.
    Never display a cached release as a fresh success. Issue API failures also
    fail the run.
-7. Dependabot opens weekly PRs updating the immutable GitHub Action pins.
+7. Dependabot opens weekly PRs updating immutable GitHub Action pins and the
+   npm manifest and lockfile. npm minor and patch updates are grouped; majors
+   remain individual review candidates. Both stable-release monitoring and
+   Dependabot activate on the default branch.
    Validation checks inventory coverage and behavioral tests on those PRs.
    Maintainers merge passing updates; major upgrades are not auto-merged.
 
@@ -147,6 +175,7 @@ failure exits 1 after reports are saved.
 | Component | Update path | Acceptance and rollback |
 |---|---|---|
 | GitHub Actions | Merge tested Dependabot PRs | Validation passes; revert workflow change if needed |
+| Viewer npm dependencies | Weekly Dependabot PRs update manifest and lockfile | Production build, link-policy tests, Pages URL tests and desktop/mobile smoke tests pass; revert the complete manifest/lockfile change if needed |
 | Homebrew utilities | Review brew outdated --json=v2; upgrade named packages | Command and dependency checks; preserve baseline and reinstall path |
 | macOS | Compatible release in Software Update, including supported patch-only options | Off-machine backup and recovery plan; verify services and storage |
 | Ollama / MLX / mlx-lm | One runtime in its existing channel/environment | Preserve paths/models; strict benchmark and memory checks; restore prior environment |
@@ -175,10 +204,10 @@ this checkout. Normalize and syntax-check them in a scoped maintenance change
 before relying on them on the Mac. This audit did not run restore scripts or
 upgrade host software.
 
-If application dependencies are introduced, add real manifests and lockfiles,
-tests and the corresponding Dependabot ecosystem. Inventory validation detects
-new Homebrew entries missing from tracking. New runtime packages, containers
-and frameworks still require explicit inventory review.
+New application dependencies must be added to the inventory in the same PR as
+their manifest and lockfile changes. Inventory validation detects omissions in
+Homebrew manifests, direct npm dependencies and external workflow actions.
+New host runtimes and containers still require explicit evidence review.
 
 ## Source ledger and next action
 
@@ -193,6 +222,9 @@ Policy references checked 2026-09-19 UTC:
 - [GitHub scheduled events](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows): default-branch scheduling and delays.
 - [GitHub workflow enablement](https://docs.github.com/en/actions/how-tos/manage-workflow-runs/disable-and-enable-workflows): 60-day inactivity limitation.
 - [SearXNG container installation](https://docs.searxng.org/admin/installation-docker.html): published image channels and configuration review.
+
+The [Dependabot options reference](https://docs.github.com/en/code-security/reference/supply-chain-security/dependabot-options-reference)
+was checked again on October 22 UTC for npm scheduling and minor/patch grouping.
 
 Next operational action: run the read-only collector on the Mac Studio and
 reconcile unknown installed versions before treating the report as a verified

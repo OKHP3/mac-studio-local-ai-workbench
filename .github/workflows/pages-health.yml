@@ -1,0 +1,64 @@
+name: Check published Pages health
+
+on:
+  schedule:
+    - cron: "23 */6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: read
+
+concurrency:
+  group: pages-health
+  cancel-in-progress: false
+
+jobs:
+  probe:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "24"
+          cache: npm
+      - name: Test Pages URL resolution policies without network requests
+        run: node --test tests/pages-url.test.mjs
+      - name: Resolve the actual Pages URL (read-only)
+        id: pages
+        run: node scripts/resolve-pages-url.mjs
+        env:
+          GH_TOKEN: ${{ github.token }}
+      - run: npm ci --no-audit --no-fund
+      - run: npx playwright install --with-deps chromium
+      - name: Probe the published site without building or deploying
+        run: npm run test:smoke
+        env:
+          PAGES_URL: ${{ steps.pages.outputs.url }}
+      - name: Preserve URL diagnostics, report, and failure traces
+        if: ${{ always() }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: pages-health-probe-attempt-${{ github.run_attempt }}
+          path: |
+            reports/pages-health/
+            playwright-report/
+            test-results/
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Publish probe result
+        if: ${{ always() }}
+        env:
+          PROBE_STATUS: ${{ job.status }}
+          PAGES_URL: ${{ steps.pages.outputs.url }}
+          PROBE_ARTIFACT: pages-health-probe-attempt-${{ github.run_attempt }}
+        run: |
+          {
+            printf '## Published Pages health: %s\n\n' "$PROBE_STATUS"
+            printf 'URL (from GitHub Pages API): %s\n\n' "${PAGES_URL:-unresolved; see URL diagnostics}"
+            printf 'Checks: home, generated assets, section anchors, Architecture navigation, shared documentation, and refresh on desktop/mobile. Failed checks retry at most twice.\n\n'
+            printf 'Inspect the %s artifact for URL diagnostics, the HTML report, screenshots, and traces. Choose **Re-run failed jobs** to retry. No site build, Pages artifact upload, or deployment runs in this workflow.\n' "$PROBE_ARTIFACT"
+          } >> "$GITHUB_STEP_SUMMARY"

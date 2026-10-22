@@ -119,6 +119,48 @@ class ReleaseSelection(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "missing entries"):
             tracker.validate_inventory(broken)
 
+    def test_inventory_rejects_missing_or_absent_viewer_dependencies(self):
+        data = json.loads((ROOT / "config/technology-inventory.json").read_text(encoding="utf-8"))
+        broken = copy.deepcopy(data)
+        broken["technologies"] = [i for i in broken["technologies"] if i.get("npm_package") != "vite"]
+        with self.assertRaisesRegex(ValueError, "every direct viewer dependency"):
+            tracker.validate_inventory(broken)
+        for technology in data["technologies"]:
+            if technology.get("npm_package") == "vite":
+                technology["scope"] = "absent"
+        with self.assertRaisesRegex(ValueError, "cannot be classified as absent"):
+            tracker.validate_inventory(data)
+
+    def test_inventory_rejects_untracked_workflow_actions(self):
+        data = json.loads((ROOT / "config/technology-inventory.json").read_text(encoding="utf-8"))
+        data["technologies"] = [i for i in data["technologies"] if i.get("workflow_action") != "actions/setup-node"]
+        with self.assertRaisesRegex(ValueError, "missing GitHub Actions"):
+            tracker.validate_inventory(data)
+
+    def test_npm_report_follows_lockfile_instead_of_old_inventory_version(self):
+        row = {**item("repository"), "npm_package": "example"}
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            lock = root / "package-lock.json"
+            with patch.object(tracker, "ROOT", root), patch.object(tracker, "resolve", return_value={"version": "1.11.0"}):
+                for version, status in [("1.10.0", "update-available"), ("1.11.0", "matches-record")]:
+                    lock.write_text(json.dumps({"packages": {"node_modules/example": {"version": version}}}), encoding="utf-8")
+                    result = tracker.check(row)
+                    self.assertEqual(result["recorded"], version)
+                    self.assertEqual(result["status"], status)
+        self.assertEqual(row["recorded"], "1.9.0")
+
+    def test_action_version_comes_from_its_workflow_with_repeated_steps(self):
+        row = {**item("repository"), "workflow_action": "actions/example", "workflow_file": "viewer.yml"}
+        pin = "a" * 40
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            (root / "viewer.yml").write_text((f"- uses: actions/example@{pin} # v2.0.0\n") * 2, encoding="utf-8")
+            with patch.object(tracker, "ROOT", root), patch.object(tracker, "resolve", return_value={"version": "2.0.0"}):
+                result = tracker.check(row)
+        self.assertEqual(result["recorded"], "2.0.0")
+        self.assertEqual(result["status"], "matches-record")
+
     def test_evidence_uses_git_filename_case_even_on_windows(self):
         tracked = set(subprocess.check_output(["git", "ls-files"], cwd=ROOT, text=True).splitlines())
         data = json.loads((ROOT / "config/technology-inventory.json").read_text(encoding="utf-8"))

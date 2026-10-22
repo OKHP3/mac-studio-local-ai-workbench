@@ -75,6 +75,26 @@ npm run dev
 
 Open **[the local viewer](http://localhost:5000/)** once the development server is running.
 
+The **Deploy and verify GitHub Pages** workflow builds, tests, publishes and
+checks the live viewer on pushes to `main`. Its separate verification job checks
+home, assets, anchors, Architecture navigation, shared documentation and refresh
+on desktop and mobile. Choose **Re-run failed jobs** to retry a failed probe
+without repeating a successful deployment. Reports distinguish run attempts.
+
+**Check published Pages health** repeats the read-only live probe every six
+hours and on manual runs. It resolves the actual URL through GitHub's Pages API,
+uses bounded retries and keeps diagnostics for 14 days. GitHub schedules can be
+delayed. Pages must use **GitHub Actions** as the build source; the optional
+`VITE_GA_MEASUREMENT_ID` repository variable enables publication analytics.
+
+External project and published-document links are audited weekly and on manual
+runs. Use `npm run check:links` for a live audit or `npm run test:links` for
+offline policy checks. See [external link checks](docs/external-link-checks.md)
+for redirect, retry, reporting and failure rules.
+
+To check the deployed viewer locally, set `PAGES_URL` to the published site URL
+and run `npm run test:smoke`. These checks concern the documentation viewer.
+
 Useful checks:
 
 ```bash
@@ -83,7 +103,7 @@ npx playwright install chromium  # install the browser used by smoke checks
 npm run test:smoke                # desktop and mobile routes
 ```
 
-Markdown remains the source of truth. [`src/docsCatalog.js`](src/docsCatalog.js) selects the public documents, and [`src/`](src/) renders them. The verified public destination is the [OverKill Hill project page](https://overkillhill.com/projects/mac-studio-local-ai-workbench/); this repository does not currently publish the viewer through GitHub Pages.
+Markdown remains the source of truth. [`src/docsCatalog.js`](src/docsCatalog.js) selects the public documents, and [`src/`](src/) renders them. The [GitHub Pages viewer](https://okhp3.github.io/mac-studio-local-ai-workbench/) publishes these documents. The [OverKill Hill project page](https://overkillhill.com/projects/mac-studio-local-ai-workbench/) presents the broader build story.
 
 ## Visual identity and sharing
 
@@ -111,7 +131,7 @@ The viewer's page head references the social card, tab icons, touch icon, pinned
 
 ## Maintain and recover
 
-The [technology comparison](reports/technology-update-report.md) links recorded versions to upstream release sources and identifies unknowns. The [maintenance policy](docs/15-technology-version-management.md) covers weekly monitoring, Dependabot updates for GitHub Actions, upgrade checks, and rollback. Recorded host versions need verification on the Mac before an upgrade decision.
+The [technology comparison](reports/technology-update-report.md) links recorded versions to upstream release sources and identifies unknowns. The [maintenance policy](docs/15-technology-version-management.md) covers weekly monitoring, Dependabot updates for npm dependencies and GitHub Actions, upgrade checks, and rollback. Recorded host versions need verification on the Mac before an upgrade decision.
 
 Recovery starts with the [manifests](manifests/), [sanitized configuration example](config/env.example), and [repository-aware scripts](scripts/). The current restore and verification scripts need their CRLF line endings corrected before use; see [the script guidance](AGENTS.md#verified-and-available-operations). The copies in [`mac-studio-setup/`](mac-studio-setup/) belong to the dated baseline. Restore operations change the host and should follow a backup or checkpoint.
 

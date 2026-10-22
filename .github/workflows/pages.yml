@@ -1,0 +1,102 @@
+name: Deploy and verify GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      pages: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "24"
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - run: npx playwright install --with-deps chromium
+      - run: npm run check
+        env:
+          VITE_GA_MEASUREMENT_ID: ${{ vars.VITE_GA_MEASUREMENT_ID }}
+      - run: npm run test:smoke
+      - uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
+      - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    outputs:
+      page_url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy built artifact
+        id: deployment
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
+
+  # Separate read-only job: "Re-run failed jobs" repeats only the probe,
+  # not the successful build, artifact upload, or deployment.
+  verify:
+    name: Verify published Pages site
+    needs: deploy
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      PAGES_URL: ${{ needs.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "24"
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - run: npx playwright install --with-deps chromium
+      - name: Require the published URL
+        run: test -n "$PAGES_URL"
+      - name: Probe home, navigation, shared documentation, and document refresh
+        run: npm run test:smoke
+      - name: Preserve probe report and failure traces
+        if: ${{ always() }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: pages-live-probe-attempt-${{ github.run_attempt }}
+          path: |
+            playwright-report/
+            test-results/
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Publish probe result
+        if: ${{ always() }}
+        env:
+          PROBE_STATUS: ${{ job.status }}
+          PROBE_ARTIFACT: pages-live-probe-attempt-${{ github.run_attempt }}
+        run: |
+          {
+            printf '## Published Pages probe: %s\n\n' "$PROBE_STATUS"
+            printf 'URL: %s\n\n' "$PAGES_URL"
+            printf 'Checks: home page, repository subpath, section anchors, Architecture navigation, direct documentation index and project overview, and document refresh (desktop/mobile).\n\n'
+            printf 'Inspect the %s artifact for the report and failure traces. To retry a failed probe without changing the deployed artifact, choose **Re-run failed jobs**.\n' "$PROBE_ARTIFACT"
+          } >> "$GITHUB_STEP_SUMMARY"

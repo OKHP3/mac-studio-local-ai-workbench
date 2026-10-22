@@ -3,15 +3,26 @@ import { defineConfig } from "@playwright/test";
 const pagesBase = "/mac-studio-local-ai-workbench/";
 const smokePort = 4173;
 
+const publishedURL = process.env.PAGES_URL;
+const baseURL = publishedURL
+  ? `${publishedURL.replace(/\/+$/, "")}/`
+  : `http://127.0.0.1:${smokePort}${pagesBase}`;
+
 export default defineConfig({
   testDir: "./tests",
-  retries: process.env.CI ? 1 : 0,
-  reporter: process.env.CI ? "github" : "list",
+  testMatch: "**/*.spec.js",
+  retries: process.env.CI ? (publishedURL ? 2 : 1) : 0,
+  reporter: publishedURL
+    ? [["github"], ["html", { open: "never" }]]
+    : process.env.CI ? "github" : "list",
+  // Only the small, read-only probe (including shared docs and refresh) runs against a public site.
+  grep: publishedURL ? /@live/ : undefined,
   use: {
-    baseURL: `http://127.0.0.1:${smokePort}${pagesBase}`,
+    baseURL,
     trace: "retain-on-failure",
+    screenshot: "only-on-failure",
   },
-  webServer: {
+  webServer: publishedURL ? undefined : {
     command: `npm run preview -- --port ${smokePort}`,
     url: `http://127.0.0.1:${smokePort}${pagesBase}`,
     reuseExistingServer: !process.env.CI,
