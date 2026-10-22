@@ -44,7 +44,9 @@ lockfile records their exact versions and every transitive npm package.
 | Playwright Test | 1.63.0 |
 
 The checker reads these versions directly from `package-lock.json` on every run,
-then queries each package's npm `latest` release metadata. Inventory validation
+then queries npm `latest` release metadata, or the official stable GitHub
+releases for Playwright, whose npm metadata endpoint repeatedly timed out.
+Inventory validation
 fails when a direct manifest dependency or workflow action is missing, or when
 an application dependency is classified as absent. npm changes trigger this
 validation. New transitive packages remain represented by the lockfile and are

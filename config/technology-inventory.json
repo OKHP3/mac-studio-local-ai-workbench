@@ -2397,17 +2397,16 @@
       "recorded_date": "2026-10-22",
       "npm_package": "@playwright/test",
       "source": {
-        "kind": "json",
-        "url": "https://registry.npmjs.org/@playwright/test/latest",
-        "field": "version",
-        "publisher": "@playwright/test publisher on npm",
-        "title": "Playwright Test stable release metadata"
+        "kind": "github",
+        "url": "https://api.github.com/repos/microsoft/playwright/releases/latest",
+        "publisher": "Microsoft Playwright",
+        "title": "Official stable Playwright releases"
       },
       "evidence": [
         "package.json",
         "package-lock.json"
       ],
-      "notes": "Exact locked version is re-read for every report. Dependabot proposes tested manifest and lockfile updates."
+      "notes": "Locked npm package version is read on every run. Official Playwright stable releases are used because its npm latest metadata endpoint repeatedly timed out; no cached release is substituted."
     },
     {
       "id": "action-setup-node",
