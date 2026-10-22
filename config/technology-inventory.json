@@ -1977,7 +1977,7 @@
       "name": "Vite",
       "scope": "repository",
       "role": "Documentation viewer dependency",
-      "recorded": "8.3.0",
+      "recorded": "8.3.4",
       "recorded_date": "2026-10-22",
       "source": {
         "kind": "json",
@@ -2017,7 +2017,7 @@
       "name": "React",
       "scope": "repository",
       "role": "Documentation viewer dependency",
-      "recorded": "19.3.0",
+      "recorded": "19.3.1",
       "recorded_date": "2026-10-22",
       "source": {
         "kind": "json",
@@ -2288,7 +2288,7 @@
       "name": "Vite React plugin",
       "scope": "repository",
       "role": "Documentation viewer dependency",
-      "recorded": "6.1.1",
+      "recorded": "6.1.2",
       "recorded_date": "2026-10-22",
       "npm_package": "@vitejs/plugin-react",
       "source": {
@@ -2309,7 +2309,7 @@
       "name": "Lucide React",
       "scope": "repository",
       "role": "Documentation viewer dependency",
-      "recorded": "1.47.0",
+      "recorded": "1.59.0",
       "recorded_date": "2026-10-22",
       "npm_package": "lucide-react",
       "source": {
@@ -2330,7 +2330,7 @@
       "name": "React DOM",
       "scope": "repository",
       "role": "Documentation viewer dependency",
-      "recorded": "19.3.0",
+      "recorded": "19.3.1",
       "recorded_date": "2026-10-22",
       "npm_package": "react-dom",
       "source": {
@@ -2393,21 +2393,20 @@
       "name": "Playwright Test",
       "scope": "repository",
       "role": "Desktop and mobile browser validation",
-      "recorded": "1.63.0",
+      "recorded": "1.64.1",
       "recorded_date": "2026-10-22",
       "npm_package": "@playwright/test",
       "source": {
-        "kind": "json",
-        "url": "https://registry.npmjs.org/@playwright/test/latest",
-        "field": "version",
-        "publisher": "@playwright/test publisher on npm",
-        "title": "Playwright Test stable release metadata"
+        "kind": "github",
+        "url": "https://api.github.com/repos/microsoft/playwright/releases/latest",
+        "publisher": "Microsoft Playwright",
+        "title": "Official stable Playwright releases"
       },
       "evidence": [
         "package.json",
         "package-lock.json"
       ],
-      "notes": "Exact locked version is re-read for every report. Dependabot proposes tested manifest and lockfile updates."
+      "notes": "Locked npm package version is read on every run. Official Playwright stable releases are used because its npm latest metadata endpoint repeatedly timed out; no cached release is substituted."
     },
     {
       "id": "action-setup-node",

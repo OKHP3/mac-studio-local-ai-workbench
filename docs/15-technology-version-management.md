@@ -37,14 +37,16 @@ lockfile records their exact versions and every transitive npm package.
 
 | Viewer dependency | Locked version on October 22 UTC |
 |---|---|
-| React / React DOM | 19.3.0 / 19.3.0 |
-| Vite / Vite React plugin | 8.3.0 / 6.1.1 |
+| React / React DOM | 19.3.1 / 19.3.1 |
+| Vite / Vite React plugin | 8.3.4 / 6.1.2 |
 | React Markdown / Remark GFM | 10.1.0 / 4.0.1 |
-| Lucide React | 1.47.0 |
-| Playwright Test | 1.63.0 |
+| Lucide React | 1.59.0 |
+| Playwright Test | 1.64.1 |
 
 The checker reads these versions directly from `package-lock.json` on every run,
-then queries each package's npm `latest` release metadata. Inventory validation
+then queries npm `latest` release metadata, or the official stable GitHub
+releases for Playwright, whose npm metadata endpoint repeatedly timed out.
+Inventory validation
 fails when a direct manifest dependency or workflow action is missing, or when
 an application dependency is classified as absent. npm changes trigger this
 validation. New transitive packages remain represented by the lockfile and are
@@ -114,7 +116,9 @@ failures. Those behaviors are replaced. Dated historical records are preserved.
    produce no edit. Leave old duplicate issues untouched.
 6. Preserve failed lookups as unknown and fail the run after saving the report.
    Never display a cached release as a fresh success. Issue API failures also
-   fail the run.
+   fail the run. Read-only metadata requests retry transient timeouts and HTTP
+   outages up to three attempts, with 30-second request timeouts and bounded
+   backoff. Permanent failures and issue writes are not replayed automatically.
 7. Dependabot opens weekly PRs updating immutable GitHub Action pins and the
    npm manifest and lockfile. npm minor and patch updates are grouped; majors
    remain individual review candidates. Both stable-release monitoring and

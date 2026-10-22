@@ -119,6 +119,34 @@ class ReleaseSelection(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "missing entries"):
             tracker.validate_inventory(broken)
 
+    def test_transient_get_timeout_retries_then_returns_fresh_response(self):
+        class Response:
+            headers = {}
+            def __enter__(self): return self
+            def __exit__(self, *args): pass
+            def read(self): return b'{"version":"2.0.0"}'
+        with patch.object(tracker.urllib.request, "urlopen", side_effect=[TimeoutError("slow"), Response()]) as fetch, patch.object(tracker.time, "sleep") as wait:
+            self.assertEqual(tracker.get_json("https://registry.npmjs.org/example/latest")["version"], "2.0.0")
+        self.assertEqual(fetch.call_count, 2)
+        wait.assert_called_once_with(1)
+
+    def test_get_retries_are_bounded_and_issue_writes_are_not_replayed(self):
+        with patch.object(tracker.urllib.request, "urlopen", side_effect=TimeoutError("offline")) as fetch, patch.object(tracker.time, "sleep"):
+            with self.assertRaises(TimeoutError):
+                tracker.request("https://registry.npmjs.org/example/latest")
+            self.assertEqual(fetch.call_count, 3)
+        with patch.object(tracker.urllib.request, "urlopen", side_effect=TimeoutError("unknown write outcome")) as fetch:
+            with self.assertRaises(TimeoutError):
+                tracker.request("https://api.github.com/repos/owner/repo/issues", {"title": "example"}, "POST")
+            self.assertEqual(fetch.call_count, 1)
+
+    def test_permanent_get_failure_is_not_retried(self):
+        error = urllib.error.HTTPError("https://example.org", 404, "missing", {}, None)
+        with patch.object(tracker.urllib.request, "urlopen", side_effect=error) as fetch:
+            with self.assertRaises(urllib.error.HTTPError):
+                tracker.request("https://example.org")
+            self.assertEqual(fetch.call_count, 1)
+
     def test_inventory_rejects_missing_or_absent_viewer_dependencies(self):
         data = json.loads((ROOT / "config/technology-inventory.json").read_text(encoding="utf-8"))
         broken = copy.deepcopy(data)

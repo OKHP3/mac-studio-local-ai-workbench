@@ -201,6 +201,22 @@ test("extracts plain-text and HTML HTTPS citations and excludes code, private UR
   assert.ok(links.some((link) => link.url === "https://html.example.org/source"));
 });
 
+test("bare citations exclude closing emphasis while preserving literal URL suffixes", () => {
+  const source = [
+    "*Full documentation available at: https://github.com/OKHP3/mac-studio-local-ai-workbench*",
+    "**https://example.org/bold**.",
+    "_See https://example.org/italic_",
+    "See https://example.org/literal_ and https://example.org/literal*",
+  ].join("\n");
+  assert.deepEqual(extractMarkdownExternalLinks(source, "docs/example.md").map(({ url }) => url).sort(), [
+    "https://example.org/bold",
+    "https://example.org/italic",
+    "https://example.org/literal*",
+    "https://example.org/literal_",
+    "https://github.com/OKHP3/mac-studio-local-ai-workbench",
+  ]);
+});
+
 test("extracts public HTML anchor citations, handles multiline attributes, deduplicates, and ignores code", () => {
   const source = [
     "[Markdown citation](https://example.org/source)",
