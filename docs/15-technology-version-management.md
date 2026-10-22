@@ -44,13 +44,19 @@ lockfile records their exact versions and every transitive npm package.
 | Playwright Test | 1.64.1 |
 
 The checker reads these versions directly from `package-lock.json` on every run,
-then queries npm `latest` release metadata, or the official stable GitHub
+then reads the `dist-tags.latest` value in npm's package metadata, or the official stable GitHub
 releases for Playwright, whose npm metadata endpoint repeatedly timed out.
 Inventory validation
 fails when a direct manifest dependency or workflow action is missing, or when
 an application dependency is classified as absent. npm changes trigger this
 validation. New transitive packages remain represented by the lockfile and are
 updated through the dependency graph rather than independently installed.
+
+Registry package documents use the documented
+[`GET /{package}` API](https://github.com/npm/registry/blob/main/docs/REGISTRY-API.md#getpackage).
+This avoids the version-alias endpoints that repeatedly timed out during the
+October review. The `latest` tag is still checked for a stable numeric version;
+beta, canary and next tags are not adopted.
 
 TypeScript and Tailwind remain absent application dependencies. JavaScript,
 JSX, CSS and HTML implement the viewer. Python and Bash support maintenance.
