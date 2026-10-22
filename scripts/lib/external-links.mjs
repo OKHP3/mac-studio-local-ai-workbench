@@ -104,6 +104,15 @@ export function findProjectLinkLabelMismatch(url, label) {
   return { labeledProject: labeledProject.id, destinationProject: destination.id };
 }
 
+export function formatProjectLabelWarningAnnotation(warning) {
+  const message = `${warning.file}:${warning.line}: label "${warning.label}" identifies ${warning.labeledProject}, but destination identifies ${warning.destinationProject} (${warning.url})`;
+  return `::warning::${message.replaceAll("%", "%25").replaceAll("\r", "%0D").replaceAll("\n", "%0A")}`;
+}
+
+export function auditExitCode(summary) {
+  return summary.broken || summary.insecure ? 1 : 0;
+}
+
 function isPublicExternalUrl(value) {
   let url;
   try {
@@ -244,12 +253,24 @@ function hasClosingParenthesis(line, openingParen) {
   return false;
 }
 
-function markdownLinesWithoutCode(source) {
+function markdownLinesWithoutCode(source, { preserveHtmlAnchors = false } = {}) {
   const lines = source
     .replace(/<!--[\s\S]*?(?:-->|$)/g, (comment) => comment.replace(/[^\r\n]/g, " "))
     .split(/\r?\n/);
   let fence;
+  let inHtmlAnchor = false;
+  const updateHtmlAnchorState = (line) => {
+    for (const tag of line.matchAll(/<(\/?)a(?=[\s>]|$)(?:"[^"]*"|'[^']*'|[^"'<>])*(?:>|$)/gi)) {
+      inHtmlAnchor = tag[1] !== "/";
+    }
+  };
   return lines.map((line, index) => {
+    if (preserveHtmlAnchors && inHtmlAnchor) {
+      // Indentation and backticks inside a raw HTML anchor are label content,
+      // not the start of a Markdown code block. Keep multiline attributes too.
+      updateHtmlAnchorState(line);
+      return { line, number: index + 1 };
+    }
     const fenceMatch = line.match(/^[ \t]{0,3}(`{3,}|~{3,})/);
     if (fenceMatch) {
       const marker = fenceMatch[1];
@@ -261,6 +282,7 @@ function markdownLinesWithoutCode(source) {
     if (/^(?: {4,}|\t)/.test(line)) return { line: "", number: index + 1 };
     // Inline code is literal text, not a citation.
     const withoutInlineCode = line.replace(/(`+).*?\1+/g, "");
+    if (preserveHtmlAnchors) updateHtmlAnchorState(withoutInlineCode);
     return { line: withoutInlineCode, number: index + 1 };
   });
 }
@@ -325,6 +347,33 @@ function parseAnchorHref(tag) {
   return null;
 }
 
+function decodeHtmlEntities(value) {
+  return value
+    .replace(/&nbsp;|&#160;/gi, " ")
+    .replace(/&amp;/gi, "&")
+    .replace(/&quot;|&#34;/gi, '"')
+    .replace(/&#39;|&apos;/gi, "'")
+    .replace(/&lt;/gi, "<")
+    .replace(/&gt;/gi, ">")
+    .replace(/&#(x[0-9a-f]+|\d+);/gi, (entity, code) => {
+      const point = code[0].toLowerCase() === "x"
+        ? Number.parseInt(code.slice(1), 16)
+        : Number.parseInt(code, 10);
+      return point <= 0x10ffff && !(point >= 0xd800 && point <= 0xdfff)
+        ? String.fromCodePoint(point)
+        : entity;
+    });
+}
+
+function visibleHtmlAnchorLabel(value) {
+  return decodeHtmlEntities(value
+    .replace(/<!--[\s\S]*?-->/g, " ")
+    .replace(/<(script|style)\b[^>]*>[\s\S]*?<\/\1\s*>/gi, " ")
+    .replace(/<[^>]*>/g, " "))
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 function htmlAnchorOccurrences(lines) {
   const source = lines.map(({ line }) => line).join("\n");
   const occurrences = [];
@@ -333,9 +382,16 @@ function htmlAnchorOccurrences(lines) {
     const href = parseAnchorHref(match[0]);
     if (!href || !isPublicMarkdownCitation(href.value)) continue;
     const locationIndex = match.index + href.attributeStart;
+    const closingAnchorPattern = /<\/a\s*>/gi;
+    closingAnchorPattern.lastIndex = match.index + match[0].length;
+    const closingAnchor = closingAnchorPattern.exec(source);
+    const label = closingAnchor
+      ? visibleHtmlAnchorLabel(source.slice(match.index + match[0].length, closingAnchor.index))
+      : "";
     occurrences.push({
       url: new URL(href.value).href,
       line: source.slice(0, locationIndex).split("\n").length,
+      ...(label ? { label } : {}),
     });
   }
   return occurrences;
@@ -358,7 +414,7 @@ export function extractMarkdownExternalLinks(source, file) {
     }
   }
 
-  const occurrences = htmlAnchorOccurrences(lines);
+  const occurrences = htmlAnchorOccurrences(markdownLinesWithoutCode(source, { preserveHtmlAnchors: true }));
   for (const entry of lines) {
     if (definitionLineNumbers.has(entry.number)) {
       const definition = entry.line.match(definitionPattern);

@@ -31,6 +31,10 @@ openai*.json
 notion*.json
 huggingface*.json
 
+# This tracked historical public document is not a credential file.
+# Keep it in Replit task snapshots despite the broad token-name exclusion.
+!/docs/09-token-economics.md
+
 # Python / virtual environments
 .venv/
 venv/
