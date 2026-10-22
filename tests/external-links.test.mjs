@@ -206,6 +206,24 @@ test("GitHub Actions warns on reachable project-label mismatches without failing
   assert.equal(auditExitCode(summarizeResults(reachableWithWarning)), 0);
 });
 
+test("GitHub Actions warning annotations encode percent signs and line breaks on one line", () => {
+  const annotation = formatProjectLabelWarningAnnotation({
+    file: "docs/example.md",
+    line: 2,
+    label: "SHOAL %\rAI\nServer",
+    url: "https://github.com/OKHP3/mac-studio-local-ai-workbench",
+    labeledProject: "shoal-ai-server",
+    destinationProject: "mac-studio-local-ai-workbench",
+  });
+
+  assert.equal(
+    annotation,
+    '::warning::docs/example.md:2: label "SHOAL %25%0DAI%0AServer" identifies shoal-ai-server, but destination identifies mac-studio-local-ai-workbench (https://github.com/OKHP3/mac-studio-local-ai-workbench)',
+  );
+  assert.equal(annotation.split(/\r\n|\r|\n/).length, 1);
+  assert.equal((annotation.match(/::warning::/g) ?? []).length, 1);
+});
+
 test("extracts plain-text and HTML HTTPS citations and excludes code, private URLs, and shared routes", () => {
   const source = [
     "Source: https://example.org/research/report.",
