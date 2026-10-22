@@ -377,6 +377,39 @@ test("retains visible HTML anchor labels across multiline markup and checks proj
   );
 });
 
+test("retains four-space and tab-indented HTML labels without admitting Markdown code", () => {
+  const destination = "https://github.com/OKHP3/mac-studio-local-ai-workbench";
+  for (const indentation of ["    ", "\t"]) {
+    const source = [
+      `<a href="${destination}">`,
+      `${indentation}SHOAL <strong>AI Server</strong>`,
+      "</a>",
+      "",
+      "<a",
+      `${indentation}href="${destination}">`,
+      `${indentation}SHOAL AI Server`,
+      "</a>",
+      "",
+      `${indentation}<a href="https://ignored.example.org/indented">Not a citation</a>`,
+      "```html",
+      `<a href="https://ignored.example.org/fenced">`,
+      `${indentation}SHOAL AI Server`,
+      "</a>",
+      "```",
+      "`<a href=\"https://ignored.example.org/inline\">Not a citation</a>`",
+    ].join("\n");
+    const links = extractMarkdownExternalLinks(source, "docs/example.md");
+    assert.equal(links.length, 1);
+    assert.deepEqual(links[0].locations, [
+      { file: "docs/example.md", line: 1, label: "SHOAL AI Server" },
+      { file: "docs/example.md", line: 6, label: "SHOAL AI Server" },
+    ]);
+    for (const { label } of links[0].locations) {
+      assert.equal(findProjectLinkLabelMismatch(destination, label)?.labeledProject, "shoal-ai-server");
+    }
+  }
+});
+
 test("HTML HTTP citations are reported as insecure and are not requested", async () => {
   const [citation] = extractMarkdownExternalLinks(
     '<a href="http://example.org/old-source">Old source</a>',

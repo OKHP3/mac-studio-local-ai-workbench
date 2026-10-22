@@ -253,12 +253,24 @@ function hasClosingParenthesis(line, openingParen) {
   return false;
 }
 
-function markdownLinesWithoutCode(source) {
+function markdownLinesWithoutCode(source, { preserveHtmlAnchors = false } = {}) {
   const lines = source
     .replace(/<!--[\s\S]*?(?:-->|$)/g, (comment) => comment.replace(/[^\r\n]/g, " "))
     .split(/\r?\n/);
   let fence;
+  let inHtmlAnchor = false;
+  const updateHtmlAnchorState = (line) => {
+    for (const tag of line.matchAll(/<(\/?)a(?=[\s>]|$)(?:"[^"]*"|'[^']*'|[^"'<>])*(?:>|$)/gi)) {
+      inHtmlAnchor = tag[1] !== "/";
+    }
+  };
   return lines.map((line, index) => {
+    if (preserveHtmlAnchors && inHtmlAnchor) {
+      // Indentation and backticks inside a raw HTML anchor are label content,
+      // not the start of a Markdown code block. Keep multiline attributes too.
+      updateHtmlAnchorState(line);
+      return { line, number: index + 1 };
+    }
     const fenceMatch = line.match(/^[ \t]{0,3}(`{3,}|~{3,})/);
     if (fenceMatch) {
       const marker = fenceMatch[1];
@@ -270,6 +282,7 @@ function markdownLinesWithoutCode(source) {
     if (/^(?: {4,}|\t)/.test(line)) return { line: "", number: index + 1 };
     // Inline code is literal text, not a citation.
     const withoutInlineCode = line.replace(/(`+).*?\1+/g, "");
+    if (preserveHtmlAnchors) updateHtmlAnchorState(withoutInlineCode);
     return { line: withoutInlineCode, number: index + 1 };
   });
 }
@@ -401,7 +414,7 @@ export function extractMarkdownExternalLinks(source, file) {
     }
   }
 
-  const occurrences = htmlAnchorOccurrences(lines);
+  const occurrences = htmlAnchorOccurrences(markdownLinesWithoutCode(source, { preserveHtmlAnchors: true }));
   for (const entry of lines) {
     if (definitionLineNumbers.has(entry.number)) {
       const definition = entry.line.match(definitionPattern);
