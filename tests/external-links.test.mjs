@@ -1,6 +1,10 @@
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { pathToFileURL } from "node:url";
 import test from "node:test";
+import { runExternalLinkAudit } from "../scripts/check-external-links.mjs";
 import {
   checkExternalUrl,
   auditExitCode,
@@ -204,6 +208,49 @@ test("GitHub Actions warns on reachable project-label mismatches without failing
     labelWarnings: [{ url: destination, file: "docs/example.md", line: 2, label, ...mismatch }],
   }];
   assert.equal(auditExitCode(summarizeResults(reachableWithWarning)), 0);
+});
+
+test("appends reachable project-label warnings to the GitHub job summary offline", async () => {
+  const directory = await mkdtemp(join(tmpdir(), "external-link-summary-"));
+  const root = pathToFileURL(`${directory}/`);
+  const summaryPath = join(directory, "step-summary.md");
+  const destination = "https://github.com/OKHP3/mac-studio-local-ai-workbench";
+  const warnings = [];
+  try {
+    await mkdir(new URL("src/", root), { recursive: true });
+    await mkdir(new URL("docs/", root), { recursive: true });
+    await writeFile(new URL("src/App.jsx", root), "");
+    await writeFile(
+      new URL("src/docsCatalog.js", root),
+      'const publicDocuments = [{ file: "example.md" }];',
+    );
+    await writeFile(
+      new URL("docs/example.md", root),
+      `[SHOAL AI Server](${destination})`,
+    );
+    await writeFile(summaryPath, "Existing job summary\n");
+
+    const exitCode = await runExternalLinkAudit({
+      root,
+      env: { GITHUB_ACTIONS: "true", GITHUB_STEP_SUMMARY: summaryPath },
+      fetchImpl: async () => htmlResponse(
+        "<html><body>OKHP3/mac-studio-local-ai-workbench</body></html>",
+      ),
+      log: () => {},
+      warn: (message) => warnings.push(message),
+    });
+
+    const jobSummary = await readFile(summaryPath, "utf8");
+    assert.equal(exitCode, 0);
+    assert.equal(warnings.length, 1);
+    assert.ok(jobSummary.startsWith("Existing job summary\n"));
+    assert.ok(jobSummary.includes(
+      "## Project label warnings\n\n- docs/example.md:1: label “SHOAL AI Server” identifies shoal-ai-server, but the destination identifies mac-studio-local-ai-workbench",
+    ));
+    assert.match(jobSummary, /reachable 1; insecure 0; suspicious 0; broken 0/);
+  } finally {
+    await rm(directory, { recursive: true, force: true });
+  }
 });
 
 test("GitHub Actions warning annotations encode percent signs and line breaks on one line", () => {
