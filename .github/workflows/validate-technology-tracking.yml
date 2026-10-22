@@ -5,6 +5,7 @@ on:
     paths:
       - ".github/**"
       - "config/technology-inventory.json"
+      - "package*.json"
       - "scripts/*technology*"
       - "tests/**"
       - "manifests/**"
@@ -15,6 +16,7 @@ on:
     paths:
       - ".github/**"
       - "config/technology-inventory.json"
+      - "package*.json"
       - "scripts/*technology*"
       - "tests/**"
       - "manifests/**"

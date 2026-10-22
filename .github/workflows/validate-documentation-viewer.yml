@@ -12,6 +12,10 @@ on:
       - "playwright.config.js"
       - "tests/pages-smoke.spec.js"
       - "scripts/check-dist.mjs"
+      - "scripts/*links*.mjs"
+      - "scripts/lib/**"
+      - "scripts/resolve-pages-url.mjs"
+      - "tests/**"
       - "scripts/post-merge.sh"
       - ".replit"
       - ".gitattributes"
@@ -28,6 +32,10 @@ on:
       - "playwright.config.js"
       - "tests/pages-smoke.spec.js"
       - "scripts/check-dist.mjs"
+      - "scripts/*links*.mjs"
+      - "scripts/lib/**"
+      - "scripts/resolve-pages-url.mjs"
+      - "tests/**"
       - "scripts/post-merge.sh"
       - ".replit"
       - ".gitattributes"
@@ -50,6 +58,7 @@ jobs:
           node-version: "24"
           cache: npm
       - run: npm ci --no-audit --no-fund
+      - run: node --test tests/pages-url.test.mjs
       - run: npx playwright install --with-deps chromium
       - run: npm run check
         env:

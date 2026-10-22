@@ -136,6 +136,23 @@ def validate_inventory(data, root=ROOT):
                    if line.strip() and not line.startswith("#")} - names
         if missing:
             raise ValueError(f"Inventory missing entries from {path}: {sorted(missing)}")
+    manifest = json.loads((root / "package.json").read_text(encoding="utf-8"))
+    lock = json.loads((root / "package-lock.json").read_text(encoding="utf-8"))
+    dependencies = {**manifest.get("dependencies", {}), **manifest.get("devDependencies", {})}
+    npm_items = {i["npm_package"]: i for i in data["technologies"] if i.get("npm_package")}
+    if set(dependencies) != set(npm_items):
+        raise ValueError("Inventory npm entries must cover every direct viewer dependency: "
+                         + str(sorted(set(dependencies) ^ set(npm_items))))
+    for name, item in npm_items.items():
+        if item["scope"] != "repository":
+            raise ValueError("Installed npm dependency cannot be classified as absent: " + name)
+        if not lock["packages"].get("node_modules/" + name, {}).get("version"):
+            raise ValueError("Missing locked npm version: " + name)
+    tracked_actions = {i["workflow_action"] for i in data["technologies"] if i.get("workflow_action")}
+    for path in (root / ".github/workflows").glob("*.yml"):
+        used_actions = set(re.findall(r"uses:\s*([\w.-]+/[\w./-]+)@", path.read_text(encoding="utf-8-sig")))
+        if used_actions - tracked_actions:
+            raise ValueError(f"Inventory missing GitHub Actions from {path.name}: {sorted(used_actions - tracked_actions)}")
 
 
 def compare(item, observed):
@@ -159,9 +176,14 @@ def compare(item, observed):
 
 def check(item):
     item = dict(item)
+    if item.get("npm_package"):
+        lock = json.loads((ROOT / "package-lock.json").read_text(encoding="utf-8"))
+        item["recorded"] = lock["packages"]["node_modules/" + item["npm_package"]]["version"]
+        item["recorded_date"] = datetime.now(timezone.utc).date().isoformat()
+        item["notes"] = "Exact version read from package-lock.json. Dependabot proposes manifest and lockfile updates."
     if item.get("workflow_action"):
-        workflow = (ROOT / ".github/workflows/technology-updates.yml").read_text(encoding="utf-8-sig")
-        pins = re.findall(r"uses:\s*" + re.escape(item["workflow_action"]) + r"@([a-f0-9]{40})\s*#\s*v(\d+(?:\.\d+){2})", workflow)
+        workflow = (ROOT / item.get("workflow_file", ".github/workflows/technology-updates.yml")).read_text(encoding="utf-8-sig")
+        pins = list(set(re.findall(r"uses:\s*" + re.escape(item["workflow_action"]) + r"@([a-f0-9]{40})\s*#\s*v(\d+(?:\.\d+){2})", workflow)))
         if len(pins) != 1:
             raise ValueError("Expected one SHA pin and version comment for " + item["workflow_action"])
         item["recorded"] = pins[0][1]
@@ -269,7 +291,7 @@ def main(argv=None):
     data = json.loads(args.inventory.read_text(encoding="utf-8"))
     validate_inventory(data)
     if args.validate_only:
-        print(f"Inventory valid: {len(data['technologies'])} entries; all Homebrew manifest entries covered")
+        print(f"Inventory valid: {len(data['technologies'])} entries; Homebrew, direct npm dependencies and workflow actions covered")
         return 0
     with ThreadPoolExecutor(max_workers=6) as pool:
         results = list(pool.map(check, data["technologies"]))

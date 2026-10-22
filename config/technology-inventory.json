@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
-  "inventory_date": "2026-09-19",
-  "project_scope": "Repository artifacts and documented Mac Studio stack; live host not inspected",
+  "inventory_date": "2026-10-22",
+  "project_scope": "Repository viewer, maintenance tooling and documented Mac Studio stack; live Mac host not inspected",
   "technologies": [
     {
       "id": "macos",
@@ -1751,13 +1751,15 @@
       "recorded_date": null,
       "source": {
         "kind": "none",
-        "reason": "Language support follows Node/browser. Vendored skill support includes .mjs files; no application JS in this repository.",
+        "reason": "Viewer .jsx/.js, Vite configuration and .mjs maintenance scripts use Node/browser language support. JavaScript is not a separately installed versioned package.",
         "url": "https://tc39.es/ecma262/",
         "publisher": "Project publisher or official distribution registry",
         "title": "JavaScript / ECMAScript release metadata"
       },
       "evidence": [
-        "README.md"
+        "src/App.jsx",
+        "vite.config.js",
+        "scripts/check-external-links.mjs"
       ],
       "notes": ""
     },
@@ -1770,7 +1772,7 @@
       "recorded_date": null,
       "source": {
         "kind": "none",
-        "reason": "Document format; GitHub owns the renderer. No parser dependency pinned here.",
+        "reason": "Document format. The viewer parser versions are tracked separately as react-markdown and remark-gfm; GitHub controls its own renderer.",
         "url": "https://github.github.com/gfm/",
         "publisher": "GitHub",
         "title": "Markdown / GFM release metadata"
@@ -1973,21 +1975,23 @@
     {
       "id": "vite",
       "name": "Vite",
-      "scope": "absent",
-      "role": "Requested technology; not an application dependency here",
-      "recorded": null,
-      "recorded_date": null,
+      "scope": "repository",
+      "role": "Documentation viewer dependency",
+      "recorded": "8.3.0",
+      "recorded_date": "2026-10-22",
       "source": {
         "kind": "json",
         "url": "https://registry.npmjs.org/vite/latest",
         "field": "version",
         "publisher": "vite publisher on npm",
-        "title": "Vite release metadata"
+        "title": "Vite stable release metadata"
       },
       "evidence": [
-        "AGENTS.md"
+        "package.json",
+        "package-lock.json"
       ],
-      "notes": "Mentions in vendored skills are guidance, not adoption by the workbench."
+      "notes": "Exact locked version is re-read for every report. Dependabot proposes tested manifest and lockfile updates.",
+      "npm_package": "vite"
     },
     {
       "id": "tailwindcss",
@@ -2011,21 +2015,23 @@
     {
       "id": "react",
       "name": "React",
-      "scope": "absent",
-      "role": "Requested technology; not an application dependency here",
-      "recorded": null,
-      "recorded_date": null,
+      "scope": "repository",
+      "role": "Documentation viewer dependency",
+      "recorded": "19.3.0",
+      "recorded_date": "2026-10-22",
       "source": {
         "kind": "json",
         "url": "https://registry.npmjs.org/react/latest",
         "field": "version",
         "publisher": "react publisher on npm",
-        "title": "React release metadata"
+        "title": "React stable release metadata"
       },
       "evidence": [
-        "AGENTS.md"
+        "package.json",
+        "package-lock.json"
       ],
-      "notes": "Mentions in vendored skills are guidance, not adoption by the workbench."
+      "notes": "Exact locked version is re-read for every report. Dependabot proposes tested manifest and lockfile updates.",
+      "npm_package": "react"
     },
     {
       "id": "java",
@@ -2276,6 +2282,231 @@
         "skills/okhp3-skill-promotion/SKILL.md"
       ],
       "notes": "Private @bp-skill packages record 0.1.0 and Node's built-in tests. Python support uses the standard library; package examples in SKILL.md are not application dependencies."
+    },
+    {
+      "id": "npm-vitejs-plugin-react",
+      "name": "Vite React plugin",
+      "scope": "repository",
+      "role": "Documentation viewer dependency",
+      "recorded": "6.1.1",
+      "recorded_date": "2026-10-22",
+      "npm_package": "@vitejs/plugin-react",
+      "source": {
+        "kind": "json",
+        "url": "https://registry.npmjs.org/@vitejs/plugin-react/latest",
+        "field": "version",
+        "publisher": "@vitejs/plugin-react publisher on npm",
+        "title": "Vite React plugin stable release metadata"
+      },
+      "evidence": [
+        "package.json",
+        "package-lock.json"
+      ],
+      "notes": "Exact locked version is re-read for every report. Dependabot proposes tested manifest and lockfile updates."
+    },
+    {
+      "id": "npm-lucide-react",
+      "name": "Lucide React",
+      "scope": "repository",
+      "role": "Documentation viewer dependency",
+      "recorded": "1.47.0",
+      "recorded_date": "2026-10-22",
+      "npm_package": "lucide-react",
+      "source": {
+        "kind": "json",
+        "url": "https://registry.npmjs.org/lucide-react/latest",
+        "field": "version",
+        "publisher": "lucide-react publisher on npm",
+        "title": "Lucide React stable release metadata"
+      },
+      "evidence": [
+        "package.json",
+        "package-lock.json"
+      ],
+      "notes": "Exact locked version is re-read for every report. Dependabot proposes tested manifest and lockfile updates."
+    },
+    {
+      "id": "npm-react-dom",
+      "name": "React DOM",
+      "scope": "repository",
+      "role": "Documentation viewer dependency",
+      "recorded": "19.3.0",
+      "recorded_date": "2026-10-22",
+      "npm_package": "react-dom",
+      "source": {
+        "kind": "json",
+        "url": "https://registry.npmjs.org/react-dom/latest",
+        "field": "version",
+        "publisher": "react-dom publisher on npm",
+        "title": "React DOM stable release metadata"
+      },
+      "evidence": [
+        "package.json",
+        "package-lock.json"
+      ],
+      "notes": "Exact locked version is re-read for every report. Dependabot proposes tested manifest and lockfile updates."
+    },
+    {
+      "id": "npm-react-markdown",
+      "name": "React Markdown",
+      "scope": "repository",
+      "role": "Documentation viewer dependency",
+      "recorded": "10.1.0",
+      "recorded_date": "2026-10-22",
+      "npm_package": "react-markdown",
+      "source": {
+        "kind": "json",
+        "url": "https://registry.npmjs.org/react-markdown/latest",
+        "field": "version",
+        "publisher": "react-markdown publisher on npm",
+        "title": "React Markdown stable release metadata"
+      },
+      "evidence": [
+        "package.json",
+        "package-lock.json"
+      ],
+      "notes": "Exact locked version is re-read for every report. Dependabot proposes tested manifest and lockfile updates."
+    },
+    {
+      "id": "npm-remark-gfm",
+      "name": "Remark GFM",
+      "scope": "repository",
+      "role": "Documentation viewer dependency",
+      "recorded": "4.0.1",
+      "recorded_date": "2026-10-22",
+      "npm_package": "remark-gfm",
+      "source": {
+        "kind": "json",
+        "url": "https://registry.npmjs.org/remark-gfm/latest",
+        "field": "version",
+        "publisher": "remark-gfm publisher on npm",
+        "title": "Remark GFM stable release metadata"
+      },
+      "evidence": [
+        "package.json",
+        "package-lock.json"
+      ],
+      "notes": "Exact locked version is re-read for every report. Dependabot proposes tested manifest and lockfile updates."
+    },
+    {
+      "id": "npm-playwright-test",
+      "name": "Playwright Test",
+      "scope": "repository",
+      "role": "Desktop and mobile browser validation",
+      "recorded": "1.63.0",
+      "recorded_date": "2026-10-22",
+      "npm_package": "@playwright/test",
+      "source": {
+        "kind": "json",
+        "url": "https://registry.npmjs.org/@playwright/test/latest",
+        "field": "version",
+        "publisher": "@playwright/test publisher on npm",
+        "title": "Playwright Test stable release metadata"
+      },
+      "evidence": [
+        "package.json",
+        "package-lock.json"
+      ],
+      "notes": "Exact locked version is re-read for every report. Dependabot proposes tested manifest and lockfile updates."
+    },
+    {
+      "id": "action-setup-node",
+      "name": "actions/setup-node",
+      "scope": "repository",
+      "role": "GitHub Actions dependency",
+      "recorded": "7.1.0",
+      "recorded_date": "2026-10-22",
+      "workflow_action": "actions/setup-node",
+      "workflow_file": ".github/workflows/validate-documentation-viewer.yml",
+      "source": {
+        "kind": "github",
+        "url": "https://api.github.com/repos/actions/setup-node/releases/latest",
+        "publisher": "GitHub Actions",
+        "title": "actions/setup-node stable releases"
+      },
+      "evidence": [
+        ".github/workflows/validate-documentation-viewer.yml"
+      ],
+      "notes": "The immutable workflow pin and its version comment are read on every check; Dependabot maintains the reference."
+    },
+    {
+      "id": "action-configure-pages",
+      "name": "actions/configure-pages",
+      "scope": "repository",
+      "role": "GitHub Actions dependency",
+      "recorded": "6.0.0",
+      "recorded_date": "2026-10-22",
+      "workflow_action": "actions/configure-pages",
+      "workflow_file": ".github/workflows/pages.yml",
+      "source": {
+        "kind": "github",
+        "url": "https://api.github.com/repos/actions/configure-pages/releases/latest",
+        "publisher": "GitHub Actions",
+        "title": "actions/configure-pages stable releases"
+      },
+      "evidence": [
+        ".github/workflows/pages.yml"
+      ],
+      "notes": "The immutable workflow pin and its version comment are read on every check; Dependabot maintains the reference."
+    },
+    {
+      "id": "action-upload-pages-artifact",
+      "name": "actions/upload-pages-artifact",
+      "scope": "repository",
+      "role": "GitHub Actions dependency",
+      "recorded": "5.0.0",
+      "recorded_date": "2026-10-22",
+      "workflow_action": "actions/upload-pages-artifact",
+      "workflow_file": ".github/workflows/pages.yml",
+      "source": {
+        "kind": "github",
+        "url": "https://api.github.com/repos/actions/upload-pages-artifact/releases/latest",
+        "publisher": "GitHub Actions",
+        "title": "actions/upload-pages-artifact stable releases"
+      },
+      "evidence": [
+        ".github/workflows/pages.yml"
+      ],
+      "notes": "The immutable workflow pin and its version comment are read on every check; Dependabot maintains the reference."
+    },
+    {
+      "id": "action-deploy-pages",
+      "name": "actions/deploy-pages",
+      "scope": "repository",
+      "role": "GitHub Actions dependency",
+      "recorded": "5.0.1",
+      "recorded_date": "2026-10-22",
+      "workflow_action": "actions/deploy-pages",
+      "workflow_file": ".github/workflows/pages.yml",
+      "source": {
+        "kind": "github",
+        "url": "https://api.github.com/repos/actions/deploy-pages/releases/latest",
+        "publisher": "GitHub Actions",
+        "title": "actions/deploy-pages stable releases"
+      },
+      "evidence": [
+        ".github/workflows/pages.yml"
+      ],
+      "notes": "The immutable workflow pin and its version comment are read on every check; Dependabot maintains the reference."
+    },
+    {
+      "id": "viewer-node-runtime",
+      "name": "Viewer Node.js runtime selection",
+      "scope": "repository",
+      "role": "Viewer build, validation and Replit preview runtime",
+      "recorded": null,
+      "recorded_date": null,
+      "source": {
+        "kind": "node",
+        "url": "https://nodejs.org/dist/index.json",
+        "publisher": "Node.js project",
+        "title": "Node.js release metadata"
+      },
+      "evidence": [
+        ".github/workflows/validate-documentation-viewer.yml",
+        ".replit"
+      ],
+      "notes": "CI selects the latest Node 24 patch automatically. Replit currently declares nodejs-20; its actual running patch must be inspected separately. Host Node evidence is a separate entry. A major runtime migration requires compatibility checks."
     }
   ]
 }

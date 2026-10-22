@@ -1,0 +1,1 @@
+- [GitHub Actions retry reports](github-actions-retry-reports.md) — artifact names must distinguish attempts when failed jobs can be rerun.
