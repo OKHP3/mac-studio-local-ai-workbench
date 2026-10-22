@@ -6,7 +6,9 @@ import {
   extractExternalLinkOccurrences,
   extractMarkdownExternalLinks,
   findProjectLinkLabelMismatch,
+  formatProjectLabelWarningAnnotation,
   formatReport,
+  auditExitCode,
   summarizeResults,
 } from "./lib/external-links.mjs";
 
@@ -59,10 +61,11 @@ try {
       results[index] = result;
       console.log(`${result.outcome.toUpperCase()} ${entry.url} -> ${result.finalUrl} (${result.status ?? "network error"}, ${result.attempts} attempt(s); ${entry.locations.map(({ file, line }) => `${file}:${line}`).join(", ")})`);
       for (const warning of result.labelWarnings) {
-        const message = `${warning.file}:${warning.line}: label "${warning.label}" identifies ${warning.labeledProject}, but destination identifies ${warning.destinationProject} (${entry.url})`
-          .replaceAll("%", "%25").replaceAll("\r", "%0D").replaceAll("\n", "%0A");
+        const message = `${warning.file}:${warning.line}: label "${warning.label}" identifies ${warning.labeledProject}, but destination identifies ${warning.destinationProject} (${entry.url})`;
         console.warn(`WARNING ${message}`);
-        if (process.env.GITHUB_ACTIONS === "true") console.log(`::warning::${message}`);
+        if (process.env.GITHUB_ACTIONS === "true") {
+          console.log(formatProjectLabelWarningAnnotation(warning));
+        }
       }
       if (process.env.GITHUB_ACTIONS === "true" && result.outcome !== "ok") {
         const message = `${entry.url}: ${result.detail} [${entry.locations.map(({ file, line }) => `${file}:${line}`).join(", ")}]`
@@ -84,7 +87,7 @@ try {
   if (process.env.GITHUB_STEP_SUMMARY) await appendFile(process.env.GITHUB_STEP_SUMMARY, markdown);
   console.log(`Audited ${documentFiles.length} published documents.`);
   console.log(`Reports: ${fileURLToPath(reportDirectory)}`);
-  process.exitCode = summary.broken || summary.insecure ? 1 : 0;
+  process.exitCode = auditExitCode(summary);
 } catch (error) {
   console.error(`Link audit could not run: ${error.message}`);
   process.exitCode = 1;

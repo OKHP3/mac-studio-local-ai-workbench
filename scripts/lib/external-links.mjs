@@ -104,6 +104,15 @@ export function findProjectLinkLabelMismatch(url, label) {
   return { labeledProject: labeledProject.id, destinationProject: destination.id };
 }
 
+export function formatProjectLabelWarningAnnotation(warning) {
+  const message = `${warning.file}:${warning.line}: label "${warning.label}" identifies ${warning.labeledProject}, but destination identifies ${warning.destinationProject} (${warning.url})`;
+  return `::warning::${message.replaceAll("%", "%25").replaceAll("\r", "%0D").replaceAll("\n", "%0A")}`;
+}
+
+export function auditExitCode(summary) {
+  return summary.broken || summary.insecure ? 1 : 0;
+}
+
 function isPublicExternalUrl(value) {
   let url;
   try {

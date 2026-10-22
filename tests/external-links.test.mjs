@@ -3,12 +3,14 @@ import { readFile } from "node:fs/promises";
 import test from "node:test";
 import {
   checkExternalUrl,
+  auditExitCode,
   EXPECTED_CONTENT_RULES,
   extractCatalogDocumentFiles,
   extractExternalLinkOccurrences,
   extractExternalLinks,
   extractMarkdownExternalLinks,
   findProjectLinkLabelMismatch,
+  formatProjectLabelWarningAnnotation,
   formatReport,
   summarizeResults,
 } from "../scripts/lib/external-links.mjs";
@@ -173,6 +175,35 @@ test("retains Markdown labels and warns only when a known project label names an
   assert.match(report, /SHOAL AI Server/);
   assert.match(report, /destination identifies mac-studio-local-ai-workbench/);
   assert.match(report, /reachable 1; insecure 0; suspicious 0; broken 0/);
+});
+
+test("GitHub Actions warns on reachable project-label mismatches without failing the audit", () => {
+  const destination = "https://github.com/OKHP3/mac-studio-local-ai-workbench";
+  const label = "SHOAL AI Server";
+  const mismatch = findProjectLinkLabelMismatch(destination, label);
+
+  assert.equal(
+    formatProjectLabelWarningAnnotation({
+      file: "docs/example.md",
+      line: 2,
+      label,
+      url: destination,
+      ...mismatch,
+    }),
+    '::warning::docs/example.md:2: label "SHOAL AI Server" identifies shoal-ai-server, but destination identifies mac-studio-local-ai-workbench (https://github.com/OKHP3/mac-studio-local-ai-workbench)',
+  );
+
+  const reachableWithWarning = [{
+    url: destination,
+    finalUrl: destination,
+    outcome: "ok",
+    detail: "Reachable.",
+    attempts: 1,
+    status: 200,
+    redirects: [],
+    labelWarnings: [{ url: destination, file: "docs/example.md", line: 2, label, ...mismatch }],
+  }];
+  assert.equal(auditExitCode(summarizeResults(reachableWithWarning)), 0);
 });
 
 test("extracts plain-text and HTML HTTPS citations and excludes code, private URLs, and shared routes", () => {
