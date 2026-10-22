@@ -198,7 +198,10 @@ test("extracts plain-text and HTML HTTPS citations and excludes code, private UR
     { file: "docs/example.md", line: 2, label: "Linked too" },
   ]);
   assert.ok(links.some((link) => link.url === "https://docs.example.net/guide_(part-1)"));
-  assert.ok(links.some((link) => link.url === "https://html.example.org/source"));
+  const htmlSource = links.find((link) => link.url === "https://html.example.org/source");
+  assert.deepEqual(htmlSource.locations, [
+    { file: "docs/example.md", line: 12, label: "HTML attribute" },
+  ]);
 });
 
 test("bare citations exclude closing emphasis while preserving literal URL suffixes", () => {
@@ -243,10 +246,39 @@ test("extracts public HTML anchor citations, handles multiline attributes, dedup
   const markdown = links.find((link) => link.url === "https://example.org/source");
   assert.deepEqual(markdown.locations, [
     { file: "docs/example.md", line: 1, label: "Markdown citation" },
-    { file: "docs/example.md", line: 2 },
+    { file: "docs/example.md", line: 2, label: "HTML duplicate" },
   ]);
   assert.ok(links.some((link) => link.url === "https://archive.example.org/item"));
   assert.ok(links.some((link) => link.url === "https://docs.example.net/reference"));
+});
+
+test("retains visible HTML anchor labels across multiline markup and checks project identity", () => {
+  const source = [
+    '<a href="https://github.com/OKHP3/mac-studio-local-ai-workbench">',
+    "  Mac&#32;<strong>Studio Local AI</strong>&nbsp;Workbench",
+    "</a>",
+    "<a",
+    '  href="https://github.com/OKHP3/mac-studio-local-ai-workbench">',
+    "  SHOAL <em>AI Server</em>",
+    "</a>",
+  ].join("\n");
+  const link = extractMarkdownExternalLinks(source, "docs/example.md")[0];
+
+  assert.deepEqual(link.locations, [
+    { file: "docs/example.md", line: 1, label: "Mac Studio Local AI Workbench" },
+    { file: "docs/example.md", line: 5, label: "SHOAL AI Server" },
+  ]);
+  assert.equal(
+    findProjectLinkLabelMismatch(link.url, link.locations[0].label),
+    null,
+  );
+  assert.deepEqual(
+    findProjectLinkLabelMismatch(link.url, link.locations[1].label),
+    {
+      labeledProject: "shoal-ai-server",
+      destinationProject: "mac-studio-local-ai-workbench",
+    },
+  );
 });
 
 test("HTML HTTP citations are reported as insecure and are not requested", async () => {
@@ -259,7 +291,7 @@ test("HTML HTTP citations are reported as insecure and are not requested", async
     fetchImpl: async () => { requested = true; return response(200); },
   });
   assert.equal(citation.url, "http://example.org/old-source");
-  assert.deepEqual(citation.locations, [{ file: "docs/example.md", line: 1 }]);
+  assert.deepEqual(citation.locations, [{ file: "docs/example.md", line: 1, label: "Old source" }]);
   assert.equal(result.outcome, "insecure");
   assert.equal(requested, false);
 });

@@ -325,6 +325,33 @@ function parseAnchorHref(tag) {
   return null;
 }
 
+function decodeHtmlEntities(value) {
+  return value
+    .replace(/&nbsp;|&#160;/gi, " ")
+    .replace(/&amp;/gi, "&")
+    .replace(/&quot;|&#34;/gi, '"')
+    .replace(/&#39;|&apos;/gi, "'")
+    .replace(/&lt;/gi, "<")
+    .replace(/&gt;/gi, ">")
+    .replace(/&#(x[0-9a-f]+|\d+);/gi, (entity, code) => {
+      const point = code[0].toLowerCase() === "x"
+        ? Number.parseInt(code.slice(1), 16)
+        : Number.parseInt(code, 10);
+      return point <= 0x10ffff && !(point >= 0xd800 && point <= 0xdfff)
+        ? String.fromCodePoint(point)
+        : entity;
+    });
+}
+
+function visibleHtmlAnchorLabel(value) {
+  return decodeHtmlEntities(value
+    .replace(/<!--[\s\S]*?-->/g, " ")
+    .replace(/<(script|style)\b[^>]*>[\s\S]*?<\/\1\s*>/gi, " ")
+    .replace(/<[^>]*>/g, " "))
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 function htmlAnchorOccurrences(lines) {
   const source = lines.map(({ line }) => line).join("\n");
   const occurrences = [];
@@ -333,9 +360,16 @@ function htmlAnchorOccurrences(lines) {
     const href = parseAnchorHref(match[0]);
     if (!href || !isPublicMarkdownCitation(href.value)) continue;
     const locationIndex = match.index + href.attributeStart;
+    const closingAnchorPattern = /<\/a\s*>/gi;
+    closingAnchorPattern.lastIndex = match.index + match[0].length;
+    const closingAnchor = closingAnchorPattern.exec(source);
+    const label = closingAnchor
+      ? visibleHtmlAnchorLabel(source.slice(match.index + match[0].length, closingAnchor.index))
+      : "";
     occurrences.push({
       url: new URL(href.value).href,
       line: source.slice(0, locationIndex).split("\n").length,
+      ...(label ? { label } : {}),
     });
   }
   return occurrences;
