@@ -271,6 +271,16 @@ function plainTextHttpsUrls(line) {
   const urls = [];
   for (const match of text.matchAll(/https:\/\/[^\s<>"'`]+/gi)) {
     let value = match[0].replace(/[.,!?;:]+$/, "");
+    const marker = value.match(/(\*{1,3}|_{1,3})$/)?.[0];
+    if (marker) {
+      const prefix = text.slice(0, match.index);
+      const opening = marker.replaceAll("*", "\\*");
+      const delimiterCount = [...prefix.matchAll(/(?<!\\)(\*+|_+)/g)]
+        .filter(([delimiter]) => delimiter === marker).length;
+      if (delimiterCount % 2 === 1 && new RegExp(`(?:^|[\\s(])${opening}(?=\\S|$)`).test(prefix)) {
+        value = value.slice(0, -marker.length);
+      }
+    }
     for (const [closing, opening] of [[")", "("], ["]", "["], ["}", "{"]]) {
       while (value.endsWith(closing)
         && [...value].filter((character) => character === closing).length

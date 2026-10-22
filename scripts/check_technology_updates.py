@@ -10,6 +10,7 @@ import os
 from pathlib import Path
 import re
 import sys
+import time
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -31,11 +32,21 @@ def request(url, payload=None, method=None):
         data = json.dumps(payload).encode()
         headers["Content-Type"] = "application/json"
     req = urllib.request.Request(url, data=data, headers=headers, method=method)
-    with urllib.request.urlopen(req, timeout=30) as response:
-        raw = response.read()
-        if response.headers.get("Content-Encoding") == "gzip" or raw.startswith(b"\x1f\x8b"):
-            raw = gzip.decompress(raw)
-        return raw.decode("utf-8")
+    attempts = 3 if payload is None and method in (None, "GET") else 1
+    for attempt in range(attempts):
+        try:
+            with urllib.request.urlopen(req, timeout=30) as response:
+                raw = response.read()
+                if response.headers.get("Content-Encoding") == "gzip" or raw.startswith(b"\x1f\x8b"):
+                    raw = gzip.decompress(raw)
+                return raw.decode("utf-8")
+        except urllib.error.HTTPError as exc:
+            if exc.code not in {408, 429, 500, 502, 503, 504} or attempt == attempts - 1:
+                raise
+        except (urllib.error.URLError, TimeoutError):
+            if attempt == attempts - 1:
+                raise
+        time.sleep(2 ** attempt)
 
 
 def get_json(url, payload=None, method=None):

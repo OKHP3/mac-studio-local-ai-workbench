@@ -114,7 +114,9 @@ failures. Those behaviors are replaced. Dated historical records are preserved.
    produce no edit. Leave old duplicate issues untouched.
 6. Preserve failed lookups as unknown and fail the run after saving the report.
    Never display a cached release as a fresh success. Issue API failures also
-   fail the run.
+   fail the run. Read-only metadata requests retry transient timeouts and HTTP
+   outages up to three attempts, with 30-second request timeouts and bounded
+   backoff. Permanent failures and issue writes are not replayed automatically.
 7. Dependabot opens weekly PRs updating immutable GitHub Action pins and the
    npm manifest and lockfile. npm minor and patch updates are grouped; majors
    remain individual review candidates. Both stable-release monitoring and
