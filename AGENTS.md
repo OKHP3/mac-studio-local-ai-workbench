@@ -17,7 +17,7 @@ This repository is the sanitized, durable artifact layer for a Mac Studio M4 Max
 - The baseline build, storage normalization, initial benchmark, operational hardening, and local archive were completed in May 2026.
 - OpenClaw, with the local agent named Larry, was documented as operational on 2026-05-28. Its documented primary model is `gemma3:27b` through Ollama.
 - The strict six-model Ollama benchmark was completed on 2026-05-30. `gemma3:12b` and `gemma3:27b` scored 5/5 under the documented strict prompt set.
-- The repository contains shell scripts intended for baseline verification and restore, plus manifests for Homebrew formulae, casks, and model inventories. The dated `mac-studio-setup/` copies pass shell syntax validation. The current root copies have CRLF line endings and fail `bash -n` in this checkout, so they need separate script maintenance before being relied on.
+- The repository contains shell scripts intended for baseline verification and restore, plus manifests for Homebrew formulae, casks, and model inventories. On 2026-10-26, both root scripts and the dated `mac-studio-setup/` copies passed individual `bash -n` checks. Syntax validation does not establish that they work on the target host.
 - The documented inference paths are Ollama, LM Studio, and direct `mlx-lm`. Open WebUI is the documented chat front door. OpenClaw and SearXNG form the documented autonomous agent and private search layer.
 - Dated August and September records confirm a running Qdrant service. End-to-end RAG ingestion, retrieval, and citation remain unverified. The local web portal and HTTPS front door are future architecture work.
 - This is not a hosted service, enterprise platform, or production deployment. It is a personal infrastructure case study and reference build.
@@ -112,8 +112,8 @@ From the repository root:
 
 ```bash
 # Syntax-check the dated baseline script copies without changing the host.
-bash -n mac-studio-setup/restore_mac_studio_baseline.sh \
-  mac-studio-setup/verify_mac_studio_baseline.sh
+bash -n mac-studio-setup/restore_mac_studio_baseline.sh
+bash -n mac-studio-setup/verify_mac_studio_baseline.sh
 
 # Run the repository-aware, non-destructive host verification.
 ./scripts/verify_mac_studio_baseline.sh
@@ -123,12 +123,12 @@ bash -n mac-studio-setup/restore_mac_studio_baseline.sh \
 ./scripts/restore_mac_studio_baseline.sh
 ```
 
-The root verification and restore scripts are the intended repository-aware entry points, but their current CRLF line endings must be corrected before they can be relied on. The `mac-studio-setup/` copies use the dated baseline layout and do not perform the expanded storage and container checks. Both script families are host-dependent. The restore scripts run `brew update`, install curated manifest entries, and start Ollama. Do not run them automatically as part of documentation-only changes.
+The root verification and restore scripts are the intended repository-aware entry points. The `mac-studio-setup/` copies use the dated baseline layout and do not perform the expanded storage and container checks. Both script families are host-dependent. A passing syntax check does not verify their behavior on the host. The restore scripts run `brew update`, install curated manifest entries, and start Ollama. Do not run them automatically as part of documentation-only changes.
 
 The viewer has Playwright smoke coverage and technology tracking has focused unittest coverage. For documentation and script changes, use the narrowest practical checks:
 
 1. Re-read every changed guidance or documentation file.
-2. Run `bash -n` on changed shell scripts. Resolve the known CRLF issue in the root scripts before treating those checks as passing.
+2. Run `bash -n` on each changed shell script separately.
 3. Verify referenced files and commands exist where practical.
 4. Run `git diff --check`.
 5. Run the host verification script only when the Mac Studio services and paths are intentionally in scope.
