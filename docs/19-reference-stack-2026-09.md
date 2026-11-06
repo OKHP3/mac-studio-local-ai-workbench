@@ -12,8 +12,8 @@ One Mac Studio M4 Max (36 GB unified memory) serving local models to a chat UI, 
 
 | Layer | Component | Version | Bind | Starts via | Self-heals |
 |---|---|---|---|---|---|
-| Inference | Ollama (brew) | 0.40.14 | `0.0.0.0:11434` | `sh.brew.ollama` + `com.okh.ollama-env` LaunchAgents | launchd KeepAlive |
-| Inference | LM Studio (headless service) | 0.4.28 | `0.0.0.0:1234` | Login item + "Enable Local LLM Service" | App service |
+| Inference | Ollama (brew) | 0.40.14 | `127.0.0.1:11434` + Tailscale Serve TCP `11434` (tailnet only) | `sh.brew.ollama` + `com.okh.ollama-env` LaunchAgents | launchd KeepAlive |
+| Inference | LM Studio (headless service) | 0.4.28 | `127.0.0.1:1234`, token required | Login item + "Enable Local LLM Service" | App service |
 | Chat UI | Open WebUI (Docker) | v0.13.0 | `127.0.0.1:3000` (Tailscale Serve `:8443`) | Docker Desktop autostart | `--restart always` |
 | Retrieval | Qdrant (Docker) | v1.20.0 (pinned tag) | `127.0.0.1:6333/6334` | Docker Desktop autostart | `--restart always` |
 | Search | SearXNG (Docker) | 2026.11.5 (pinned dated tag) | `127.0.0.1:8888` | Docker Desktop autostart | `--restart always` |
@@ -141,6 +141,8 @@ How "latest" is checked: GitHub's releases API (`/repos/<owner>/<repo>/releases/
 2. **Ollama 0.40 runs on MLX by default on Apple Silicon.** Engine change, not just a version bump. Test generations on `llama3.2:3b` and `gpt-oss:20b` passed and the tuning environment was unchanged, but the first start after the upgrade took about 6 minutes before the API answered.
 3. **Tailscale guard.** OpenClaw 2026.10.x refuses to start without Tailscale ("managed ingress remains required"). `com.okh.tailscale-guard` runs every 60 seconds: if the Tailscale app isn't running it opens it; if the backend isn't `Running` it runs `tailscale up` with no flags; if the gateway's tailnet URL fails three checks in a row it restarts the gateway (at most once per 15 minutes). It never acts on `NeedsLogin`. Turn it off with `touch ~/.okh/tailscale-guard.disabled`; log at `~/Library/Logs/okh-tailscale-guard.log`.
 4. **Open WebUI sub-agent limits** tightened to 2 concurrent / 2 background / 20 tool loops (doc 20).
+5. **Ollama off the home network, still on the tailnet (2026-11-06).** Its request log showed the Windows laptop calling it over Tailscale as recently as 2026-10-22, so a Mac-only bind would have broken that. `OLLAMA_HOST` is now `127.0.0.1:11434` (in `~/.okh/bin/ollama-env.sh`), and `tailscale serve --bg --tcp 11434 tcp://127.0.0.1:11434` republishes the same port on the tailnet only. Verified: loopback 200, Open WebUI via `host.docker.internal` 200, tailnet address 200 with a test generation, LAN address closed. Undo with `tailscale serve --tcp=11434 off` and the `.bak` copy of the env script.
+6. **LM Studio requires a token and listens on loopback only (2026-11-06).** One token per client: `openclaw` (Keychain service `openclaw-lmstudio-api-key`, read by OpenClaw's Keychain SecretRef resolver) and `open-webui` (stored in Open WebUI's LM Studio connection). Serve on Local Network and per-request MCPs are off. The laptop keeps using the Mac's models through LM Link, which doesn't depend on the LAN server. Verified: no token 401, each client's token 200, LAN and tailnet addresses closed. Lesson: a hidden terminal prompt gives no feedback, and one token was pasted twice (twice the normal length, rejected with 401); check stored length when a token fails.
 
 ### Incidents and root causes
 
@@ -149,7 +151,7 @@ How "latest" is checked: GitHub's releases API (`/repos/<owner>/<repo>/releases/
 | 2026-11-02 | OpenClaw tailnet URL (`:443`) refused; Open WebUI `:8443` fine | OpenClaw auto-update to 2026.10.9 failed in npm preinstall (needed Node 26.12.1 or newer, Mac had 26.10.0). The gateway stayed up but lost its Tailscale Serve claim | `openclaw gateway restart`; Node to 26.13.0; update completed |
 | 2026-11-03 | Everything on the tailnet down after an overnight reboot; load average ~25 | Tailscale came back stopped. OpenClaw crash-looped (launchd ran it 235 times) because it requires Tailscale | `tailscale up` with **no flags** (any flag triggers the "mention all non-default flags" check). Prevention: the Tailscale guard above |
 
-Gotchas: `tailscale serve status` never lists OpenClaw's `:443` claim even when it's healthy, so probe it with `curl`. `tailscale update` is a silent no-op on the Standalone app; update from the app instead. Homebrew can't quit apps for a cask upgrade unless Terminal has Automation permission for System Events.
+Gotchas: the post-boot test now reads boot time with `sed -E 's/^\{ sec = ([0-9]+),.*/\1/'` (the first version matched `usec`). `tailscale serve status` never lists OpenClaw's `:443` claim even when it's healthy, so probe it with `curl`. `tailscale update` is a silent no-op on the Standalone app; update from the app instead. Homebrew can't quit apps for a cask upgrade unless Terminal has Automation permission for System Events.
 
 ### Cold-reboot retest
 

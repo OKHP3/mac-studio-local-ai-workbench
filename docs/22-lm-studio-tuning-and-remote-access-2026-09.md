@@ -7,9 +7,9 @@ Scope: LM Studio 0.4.25 (Build 1) on the Mac Studio M4 Max, 36 GB unified memory
 | Area | Setting | Current | Target | Why |
 |---|---|---|---|---|
 | Server | Port | 1234 | 1234 | Keep. Every client is wired to it. |
-| Server | Require Authentication | OFF, 0 tokens | **ON**, one token per client | LAN-reachable API with no auth. Verified: `GET http://<lan-ip>:1234/v1/models` returns 200 with no header. |
-| Server | Serve on Local Network | ON | ON (with auth) | Needed for LAN clients; safe only once auth is on. |
-| Server | Allow per-request MCPs | ON | **OFF** | Lets any unauthenticated caller make the Mac connect to arbitrary remote MCP servers. Nothing in the stack uses it. |
+| Server | Require Authentication | OFF, 0 tokens | **ON**, one token per client (done 2026-11-06: `openclaw`, `open-webui`) | LAN-reachable API with no auth. Verified: `GET http://<lan-ip>:1234/v1/models` returns 200 with no header. |
+| Server | Serve on Local Network | ON | **OFF** (done 2026-11-06) | Revised: the laptop reaches the Mac's models through LM Link, and Open WebUI and OpenClaw run on the Mac, so nothing needs the LAN server. |
+| Server | Allow per-request MCPs | ON | **OFF** (done 2026-11-06) | Lets any unauthenticated caller make the Mac connect to arbitrary remote MCP servers. Nothing in the stack uses it. |
 | Server | Allow calling servers from mcp.json | OFF (greyed) | OFF | Requires auth; no need. |
 | Server | Enable CORS | OFF | OFF | No browser page calls LM Studio directly. Open WebUI and OpenClaw call server-side. |
 | Server | JIT model loading | ON | ON | OpenClaw fallback/utility models load on demand. Verified: cold JIT load of lfm2.5-1.2b = 6.4 s. |
