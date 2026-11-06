@@ -1,24 +1,25 @@
 ---
 title: Mac Studio local inference reference stack (September 2026)
-updated_date: 2026-09-27
+updated_date: 2026-11-05
 status: current
 ---
 
 # Mac Studio local inference reference stack (September 2026)
 
-One Mac Studio M4 Max (36 GB unified memory) serving local models to a chat UI, an agent runtime, and the home LAN. Everything below was verified live on 2026-09-24/25, including a cold reboot.
+One Mac Studio M4 Max (36 GB unified memory) serving local models to a chat UI, an agent runtime, and the home LAN. Everything below was verified live on 2026-09-24/25, including a cold reboot. Versions and binds in the topology table are current as of 2026-11-05; see [November 2026 update](#november-2026-update-2026-11-02-to-2026-11-05).
 
 ## Topology
 
 | Layer | Component | Version | Bind | Starts via | Self-heals |
 |---|---|---|---|---|---|
-| Inference | Ollama (brew) | 0.34.4 | `0.0.0.0:11434` | `sh.brew.ollama` + `com.okh.ollama-env` LaunchAgents | launchd KeepAlive |
-| Inference | LM Studio (headless service) | 0.4.25 | `0.0.0.0:1234` | Login item + "Enable Local LLM Service" | App service |
-| Chat UI | Open WebUI (Docker) | v0.11.4 | `:3000` | Docker Desktop autostart | `--restart always` |
-| Retrieval | Qdrant (Docker) | v1.19.1 (pinned tag) | `:6333/6334` | Docker Desktop autostart | `--restart always` |
-| Search | SearXNG (Docker) | 2026.9.25 (pinned dated tag) | `:8888` | Docker Desktop autostart | `--restart always` |
-| Agent | OpenClaw gateway ("Larry") | 2026.9.6 | `127.0.0.1:18789` | `ai.openclaw.gateway` LaunchAgent | KeepAlive |
-| Runtime | Docker Desktop / Node | 4.92.0 / 26.10.0 | n/a | Login item / brew | n/a |
+| Inference | Ollama (brew) | 0.40.14 | `0.0.0.0:11434` | `sh.brew.ollama` + `com.okh.ollama-env` LaunchAgents | launchd KeepAlive |
+| Inference | LM Studio (headless service) | 0.4.28 | `0.0.0.0:1234` | Login item + "Enable Local LLM Service" | App service |
+| Chat UI | Open WebUI (Docker) | v0.13.0 | `127.0.0.1:3000` (Tailscale Serve `:8443`) | Docker Desktop autostart | `--restart always` |
+| Retrieval | Qdrant (Docker) | v1.20.0 (pinned tag) | `127.0.0.1:6333/6334` | Docker Desktop autostart | `--restart always` |
+| Search | SearXNG (Docker) | 2026.11.5 (pinned dated tag) | `127.0.0.1:8888` | Docker Desktop autostart | `--restart always` |
+| Agent | OpenClaw gateway ("Larry") | 2026.11.1 (auto-updates) | `127.0.0.1:18789` (Tailscale Serve `:443`) | `ai.openclaw.gateway` LaunchAgent | KeepAlive |
+| Network | Tailscale Standalone | 1.104.5 | tailnet | Login item + VPN On Demand | `com.okh.tailscale-guard` LaunchAgent (every 60 s) |
+| Runtime | Docker Desktop / Node | 4.97.0 / 26.13.0 | n/a | Login item / brew | n/a |
 
 ## Design decisions (and why)
 
@@ -91,7 +92,7 @@ Quitting the Tailscale app (for example from the Dock) takes the Mac off the tai
 - Host-ops skills (for example `okhp3-openclaw-stack-status`) need `curl`/`docker` on the host; the sandboxed agent cannot reach them (`network=none`). Needs a deliberate choice: a separate non-sandboxed ops agent with exec approvals, or keep them CLI-only.
 - `gpt-oss:20b` still occasionally treats skill names as tools (`tool_search` / `tool_describe` misfires). `mistral-small3.1:24b` lost the bake-off (tool calls failed), so `gpt-oss:20b` stays primary.
 - Full-access mobile pairing needs TLS (`wss://`); LAN pairing is limited access only.
-- FileVault is on with no auto-login. `pmset autorestart 1` brings the Mac back after a power loss, but services start only after someone logs in at the FileVault prompt.
+- FileVault is on with no auto-login. `pmset autorestart 1` (found reset to 0 on 2026-11-03, restored 2026-11-05) brings the Mac back after a power loss, but services start only after someone logs in at the FileVault prompt.
 - Open WebUI search answers are only as good as the page they land on (it confused LM Studio with another product on the same site).
 
 ## Closeout (2026-09-25 to 2026-09-27): resolved
@@ -117,9 +118,57 @@ Root causes worth remembering:
 - Doctor's "device-required" gateway error is doctor's own probe. Run `openclaw doctor --allow-exec` when gateway credentials come from the keychain.
 - `brew outdated` flags LM Studio and Docker Desktop because both self-update and Homebrew's record goes stale. Compare app bundle versions instead.
 
+## November 2026 update (2026-11-02 to 2026-11-05)
+
+### Versions brought current
+
+| Component | Before | After | How |
+|---|---|---|---|
+| Open WebUI | v0.11.4 | v0.13.0 | `okh-openwebui-upgrade.command` (see doc 20) |
+| Ollama | 0.34.4 | 0.40.14 | `brew upgrade ollama`, then `brew services restart ollama` |
+| Qdrant | v1.19.1 | v1.20.0 | Container clone with data backup and rollback |
+| SearXNG | 2026.9.25 | 2026.11.5 | Container clone with rollback |
+| OpenClaw | 2026.10.5 | 2026.11.1 | Its own auto-update (after Node was raised) |
+| Node | 26.10.0 | 26.13.0 | brew |
+| Tailscale | 1.104.1 | 1.104.5 | App menu > Check for Updates, then Relaunch |
+| LM Studio | 0.4.26 | 0.4.28 | Its own updater |
+
+How "latest" is checked: GitHub's releases API (`/repos/<owner>/<repo>/releases/latest`), the npm registry, the Homebrew formula and cask APIs, Docker Hub's tags API for SearXNG, and the vendors' own pages for LM Studio and Docker Desktop. Not GitHub's releases web page, which served a stale "latest" on 2026-11-02.
+
+### What changed and why
+
+1. **Loopback-only containers.** Open WebUI, Qdrant and SearXNG now publish on `127.0.0.1` only. Qdrant has no API key, so on all interfaces anything on the LAN could read or write it. Every consumer was checked first: OpenClaw uses `127.0.0.1:8888`, and Open WebUI uses `host.docker.internal:8888`, which still works because Docker Desktop routes that name to the host's loopback.
+2. **Ollama 0.40 runs on MLX by default on Apple Silicon.** Engine change, not just a version bump. Test generations on `llama3.2:3b` and `gpt-oss:20b` passed and the tuning environment was unchanged, but the first start after the upgrade took about 6 minutes before the API answered.
+3. **Tailscale guard.** OpenClaw 2026.10.x refuses to start without Tailscale ("managed ingress remains required"). `com.okh.tailscale-guard` runs every 60 seconds: if the Tailscale app isn't running it opens it; if the backend isn't `Running` it runs `tailscale up` with no flags; if the gateway's tailnet URL fails three checks in a row it restarts the gateway (at most once per 15 minutes). It never acts on `NeedsLogin`. Turn it off with `touch ~/.okh/tailscale-guard.disabled`; log at `~/Library/Logs/okh-tailscale-guard.log`.
+4. **Open WebUI sub-agent limits** tightened to 2 concurrent / 2 background / 20 tool loops (doc 20).
+
+### Incidents and root causes
+
+| Date | Symptom | Root cause | Fix |
+|---|---|---|---|
+| 2026-11-02 | OpenClaw tailnet URL (`:443`) refused; Open WebUI `:8443` fine | OpenClaw auto-update to 2026.10.9 failed in npm preinstall (needed Node 26.12.1 or newer, Mac had 26.10.0). The gateway stayed up but lost its Tailscale Serve claim | `openclaw gateway restart`; Node to 26.13.0; update completed |
+| 2026-11-03 | Everything on the tailnet down after an overnight reboot; load average ~25 | Tailscale came back stopped. OpenClaw crash-looped (launchd ran it 235 times) because it requires Tailscale | `tailscale up` with **no flags** (any flag triggers the "mention all non-default flags" check). Prevention: the Tailscale guard above |
+
+Gotchas: `tailscale serve status` never lists OpenClaw's `:443` claim even when it's healthy, so probe it with `curl`. `tailscale update` is a silent no-op on the Standalone app; update from the app instead. Homebrew can't quit apps for a cask upgrade unless Terminal has Automation permission for System Events.
+
+### Cold-reboot retest
+
+PASS, 2026-11-06 00:07 CT, after `pmset -a autorestart 1` was restored (still 1 after the reboot). FileVault login is still a manual step, so times are measured from login by a one-shot LaunchAgent (`com.okh.postboot-test`):
+
+| Service | Up after login |
+|---|---|
+| Tailscale (Running), LM Studio `:1234` | +3 s |
+| Docker, Qdrant, SearXNG, Ollama | +27 s |
+| OpenClaw loopback and tailnet `:443`, Open WebUI `:3000` and tailnet `:8443` | +40 s |
+| `gpt-oss:20b` first generation (cold load) | 32 s |
+
+No manual launches. The Tailscale guard took no action (Tailscale came up by itself). Ollama's tuning environment (flash attention, q8_0 KV cache, 32k context) was applied at login.
+
 ## Operator scripts
 
 `~/Downloads/files/`: `okh-stack-inventory.sh` (read-only audit), `okh-stack-apply.sh` (update + hardening), `okh-postboot-check.sh` (PASS/FAIL after reboot), `okh-ollama-tune.sh` (memory tuning), `okh-final-verify.sh` (installed vs latest, auto-start wiring, health, OpenClaw update follow-ups; read-only), `okh-final-fixes.sh` (container tag pinning with auto-rollback), `okh-model-cleanup.sh` (dry-run-first model pruning; LM Studio folders moved, not deleted).
+
+November 2026 (same folder; `.command` files are double-clicked on the Mac): `okh-openwebui-upgrade.command` (Open WebUI upgrade with database copy, rollback and image pruning), `okh-maint-20261105.command` (Qdrant, SearXNG, Ollama, LM Studio, Tailscale upgrades with backups and rollback), `okh-prereboot-20261105.command` (loopback rebinds, Tailscale guard, Ollama model pulls, one-shot post-boot timing test), `okh-ts-health-20261105.command` (after any Tailscale change: bring it up if stopped, check both tailnet URLs, restart the gateway if needed).
 
 ## Publishing hygiene
 

@@ -1,6 +1,6 @@
 # 20 — Open WebUI tuning and cross-device access (2026-09-25)
 
-Scope: Open WebUI v0.11.4 (Docker, `:3000`) on the Mac Studio. Companion to [19](19-reference-stack-2026-09.md). Tailnet names are redacted as `<host>.<tailnet>.ts.net`.
+Scope: Open WebUI (Docker, `127.0.0.1:3000`) on the Mac Studio. Written against v0.11.4 (2026-09-25); upgrades through v0.13.0 are in [Upgrades and changes, November 2026](#upgrades-and-changes-november-2026). Companion to [19](19-reference-stack-2026-09.md). Tailnet names are redacted as `<host>.<tailnet>.ts.net`.
 
 ## Decision: one tailnet HTTPS URL for every device
 
@@ -29,7 +29,7 @@ Script: `~/Downloads/files/okh-openwebui-tailscale.sh` (apply) / `--off` (revert
 
 `start.sh` writes the JWT signing key to `/app/backend/.webui_secret_key` when `WEBUI_SECRET_KEY` is unset. That path is outside the `open-webui:/app/backend/data` volume, so each upgrade or recreate mints a new key and invalidates every session, including every PWA. This explains the "may need to re-login" note in doc 18.
 
-Fix: `WEBUI_SECRET_KEY_FILE=/app/backend/data/.webui_secret_key`, seeded from the current key so the fix itself causes no logout. Scripts: `okh-openwebui-recreate.sh`, `okh-openwebui-tune.sh` (DB settings, backup first), `okh-openwebui-audit.sh`. Script: `okh-openwebui-recreate.sh` (dry run by default; `--apply`; `OWUI_IMAGE=...` doubles as the upgrade path). It keeps `open-webui-prev` with `restart=no` (a stopped `always` container restarts on daemon start and fights for `:3000`) and auto-rolls back on a failed health check.
+Fix: `WEBUI_SECRET_KEY_FILE=/app/backend/data/.webui_secret_key`, seeded from the current key so the fix itself causes no logout. Scripts: `okh-openwebui-recreate.sh`, `okh-openwebui-tune.sh` (DB settings, backup first), `okh-openwebui-audit.sh`. Script (September): `okh-openwebui-recreate.sh` (dry run by default; `--apply`; `OWUI_IMAGE=...` doubles as the upgrade path), since replaced by `okh-openwebui-upgrade.command` (see below). It keeps `open-webui-prev` with `restart=no` (a stopped `always` container restarts on daemon start and fights for `:3000`) and auto-rolls back on a failed health check.
 
 ## Configuration model gotcha
 
@@ -77,6 +77,52 @@ Deferred: Qdrant as `VECTOR_DB` (recreate + reingest; do it when knowledge bases
 | Footprint | open-webui 1.1 GiB RSS in an 8 GiB Docker VM; gpt-oss 76 tok/s generation warm |
 
 Lesson: the `config.value` column has NUMERIC affinity, so numeric settings are stored as integers and everything else as JSON text. Direct edits must handle both (first tune run aborted before commit on this; no partial writes).
+
+## Upgrades and changes, November 2026
+
+### Upgrade path
+
+`~/Downloads/files/okh-openwebui-upgrade.command` (double-click on the Mac; `OWUI_TAG` default line selects the target):
+
+1. Pull the target tag.
+2. Copy the live container's settings: environment variables that differ from the image defaults (so `WEBUI_SECRET_KEY_FILE` survives), port bindings exactly as they are, volumes, extra hosts, network.
+3. Stop the container and copy `webui.db` to `webui.db.pre-<tag>-<timestamp>` inside the volume, using the old image.
+4. Replace `open-webui-prev` (restart=no) with the current container, and delete the retired rollback's image if nothing else uses it.
+5. Start the new tag and wait for `/health`. On failure it restores the database copy and the old container automatically.
+
+| Date | From | To | Notes |
+|---|---|---|---|
+| 2026-11-02 | v0.11.4 | v0.12.4 | Seeded 26 new config defaults; no logouts |
+| 2026-11-02 | v0.12.4 | v0.12.5 | Security fixes (not itemized upstream) |
+| 2026-11-05 | v0.12.5 | v0.13.0 | Security fixes and database schema migrations |
+
+Check for new releases with the GitHub API (`/repos/open-webui/open-webui/releases/latest`), not the releases web page: on 2026-11-02 the HTML page was stale and showed an older release as the latest.
+
+### Loopback binding
+
+Since 2026-11-02 the container publishes `127.0.0.1:3000` only (it was on all interfaces). The LAN address is closed; the Mac itself and Tailscale Serve (`:8443` -> `127.0.0.1:3000`) still work. The upgrade script copies bindings as they are, so this survives upgrades.
+
+### Behavior changes worth knowing (v0.12.x to v0.13.0)
+
+- A password change signs out every device.
+- `?q=` links only fill the message box; links that start calls, load URLs or create notes ask first.
+- orjson is the default JSON library.
+- An Ollama `max_tokens` sent through the API overrides the model's saved setting.
+- Switching models keeps tools, skills and features you picked by hand; an `@` mention switches the chat's model.
+- v0.13.0 adds side chats (`/side`), comments (`ENABLE_COMMENTS`), a notification inbox (`ENABLE_NOTIFICATIONS`), tool on/off switches, and lets models with native function calling create private Python tools (per-model "Tool Creation" builtin toggle).
+
+### Sub-agent limits
+
+The release notes say v0.13.0 removes the sub-agent limits by default. That applies to fresh installs. This instance had the earlier defaults seeded in its `config` table (20 concurrent, 20 background, 30 tool loops, 30000 characters, `subagents.enable` true). They were tightened for a single 36 GB Mac with one Ollama slot:
+
+| Key | Was | Now |
+|---|---|---|
+| `subagents.max_concurrent` | 20 | 2 |
+| `subagents.max_async` | 20 | 2 |
+| `subagents.max_iterations` | 30 | 20 |
+| `subagents.max_output` | 30000 | 30000 |
+
+The `config` table has columns `key`, `value`, `updated_at`. Edit it only with the container stopped (Python inside the Open WebUI image, against the volume), after copying `webui.db`.
 
 ## Agent skills (OKHP3/skillz -> Open WebUI native Skills)
 

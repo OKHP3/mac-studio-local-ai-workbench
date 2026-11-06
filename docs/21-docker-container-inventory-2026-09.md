@@ -1,18 +1,22 @@
-# Docker container inventory and naming legend (2026-09-25)
+# Docker container inventory and naming legend (2026-09-25, updated 2026-11-05)
 
-Docker Desktop on the Mac Studio should show **8 containers** in steady state (through the rollback-retention window below).
+Docker Desktop on the Mac Studio shows **3 running services**, up to **3 stopped `-prev` rollback copies** during a retention window after an upgrade, and any OpenClaw sandbox containers.
 
-## Legend
+## Legend (2026-11-05)
 
-| Container | Role | Expected state | Keep? |
-|---|---|---|---|
-| `open-webui` | Open WebUI v0.11.4, chat front end (127.0.0.1:3000, Tailscale Serve :8443) | Running, restart=always | Yes, core service |
-| `qdrant` | Qdrant v1.19.1 vector DB | Running, restart=always | Yes, core service |
-| `searxng` | SearXNG private web search (feeds OpenClaw + Open WebUI web search) | Running, restart=always | Yes, core service |
-| `open-webui-prev` | Rollback copy of the pre-upgrade Open WebUI container | Stopped, restart=no | Until ~2026-09-30, then delete |
-| `qdrant-prev` | Rollback copy of the pre-pin Qdrant container | Stopped, restart=no | Until ~2026-10-02, then delete |
-| `searxng-prev` | Rollback copy of the pre-pin SearXNG container | Stopped, restart=no | Until ~2026-10-02, then delete |
-| `openclaw-sbx-workspace-<hash>` | OpenClaw agent sandbox, one per chat session (`sandbox.mode: all`, session scope) | Running while the session is live | Managed by OpenClaw; disposable |
+| Container | Role | Bind | Expected state | Keep? |
+|---|---|---|---|---|
+| `open-webui` | Open WebUI v0.13.0, chat front end (Tailscale Serve `:8443` in front) | `127.0.0.1:3000` | Running, restart=always | Yes, core service |
+| `qdrant` | Qdrant v1.20.0 vector DB (currently holds almost no data; not yet Open WebUI's `VECTOR_DB`) | `127.0.0.1:6333-6334` | Running, restart=always | Yes, core service |
+| `searxng` | SearXNG private web search, pinned dated tag `2026.11.5-3e95f6cd2` (feeds OpenClaw via `127.0.0.1:8888` and Open WebUI via `host.docker.internal:8888`) | `127.0.0.1:8888` | Running, restart=always | Yes, core service |
+| `open-webui-prev` | Rollback copy, Open WebUI v0.12.5 | none | Stopped, restart=no | Until ~2026-11-12, then delete with its image |
+| `qdrant-prev` | Rollback copy, Qdrant v1.19.1 | none | Stopped, restart=no | Until ~2026-11-12, then delete with its image |
+| `searxng-prev` | Rollback copy, SearXNG `2026.9.25-12f8b6515` | none | Stopped, restart=no | Until ~2026-11-12, then delete with its image |
+| `openclaw-sbx-workspace-<hash>` | OpenClaw agent sandbox, one per chat session (`sandbox.mode: all`, session scope) | none | Running while the session is live | Managed by OpenClaw; disposable |
+
+All three services bind to loopback only (2026-11-02 for Open WebUI, 2026-11-05 for Qdrant and SearXNG). Nothing on the home LAN can reach them directly; other devices use the Tailscale Serve URLs. Containers reach host-published loopback ports through `host.docker.internal` on Docker Desktop.
+
+A stopped `-prev` container must keep `restart=no`: a stopped `always` container restarts when the Docker daemon starts and fights the live container for its port.
 
 ## Reading an `openclaw-sbx-*` name
 
@@ -38,20 +42,24 @@ Cleanup 2026-09-25: deleted 8 stopped `openclaw-sbx-workspace-*` containers (b80
 - Or switch sandbox scope from session to agent (one container per agent, name becomes stable) if cross-session workspace sharing is acceptable.
 - Manual sweep: delete stopped `openclaw-sbx-*` rows in Docker Desktop any time; never touch running ones.
 
-## Image cleanup (2026-09-25)
+## Image cleanup
 
-Docker disk use went from 35.29 GB to 11.43 GB, about 24 GB freed.
-
-Deleted six images that no container used: `open-webui:v0.11.0`, `open-webui:v0.10.2`, `open-webui:main`, and three untagged `<none>` leftovers from older pulls.
+### 2026-11-05
 
 | Image | Used by | Status |
 |---|---|---|
-| `ghcr.io/open-webui/open-webui:v0.11.4` | `open-webui`, `open-webui-prev` | Keep |
-| `qdrant/qdrant:v1.19.1` (same ID as `:latest`) | `qdrant`, `qdrant-prev` | Keep |
-| `searxng/searxng:2026.9.25-12f8b6515` | `searxng` | Keep |
-| `searxng/searxng:latest` | `searxng-prev` | Keep until the rollback retires (~2026-10-02) |
+| `ghcr.io/open-webui/open-webui:v0.13.0` | `open-webui` | Keep |
+| `ghcr.io/open-webui/open-webui:v0.12.5` | `open-webui-prev` | Delete with the rollback (~2026-11-12) |
+| `qdrant/qdrant:v1.20.0` | `qdrant` | Keep |
+| `qdrant/qdrant:v1.19.1` (same ID as `:latest`) | `qdrant-prev` | Delete both tags with the rollback |
+| `searxng/searxng:2026.11.5-3e95f6cd2` | `searxng` | Keep |
+| `searxng/searxng:2026.9.25-12f8b6515` | `searxng-prev` | Delete with the rollback |
 | `openclaw-sandbox:bookworm-slim` | OpenClaw sandboxes | Keep. **Built locally and not on any registry**, so if it's deleted, run `scripts/sandbox-setup.sh` again |
-| `ghcr.io/microsoft/mcp-dotnet-samples/awesome-copilot` | Probably an MCP client that runs `docker run` on demand | Kept (188 MB). Can be pulled again |
-| `ghcr.io/github/github-mcp-server:latest` | Probably an MCP client that runs `docker run` on demand | Kept (69 MB). Can be pulled again |
+| `ghcr.io/microsoft/mcp-dotnet-samples/awesome-copilot` (2 tags) | Probably an MCP client that runs `docker run` on demand | Unused; can be pulled again |
+| `ghcr.io/github/github-mcp-server:latest` | Probably an MCP client that runs `docker run` on demand | Unused; can be pulled again |
 
-After the `-prev` containers are removed, delete `searxng:latest` too.
+Removed this month: `open-webui:v0.11.4` (~5.9 GB), `open-webui:v0.12.4`, `searxng:latest`, and the September `qdrant-prev` / `searxng-prev` containers. The Open WebUI upgrade script now deletes the image of the rollback container it retires, as long as nothing else uses it.
+
+### 2026-09-25
+
+Docker disk use went from 35.29 GB to 11.43 GB, about 24 GB freed, by deleting six images no container used: `open-webui:v0.11.0`, `open-webui:v0.10.2`, `open-webui:main`, and three untagged `<none>` leftovers from older pulls.
