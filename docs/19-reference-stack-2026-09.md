@@ -1,25 +1,25 @@
 ---
 title: Mac Studio local inference reference stack (September 2026)
-updated_date: 2026-11-05
+updated_date: 2026-11-17
 status: current
 ---
 
 # Mac Studio local inference reference stack (September 2026)
 
-One Mac Studio M4 Max (36 GB unified memory) serving local models to a chat UI, an agent runtime, and the home LAN. Everything below was verified live on 2026-09-24/25, including a cold reboot. Versions and binds in the topology table are current as of 2026-11-05; see [November 2026 update](#november-2026-update-2026-11-02-to-2026-11-05).
+One Mac Studio M4 Max (36 GB unified memory) serving local models to a chat UI, an agent runtime, and the home LAN. Everything below was verified live on 2026-09-24/25, including a cold reboot. Versions and binds in the topology table are current as of 2026-11-16; see [November 2026 update](#november-2026-update-2026-11-02-to-2026-11-05) and [Maintenance 2026-11-16](#maintenance-2026-11-16).
 
 ## Topology
 
 | Layer | Component | Version | Bind | Starts via | Self-heals |
 |---|---|---|---|---|---|
-| Inference | Ollama (brew) | 0.40.14 | `127.0.0.1:11434` + Tailscale Serve TCP `11434` (tailnet only) | `sh.brew.ollama` + `com.okh.ollama-env` LaunchAgents | launchd KeepAlive |
+| Inference | Ollama (brew) | 0.40.16 | `127.0.0.1:11434` + Tailscale Serve TCP `11434` (tailnet only) | `sh.brew.ollama` + `com.okh.ollama-env` LaunchAgents | launchd KeepAlive |
 | Inference | LM Studio (headless service) | 0.4.28 | `127.0.0.1:1234`, token required | Login item + "Enable Local LLM Service" | App service |
-| Chat UI | Open WebUI (Docker) | v0.13.0 | `127.0.0.1:3000` (Tailscale Serve `:8443`) | Docker Desktop autostart | `--restart always` |
-| Retrieval | Qdrant (Docker) | v1.20.0 (pinned tag) | `127.0.0.1:6333/6334` | Docker Desktop autostart | `--restart always` |
-| Search | SearXNG (Docker) | 2026.11.5 (pinned dated tag) | `127.0.0.1:8888` | Docker Desktop autostart | `--restart always` |
-| Agent | OpenClaw gateway ("Larry") | 2026.11.1 (auto-updates) | `127.0.0.1:18789` (Tailscale Serve `:443`) | `ai.openclaw.gateway` LaunchAgent | KeepAlive |
-| Network | Tailscale Standalone | 1.104.5 | tailnet | Login item + VPN On Demand | `com.okh.tailscale-guard` LaunchAgent (every 60 s) |
-| Runtime | Docker Desktop / Node | 4.97.0 / 26.13.0 | n/a | Login item / brew | n/a |
+| Chat UI | Open WebUI (Docker) | v0.13.4 | `127.0.0.1:3000` (Tailscale Serve `:8443`) | Docker Desktop autostart | `--restart always` |
+| Retrieval | Qdrant (Docker) | v1.20.2 (pinned tag) | `127.0.0.1:6333/6334` | Docker Desktop autostart | `--restart always` |
+| Search | SearXNG (Docker) | 2026.11.15 (pinned dated tag) | `127.0.0.1:8888` | Docker Desktop autostart | `--restart always` |
+| Agent | OpenClaw gateway ("Larry") | 2026.11.3 (auto-updates) | `127.0.0.1:18789` (Tailscale Serve `:443`) | `ai.openclaw.gateway` LaunchAgent | KeepAlive |
+| Network | Tailscale Standalone | 1.104.5 (self-updates; 1.104.7 available) | tailnet | Login item + VPN On Demand | `com.okh.tailscale-guard` LaunchAgent (every 60 s) |
+| Runtime | Docker Desktop / Node | 4.99.0 / 26.13.1 | n/a | Login item / brew | n/a |
 
 ## Design decisions (and why)
 
@@ -165,6 +165,25 @@ PASS, 2026-11-06 00:07 CT, after `pmset -a autorestart 1` was restored (still 1 
 | `gpt-oss:20b` first generation (cold load) | 32 s |
 
 No manual launches. The Tailscale guard took no action (Tailscale came up by itself). Ollama's tuning environment (flash attention, q8_0 KV cache, 32k context) was applied at login.
+
+## Maintenance 2026-11-16
+
+One script run (`okh-maint-20261116.command`), about 14 minutes, every step passed with a backup and rollback in place.
+
+| Component | Before | After | Notes |
+|---|---|---|---|
+| Open WebUI | v0.13.0 | v0.13.3 | Healthy in 16 s, no logouts; database copied first (v0.13.1 has security fixes and schema migrations) |
+| Qdrant | v1.20.0 | v1.20.2 | Still loopback-only |
+| SearXNG | 2026.11.5 | 2026.11.15 | Open WebUI search through it: 200 |
+| Ollama | 0.40.14 | 0.40.16 | All models checked with `ollama pull`, none changed; generation, tailnet access and closed LAN verified |
+| Node | 26.13.0 | 26.13.1 | brew |
+| Docker Desktop | 4.97.0 | 4.99.0 | Self-updated |
+
+Already current or self-updating: LM Studio 0.4.28 (latest), OpenClaw 2026.11.3 (2026.11.4 published the same day; its auto-update applies it), Tailscale 1.104.5 (1.104.7 published 2026-11-12; the app's own "Install Updates Automatically" is on).
+
+Housekeeping: the retired rollback images (`open-webui:v0.12.5`, `qdrant:v1.19.1` and its `:latest` alias, `searxng:2026.9.25`) were deleted automatically. `codestral:22b` (12 GB, not on the kept-models list) was removed from Ollama; the agent workspace's own notes still mention it, so the agent may pull it again.
+
+2026-11-17: Open WebUI v0.13.3 -> v0.13.4 (bug fixes, including Ollama tool-call turns and sub-agent hangs; no breaking changes). Healthy in 10 s, database copied first, the retired v0.13.0 rollback image deleted automatically.
 
 ## Operator scripts
 
