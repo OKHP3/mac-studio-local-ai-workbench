@@ -1,15 +1,15 @@
-# Docker container inventory and naming legend (2026-09-25, updated 2026-11-17)
+# Docker container inventory and naming legend (2026-09-25, updated 2026-11-25)
 
 Docker Desktop on the Mac Studio shows **3 running services**, up to **3 stopped `-prev` rollback copies** during a retention window after an upgrade, and any OpenClaw sandbox containers.
 
-## Legend (2026-11-17)
+## Legend (2026-11-25)
 
 | Container | Role | Bind | Expected state | Keep? |
 |---|---|---|---|---|
-| `open-webui` | Open WebUI v0.13.4, chat front end (Tailscale Serve `:8443` in front) | `127.0.0.1:3000` | Running, restart=always | Yes, core service |
+| `open-webui` | Open WebUI v0.13.5, chat front end (Tailscale Serve `:8443` in front) | `127.0.0.1:3000` | Running, restart=always | Yes, core service |
 | `qdrant` | Qdrant v1.20.2 vector DB (currently holds almost no data; not yet Open WebUI's `VECTOR_DB`) | `127.0.0.1:6333-6334` | Running, restart=always | Yes, core service |
 | `searxng` | SearXNG private web search, pinned dated tag `2026.11.15-2d500cb6b` (feeds OpenClaw via `127.0.0.1:8888` and Open WebUI via `host.docker.internal:8888`) | `127.0.0.1:8888` | Running, restart=always | Yes, core service |
-| `open-webui-prev` | Rollback copy, Open WebUI v0.13.3 | none | Stopped, restart=no | Until ~2026-11-23, then delete with its image |
+| `open-webui-prev` | Rollback copy, Open WebUI v0.13.4 | none | Stopped, restart=no | Until ~2026-11-23, then delete with its image |
 | `qdrant-prev` | Rollback copy, Qdrant v1.20.0 | none | Stopped, restart=no | Until ~2026-11-23, then delete with its image |
 | `searxng-prev` | Rollback copy, SearXNG `2026.11.5-3e95f6cd2` | none | Stopped, restart=no | Until ~2026-11-23, then delete with its image |
 | auto-named MCP containers (`github-mcp-server`, `awesome-copilot`) | Started on demand by an MCP client with `docker run` | none | Running while the client uses them | Managed by the client; disposable |
@@ -49,8 +49,8 @@ Cleanup 2026-09-25: deleted 8 stopped `openclaw-sbx-workspace-*` containers (b80
 
 | Image | Used by | Status |
 |---|---|---|
-| `ghcr.io/open-webui/open-webui:v0.13.4` | `open-webui` | Keep (upgraded 2026-11-17) |
-| `ghcr.io/open-webui/open-webui:v0.13.3` | `open-webui-prev` | Delete with the rollback (~2026-11-23) |
+| `ghcr.io/open-webui/open-webui:v0.13.5` | `open-webui` | Keep (upgraded 2026-11-25) |
+| `ghcr.io/open-webui/open-webui:v0.13.4` | `open-webui-prev` | Delete with the rollback (~2026-11-23) |
 | `qdrant/qdrant:v1.20.2` | `qdrant` | Keep |
 | `qdrant/qdrant:v1.20.0` | `qdrant-prev` | Delete with the rollback |
 | `searxng/searxng:2026.11.15-2d500cb6b` | `searxng` | Keep |
@@ -58,7 +58,7 @@ Cleanup 2026-09-25: deleted 8 stopped `openclaw-sbx-workspace-*` containers (b80
 | `openclaw-sandbox:bookworm-slim` | OpenClaw sandboxes | Keep. Built locally; if deleted, run `scripts/sandbox-setup.sh` again |
 | `awesome-copilot` (2 tags), `github-mcp-server:latest` | MCP client containers | Keep while the client uses them; can be pulled again |
 
-Removed by the upgrade scripts: `open-webui:v0.13.0` (2026-11-17), `open-webui:v0.12.5`, `qdrant:v1.19.1` and its `:latest` alias, `searxng:2026.9.25-12f8b6515`.
+Removed by the upgrade scripts: `open-webui:v0.13.3` (2026-11-25), `open-webui:v0.13.0` (2026-11-17), `open-webui:v0.12.5`, `qdrant:v1.19.1` and its `:latest` alias, `searxng:2026.9.25-12f8b6515`.
 
 ### 2026-11-05
 

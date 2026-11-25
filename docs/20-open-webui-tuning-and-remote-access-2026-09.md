@@ -1,6 +1,6 @@
 # 20 — Open WebUI tuning and cross-device access (2026-09-25)
 
-Scope: Open WebUI (Docker, `127.0.0.1:3000`) on the Mac Studio. Written against v0.11.4 (2026-09-25); upgrades through v0.13.4 are in [Upgrades and changes, November 2026](#upgrades-and-changes-november-2026). Companion to [19](19-reference-stack-2026-09.md). Tailnet names are redacted as `<host>.<tailnet>.ts.net`.
+Scope: Open WebUI (Docker, `127.0.0.1:3000`) on the Mac Studio. Written against v0.11.4 (2026-09-25); upgrades through v0.13.5 are in [Upgrades and changes, November 2026](#upgrades-and-changes-november-2026). Companion to [19](19-reference-stack-2026-09.md). Tailnet names are redacted as `<host>.<tailnet>.ts.net`.
 
 ## Decision: one tailnet HTTPS URL for every device
 
@@ -97,6 +97,7 @@ Lesson: the `config.value` column has NUMERIC affinity, so numeric settings are 
 | 2026-11-05 | v0.12.5 | v0.13.0 | Security fixes and database schema migrations |
 | 2026-11-16 | v0.13.0 | v0.13.3 | v0.13.1 security fixes and schema migrations; v0.13.2/v0.13.3 bug fixes. Healthy in 16 s, no logouts; the retired v0.12.5 rollback image was deleted automatically |
 | 2026-11-17 | v0.13.3 | v0.13.4 | Bug fixes (Ollama OpenAI-compatible tool-call turns, final answers after tool loops, sub-agent hangs, MCP OAuth refresh). Healthy in 10 s |
+| 2026-11-25 | v0.13.4 | v0.13.5 | Security fixes. Chat history moves into one `chat_message` row per message (44 chats converted in ~10 s); Terminals are renamed Machines; tags move to a `resource_tag` table. Healthy in 10 s |
 
 Check for new releases with the GitHub API (`/repos/open-webui/open-webui/releases/latest`), not the releases web page: on 2026-11-02 the HTML page was stale and showed an older release as the latest.
 

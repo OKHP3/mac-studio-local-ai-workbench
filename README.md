@@ -133,6 +133,8 @@ The viewer's page head references the social card, tab icons, touch icon, pinned
 
 The [technology comparison](reports/technology-update-report.md) links recorded versions to upstream release sources and identifies unknowns. The [maintenance policy](docs/15-technology-version-management.md) covers weekly monitoring, Dependabot updates for npm dependencies and GitHub Actions, upgrade checks, and rollback. Recorded host versions need verification on the Mac before an upgrade decision.
 
+The upgrade routine itself is packaged as a portable Agent Skill, [`okhp3-local-ai-stack-upgrade`](skills/okhp3-local-ai-stack-upgrade/SKILL.md): release checks from the GitHub and Docker Hub APIs, one-container upgrades with a database copy, a kept rollback and automatic rollback on a failed health check, loopback and tailnet exposure checks, rollback retirement, and a publish guard for docs. Nothing in it is specific to this machine; copy the example config, fill in your own services, and it runs on any Mac with Docker Desktop and Homebrew. It is also distributed through the OKHP3 Skillz library, with a downloadable bundle: [Skillz Forge catalog page](https://okhp3.github.io/skillz/#/skills/universal/okhp3-local-ai-stack-upgrade) · [install guide](skills/okhp3-local-ai-stack-upgrade/INSTALL.md).
+
 Recovery starts with the [manifests](manifests/), [sanitized configuration example](config/env.example), and [repository-aware scripts](scripts/). The current restore and verification scripts need their CRLF line endings corrected before use; see [the script guidance](AGENTS.md#verified-and-available-operations). The copies in [`mac-studio-setup/`](mac-studio-setup/) belong to the dated baseline. Restore operations change the host and should follow a backup or checkpoint.
 
 <details>
@@ -145,6 +147,7 @@ Recovery starts with the [manifests](manifests/), [sanitized configuration examp
 | [`src/`](src/) · [`public/`](public/) | Static documentation viewer and branding assets |
 | [`manifests/`](manifests/) · [`config/`](config/) | Package and model inventories, sanitized examples, technology tracking inputs |
 | [`scripts/`](scripts/) · [`tests/`](tests/) | Maintenance, recovery, and validation |
+| [`skills/`](skills/) · [`.agents/skills/`](.agents/skills/) | Published Agent Skills and their editable sources |
 | [`reports/`](reports/) · [`templates/`](templates/) | Evidence reports and reusable working documents |
 | [`mac-studio-setup/`](mac-studio-setup/) | Preserved baseline snapshot |
 | [`context/threads/`](context/threads/) | Sanitized continuity extracts |

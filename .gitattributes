@@ -1,3 +1,5 @@
 /.gitignore text eol=lf
 /.githooks/* text eol=lf
 /scripts/post-merge.sh text eol=lf
+/.agents/skills/okhp3-local-ai-stack-upgrade/** text=auto eol=lf
+/skills/okhp3-local-ai-stack-upgrade/** text=auto eol=lf

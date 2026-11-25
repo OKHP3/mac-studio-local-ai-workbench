@@ -8,8 +8,10 @@ title = "mac-studio-local-ai-workbench publishing hygiene"
 useDefault = true
 
 [allowlist]
-description = "Rule definitions themselves"
+description = "Rule definitions themselves, and 100.64.0.0 exactly: the network address of the documented Tailscale CGNAT range (100.64.0.0/10), never a device address"
 paths = ['''\.gitleaks\.toml''', '''\.githooks/''']
+regexTarget = "match"
+regexes = ['''^100\.64\.0\.0$''']
 
 [[rules]]
 id = "apple-serial-number"

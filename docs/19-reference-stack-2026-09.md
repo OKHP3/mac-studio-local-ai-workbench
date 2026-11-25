@@ -1,6 +1,6 @@
 ---
 title: Mac Studio local inference reference stack (September 2026)
-updated_date: 2026-11-17
+updated_date: 2026-11-25
 status: current
 ---
 
@@ -14,7 +14,7 @@ One Mac Studio M4 Max (36 GB unified memory) serving local models to a chat UI, 
 |---|---|---|---|---|---|
 | Inference | Ollama (brew) | 0.40.16 | `127.0.0.1:11434` + Tailscale Serve TCP `11434` (tailnet only) | `sh.brew.ollama` + `com.okh.ollama-env` LaunchAgents | launchd KeepAlive |
 | Inference | LM Studio (headless service) | 0.4.28 | `127.0.0.1:1234`, token required | Login item + "Enable Local LLM Service" | App service |
-| Chat UI | Open WebUI (Docker) | v0.13.4 | `127.0.0.1:3000` (Tailscale Serve `:8443`) | Docker Desktop autostart | `--restart always` |
+| Chat UI | Open WebUI (Docker) | v0.13.5 | `127.0.0.1:3000` (Tailscale Serve `:8443`) | Docker Desktop autostart | `--restart always` |
 | Retrieval | Qdrant (Docker) | v1.20.2 (pinned tag) | `127.0.0.1:6333/6334` | Docker Desktop autostart | `--restart always` |
 | Search | SearXNG (Docker) | 2026.11.15 (pinned dated tag) | `127.0.0.1:8888` | Docker Desktop autostart | `--restart always` |
 | Agent | OpenClaw gateway ("Larry") | 2026.11.3 (auto-updates) | `127.0.0.1:18789` (Tailscale Serve `:443`) | `ai.openclaw.gateway` LaunchAgent | KeepAlive |
@@ -184,6 +184,8 @@ Already current or self-updating: LM Studio 0.4.28 (latest), OpenClaw 2026.11.3 
 Housekeeping: the retired rollback images (`open-webui:v0.12.5`, `qdrant:v1.19.1` and its `:latest` alias, `searxng:2026.9.25`) were deleted automatically. `codestral:22b` (12 GB, not on the kept-models list) was removed from Ollama; the agent workspace's own notes still mention it, so the agent may pull it again.
 
 2026-11-17: Open WebUI v0.13.3 -> v0.13.4 (bug fixes, including Ollama tool-call turns and sub-agent hangs; no breaking changes). Healthy in 10 s, database copied first, the retired v0.13.0 rollback image deleted automatically.
+
+2026-11-25: Open WebUI v0.13.4 -> v0.13.5 (security fixes; stores each chat message as its own row, so the upgrade converts existing chat history). The migration moved the messages of 44 chats in about 10 seconds; database copied first, the retired v0.13.3 rollback image deleted automatically. The upgrade script now lives in an untracked `.okh-local/` folder of this clone (excluded through `.git/info/exclude`), because the old scripts folder under Downloads is gone. The same routine, generalized and stripped of machine details, is published as the [`okhp3-local-ai-stack-upgrade`](../skills/okhp3-local-ai-stack-upgrade/SKILL.md) skill.
 
 ## Operator scripts
 
